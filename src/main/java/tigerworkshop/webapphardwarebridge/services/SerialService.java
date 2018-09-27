@@ -49,8 +49,7 @@ public class SerialService {
                                     SerialPort.PARITY_NONE);
                         }
                     } catch (Exception e) {
-                        logger.info("Error: " + e.getMessage());
-                        e.printStackTrace();
+                        logger.warn("Error: " + e.getMessage());
                         ThreadUtil.silentSleep(1000);
                     }
                 }

@@ -1,14 +1,12 @@
 {
-  "setting": {
-    "port": 12212
-  },
+  "port": 12212,
+  "fallbackToDefaultPrinter": true,
   "printers": {
-    "LABEL": "KM-200",
+    "LABEL": "FinePrint",
     "INVOICE": "KM-200",
     "BOX_LABEL": "KM-200"
   },
   "serials": {
-    "WEIGH": "COM3",
-    "LCD": "COM4"
+    "WEIGH": "COM7"
   }
 }

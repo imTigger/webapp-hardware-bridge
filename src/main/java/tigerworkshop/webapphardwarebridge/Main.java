@@ -1,18 +1,15 @@
 package tigerworkshop.webapphardwarebridge;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
 import com.sun.management.OperatingSystemMXBean;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.services.SerialService;
+import tigerworkshop.webapphardwarebridge.services.SettingService;
 
-import java.io.FileReader;
 import java.lang.management.ManagementFactory;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
@@ -46,21 +43,18 @@ public class Main {
         logger.info("JVM Maximum memory (bytes): " + Runtime.getRuntime().maxMemory());
         logger.info("System memory (bytes): " + ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize());
 
+        SettingService settingService = SettingService.getInstance();
+
         try {
-            Gson gson = new Gson();
-            JsonReader reader = new JsonReader(new FileReader("setting.json"));
-            JsonElement element = gson.fromJson(reader, JsonElement.class);
-
-            int port = element.getAsJsonObject().get("setting").getAsJsonObject().get("port").getAsInt();
-            JsonObject serials = element.getAsJsonObject().get("serials").getAsJsonObject();
-
+            int port = settingService.getPort();
+            HashMap<String, String> serials = settingService.getSerials();
 
             BridgeWebSocketServer webSocketServer = null;
             try {
                 webSocketServer = new BridgeWebSocketServer(port);
 
-                for (Map.Entry<String, JsonElement> elem : serials.entrySet()) {
-                    webSocketServer.addSerialMapping(elem.getKey(), elem.getValue().getAsString());
+                for (Map.Entry<String, String> elem : serials.entrySet()) {
+                    webSocketServer.addSerialMapping(elem.getKey(), elem.getValue());
                 }
 
                 webSocketServer.start();
@@ -70,8 +64,8 @@ public class Main {
                 System.exit(0);
             }
 
-            for (Map.Entry<String, JsonElement> elem : serials.entrySet()) {
-                SerialService serialService = new SerialService(webSocketServer, elem.getValue().getAsString());
+            for (Map.Entry<String, String> elem : serials.entrySet()) {
+                SerialService serialService = new SerialService(webSocketServer, elem.getValue());
             }
         } catch (Exception e) {
             e.printStackTrace();

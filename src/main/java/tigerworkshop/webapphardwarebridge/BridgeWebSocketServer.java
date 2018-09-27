@@ -1,20 +1,24 @@
 package tigerworkshop.webapphardwarebridge;
 
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
+import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ClientHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
+import tigerworkshop.webapphardwarebridge.services.DocumentService;
+import tigerworkshop.webapphardwarebridge.services.PrinterService;
+
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketServer {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private Gson gson = new Gson();
 
     private HashMap<String, ArrayList<WebSocket>> channelClientList = new HashMap<>();
     private HashMap<String, String> serialMappings = new HashMap<>();
@@ -22,7 +26,7 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
     private String serialPrefix = "/serial/";
     private String printerPrefix = "/printer";
 
-    public BridgeWebSocketServer(int port) throws UnknownHostException {
+    public BridgeWebSocketServer(int port) {
         super(new InetSocketAddress(port));
     }
 
@@ -54,6 +58,24 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
     @Override
     public void onMessage(WebSocket conn, String message) {
         logger.info("onMessage: " + conn + ": " + message);
+
+        if (conn.getAttachment().equals(printerPrefix)) {
+            logger.info("Attempt to print: " + message);
+
+            try {
+                PrintDocument[] printDocuments = gson.fromJson(message, PrintDocument[].class);
+                for (PrintDocument printDocument : printDocuments) {
+                    try {
+                        DocumentService.getInstance().prepareDocument(printDocument);
+                        PrinterService.getInstance().printDocument(printDocument);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     @Override
