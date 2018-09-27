@@ -1,0 +1,14 @@
+{
+  "setting": {
+    "port": 12212
+  },
+  "printers": {
+    "LABEL": "KM-200",
+    "INVOICE": "KM-200",
+    "BOX_LABEL": "KM-200"
+  },
+  "serials": {
+    "WEIGH": "COM3",
+    "LCD": "COM4"
+  }
+}
