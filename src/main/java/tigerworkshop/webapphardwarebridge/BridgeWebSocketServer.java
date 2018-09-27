@@ -2,7 +2,6 @@ package tigerworkshop.webapphardwarebridge;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,13 +20,10 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
     private HashMap<String, String> serialMappings = new HashMap<>();
 
     private String serialPrefix = "/serial/";
+    private String printerPrefix = "/printer";
 
     public BridgeWebSocketServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
-    }
-
-    public BridgeWebSocketServer(InetSocketAddress address) {
-        super(address);
     }
 
     @Override
@@ -41,6 +37,12 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
         clientList.add(conn);
         channelClientList.put(uri, clientList);
 
+        if (uri.equals(printerPrefix)) {
+            conn.send("Ready");
+        }
+
+        conn.setAttachment(uri);
+
         logger.info(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected to " + handshake.getResourceDescriptor());
     }
 
@@ -51,11 +53,6 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        logger.info("onMessage: " + conn + ": " + message);
-    }
-
-    @Override
-    public void onMessage(WebSocket conn, ByteBuffer message) {
         logger.info("onMessage: " + conn + ": " + message);
     }
 
