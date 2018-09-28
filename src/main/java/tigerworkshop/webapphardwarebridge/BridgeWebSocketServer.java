@@ -6,22 +6,24 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ClientHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.interfaces.SerialListener;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
 import tigerworkshop.webapphardwarebridge.services.DocumentService;
 import tigerworkshop.webapphardwarebridge.services.PrinterService;
+import tigerworkshop.webapphardwarebridge.services.SerialService;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketServer {
+public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketServer implements SerialListener {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Gson gson = new Gson();
 
     private HashMap<String, ArrayList<WebSocket>> channelClientList = new HashMap<>();
-    private HashMap<String, String> serialMappings = new HashMap<>();
+    private HashMap<String, SerialService> serialServices = new HashMap<>();
 
     private String serialPrefix = "/serial/";
     private String printerPrefix = "/printer";
@@ -75,6 +77,16 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
+        } else if (conn.getAttachment().toString().startsWith(serialPrefix)) {
+            logger.info("Attempt to send: " + message);
+
+            String mappingKey = conn.getAttachment().toString().replace(serialPrefix, "");
+            SerialService serialService = serialServices.get(mappingKey);
+            if (serialService != null) {
+                serialService.send(message.getBytes());
+            } else {
+                logger.warn("serialService is null");
+            }
         }
     }
 
@@ -89,32 +101,25 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
         setConnectionLostTimeout(30);
     }
 
-    public void updateSerial(String s, String port) {
-        ArrayList<WebSocket> clientList = channelClientList.get(getSerialChannel(port));
+    @Override
+    public void onStart(SerialService serialService) {
+        serialServices.put(serialService.getMappingKey(), serialService);
+    }
+
+    @Override
+    public void onDataReceived(SerialService serialService, String receivedData) {
+        ArrayList<WebSocket> clientList = channelClientList.get(serialPrefix + serialService.getMappingKey());
 
         if (clientList != null) {
             for (Iterator<WebSocket> it = clientList.iterator(); it.hasNext(); ) {
                 WebSocket conn = it.next();
                 try {
-                    conn.send(s);
+                    conn.send(receivedData);
                 } catch (WebsocketNotConnectedException e) {
                     logger.warn("WebsocketNotConnectedException: Removing client from list - " + conn.getRemoteSocketAddress());
                     it.remove();
                 }
             }
         }
-    }
-
-    public String getSerialChannel(String port) {
-        String key = serialMappings.get(port);
-        if (key == null) {
-            return null;
-        } else {
-            return serialPrefix + key;
-        }
-    }
-
-    public void addSerialMapping(String key, String port) {
-        serialMappings.put(port, key);
     }
 }

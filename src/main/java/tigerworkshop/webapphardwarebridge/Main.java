@@ -54,7 +54,7 @@ public class Main {
                 webSocketServer = new BridgeWebSocketServer(port);
 
                 for (Map.Entry<String, String> elem : serials.entrySet()) {
-                    webSocketServer.addSerialMapping(elem.getKey(), elem.getValue());
+                    SerialService serialService = new SerialService(webSocketServer, elem.getValue(), elem.getKey());
                 }
 
                 webSocketServer.start();
@@ -62,10 +62,6 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(0);
-            }
-
-            for (Map.Entry<String, String> elem : serials.entrySet()) {
-                SerialService serialService = new SerialService(webSocketServer, elem.getValue());
             }
         } catch (Exception e) {
             e.printStackTrace();
