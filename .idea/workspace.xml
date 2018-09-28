@@ -6,12 +6,9 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a731182a-a49f-4e17-a152-1e4fa9067583" name="Default Changelist" comment="Added artifact settings">
-      <change afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/interfaces/SerialListener.java" afterDir="false" />
+    <list default="true" id="a731182a-a49f-4e17-a152-1e4fa9067583" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -129,17 +126,17 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="13" />
-          <entry key="java" value="2128" />
+          <entry key="java" value="2133" />
           <entry key="json" value="56" />
-          <entry key="txt" value="79" />
+          <entry key="txt" value="105" />
           <entry key="xml" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="2128" />
+          <entry key="JAVA" value="2133" />
           <entry key="JSON" value="56" />
-          <entry key="PLAIN_TEXT" value="92" />
+          <entry key="PLAIN_TEXT" value="118" />
           <entry key="XML" value="20" />
         </counts>
       </usages-collector>
@@ -159,11 +156,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="41" column="56" selection-start-line="41" selection-start-column="56" selection-end-line="41" selection-end-column="56" />
+            <state relative-caret-position="665">
+              <caret line="40" column="56" selection-start-line="40" selection-start-column="56" selection-end-line="40" selection-end-column="56" />
               <folding>
                 <element signature="e#3676#3677#0" expanded="true" />
                 <element signature="e#3703#3704#0" expanded="true" />
@@ -176,11 +173,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-223">
-              <caret line="61" column="40" selection-start-line="61" selection-start-column="40" selection-end-line="61" selection-end-column="40" />
+            <state relative-caret-position="285">
+              <caret line="47" column="9" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3468#3469#0" expanded="true" />
@@ -240,6 +237,7 @@
       <replace>PrinterService</replace>
       <replace>DocumentService</replace>
       <replace>WebApp Hardware Bridge</replace>
+      <replace>getResourceDescriptor()</replace>
     </replaceStrings>
     <dirStrings>
       <dir>C:\Users\tiger\IdeaProjects\webapp-hardware-bridge</dir>
@@ -644,8 +642,8 @@
         <option value="$PROJECT_DIR$/src/main/resources/log4j2.xml" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Main.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/interfaces/SerialListener.java" />
-        <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" />
       </list>
     </option>
   </component>
@@ -734,7 +732,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538166679492" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538166878263" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/dist/log4j2.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -837,7 +835,7 @@
       <workItem from="1537948225292" duration="4496000" />
       <workItem from="1537981250594" duration="6545000" />
       <workItem from="1538069128676" duration="7918000" />
-      <workItem from="1538164109414" duration="2547000" />
+      <workItem from="1538164109414" duration="2754000" />
     </task>
     <task id="LOCAL-00001" summary="Added printer service">
       <created>1538075567122</created>
@@ -853,11 +851,18 @@
       <option name="project" value="LOCAL" />
       <updated>1538164141314</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added serial write ability">
+      <created>1538166703930</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1538166703930</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="23515000" />
+    <option name="totallyTimeSpent" value="23722000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -905,7 +910,8 @@
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <MESSAGE value="Added printer service" />
     <MESSAGE value="Added artifact settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added artifact settings" />
+    <MESSAGE value="Added serial write ability" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added serial write ability" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -957,6 +963,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="608">
           <caret line="32" column="31" selection-start-line="32" selection-start-column="16" selection-end-line="32" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1017#1018#0" expanded="true" />
+            <element signature="e#1048#1049#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1089,22 +1100,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-223">
-          <caret line="61" column="40" selection-start-line="61" selection-start-column="40" selection-end-line="61" selection-end-column="40" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3468#3469#0" expanded="true" />
-            <element signature="e#3517#3518#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="41" column="56" selection-start-line="41" selection-start-column="56" selection-end-line="41" selection-end-column="56" />
+        <state relative-caret-position="665">
+          <caret line="40" column="56" selection-start-line="40" selection-start-column="56" selection-end-line="40" selection-end-column="56" />
           <folding>
             <element signature="e#3676#3677#0" expanded="true" />
             <element signature="e#3703#3704#0" expanded="true" />
@@ -1112,6 +1111,18 @@
             <element signature="e#3842#3843#0" expanded="true" />
             <element signature="e#3912#3913#0" expanded="true" />
             <element signature="e#3959#3960#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="47" column="9" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3468#3469#0" expanded="true" />
+            <element signature="e#3517#3518#0" expanded="true" />
           </folding>
         </state>
       </provider>

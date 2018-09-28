@@ -47,8 +47,6 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
             conn.send("Ready");
         }
 
-        conn.setAttachment(uri);
-
         logger.info(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected to " + handshake.getResourceDescriptor());
     }
 
@@ -61,7 +59,7 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
     public void onMessage(WebSocket conn, String message) {
         logger.info("onMessage: " + conn + ": " + message);
 
-        if (conn.getAttachment().equals(printerPrefix)) {
+        if (conn.getResourceDescriptor().equals(printerPrefix)) {
             logger.info("Attempt to print: " + message);
 
             try {
@@ -77,10 +75,10 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
-        } else if (conn.getAttachment().toString().startsWith(serialPrefix)) {
+        } else if (conn.getResourceDescriptor().startsWith(serialPrefix)) {
             logger.info("Attempt to send: " + message);
 
-            String mappingKey = conn.getAttachment().toString().replace(serialPrefix, "");
+            String mappingKey = conn.getResourceDescriptor().replace(serialPrefix, "");
             SerialService serialService = serialServices.get(mappingKey);
             if (serialService != null) {
                 serialService.send(message.getBytes());
