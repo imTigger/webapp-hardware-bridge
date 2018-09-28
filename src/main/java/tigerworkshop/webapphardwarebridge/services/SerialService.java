@@ -13,7 +13,6 @@ public class SerialService {
     private final SerialPort serialPort;
     private final Thread writeThread;
     private final Thread readThread;
-    private SerialListener listener;
     private byte[] writeBuffer = {};
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -21,7 +20,6 @@ public class SerialService {
     public SerialService(SerialListener listener, String portName, String mappingKey) {
         logger.info("Starting SerialService on " + portName);
 
-        this.listener = listener;
         this.portName = portName;
         this.mappingKey = mappingKey;
         this.serialPort = new SerialPort(portName);

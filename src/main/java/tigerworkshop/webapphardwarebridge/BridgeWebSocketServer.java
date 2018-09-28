@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.interfaces.SerialListener;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketServer implements SerialListener {
+public class BridgeWebSocketServer extends WebSocketServer implements SerialListener {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Gson gson = new Gson();
@@ -75,7 +76,9 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
-        } else if (conn.getResourceDescriptor().startsWith(serialPrefix)) {
+        }
+
+        if (conn.getResourceDescriptor().startsWith(serialPrefix)) {
             logger.info("Attempt to send: " + message);
 
             String mappingKey = conn.getResourceDescriptor().replace(serialPrefix, "");
@@ -108,15 +111,17 @@ public class BridgeWebSocketServer extends org.java_websocket.server.WebSocketSe
     public void onDataReceived(SerialService serialService, String receivedData) {
         ArrayList<WebSocket> clientList = channelClientList.get(serialPrefix + serialService.getMappingKey());
 
-        if (clientList != null) {
-            for (Iterator<WebSocket> it = clientList.iterator(); it.hasNext(); ) {
-                WebSocket conn = it.next();
-                try {
-                    conn.send(receivedData);
-                } catch (WebsocketNotConnectedException e) {
-                    logger.warn("WebsocketNotConnectedException: Removing client from list - " + conn.getRemoteSocketAddress());
-                    it.remove();
-                }
+        if (clientList == null) {
+            return;
+        }
+
+        for (Iterator<WebSocket> it = clientList.iterator(); it.hasNext(); ) {
+            WebSocket conn = it.next();
+            try {
+                conn.send(receivedData);
+            } catch (WebsocketNotConnectedException e) {
+                logger.warn("WebsocketNotConnectedException: Removing client from list - " + conn.getRemoteSocketAddress());
+                it.remove();
             }
         }
     }
