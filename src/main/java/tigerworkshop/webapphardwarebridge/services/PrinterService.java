@@ -209,16 +209,14 @@ public class PrinterService {
     private DocPrintJob getDocPrintJob(String type) throws PrinterException {
         String printerName = findMappedPrinter(type);
 
-        if (printerName == null) {
-            throw new PrinterException("No printer set for type: " + type);
-        }
+        if (printerName != null) {
+            PrintService[] services = PrinterJob.lookupPrintServices();
 
-        PrintService[] services = PrinterJob.lookupPrintServices();
-
-        for (PrintService service : services) {
-            if (service.getName().equalsIgnoreCase(printerName)) {
-                logger.info("Creating print job to printer: " + service.getName());
-                return service.createPrintJob();
+            for (PrintService service : services) {
+                if (service.getName().equalsIgnoreCase(printerName)) {
+                    logger.info("Creating print job to printer: " + service.getName());
+                    return service.createPrintJob();
+                }
             }
         }
 
@@ -226,7 +224,7 @@ public class PrinterService {
             logger.info("No matched printer: " + printerName + ", falling back to default printer");
             return PrintServiceLookup.lookupDefaultPrintService().createPrintJob();
         } else {
-            throw new PrinterException("No matched printer: " + printerName);
+            throw new PrinterException("No matched printer: " + type);
         }
     }
 }

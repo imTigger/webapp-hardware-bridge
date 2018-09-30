@@ -6,11 +6,10 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a731182a-a49f-4e17-a152-1e4fa9067583" name="Default Changelist" comment="Cleanup">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+    <list default="true" id="a731182a-a49f-4e17-a152-1e4fa9067583" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -98,11 +97,12 @@
     <session id="942085248">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="3" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.4" value="1" />
+          <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -110,7 +110,7 @@
           <entry key="class" value="2" />
           <entry key="gitignore" value="2" />
           <entry key="gradle" value="1" />
-          <entry key="java" value="30" />
+          <entry key="java" value="31" />
           <entry key="json" value="3" />
           <entry key="xml" value="3" />
         </counts>
@@ -119,7 +119,7 @@
         <counts>
           <entry key="CLASS" value="2" />
           <entry key="Groovy" value="1" />
-          <entry key="JAVA" value="30" />
+          <entry key="JAVA" value="31" />
           <entry key="JSON" value="3" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="XML" value="3" />
@@ -128,7 +128,7 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="33" />
-          <entry key="java" value="2158" />
+          <entry key="java" value="2194" />
           <entry key="json" value="56" />
           <entry key="txt" value="112" />
           <entry key="xml" value="20" />
@@ -136,7 +136,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="2158" />
+          <entry key="JAVA" value="2194" />
           <entry key="JSON" value="56" />
           <entry key="PLAIN_TEXT" value="145" />
           <entry key="XML" value="20" />
@@ -149,7 +149,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
+            <state relative-caret-position="874">
               <caret line="56" column="60" selection-start-line="56" selection-start-column="60" selection-end-line="56" selection-end-column="60" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -161,16 +161,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
+            <state relative-caret-position="190">
               <caret line="15" selection-start-line="15" selection-end-line="15" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3676#3677#0" expanded="true" />
-                <element signature="e#3703#3704#0" expanded="true" />
-                <element signature="e#3809#3810#0" expanded="true" />
-                <element signature="e#3842#3843#0" expanded="true" />
-                <element signature="e#3912#3913#0" expanded="true" />
-                <element signature="e#3959#3960#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -179,12 +173,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1287">
-              <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+            <state relative-caret-position="138">
+              <caret line="66" column="43" selection-start-line="66" selection-start-column="43" selection-end-line="66" selection-end-column="43" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3468#3469#0" expanded="true" />
-                <element signature="e#3517#3518#0" expanded="true" />
+                <element signature="e#3641#3642#0" expanded="true" />
+                <element signature="e#3690#3691#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -209,10 +203,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+        <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38">
-              <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+            <state relative-caret-position="346">
+              <caret line="222" column="37" selection-start-line="222" selection-start-column="37" selection-end-line="222" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -245,6 +239,7 @@
       <find>getSerialChannel</find>
       <find>listener</find>
       <find>uri</find>
+      <find>gson</find>
     </findStrings>
     <replaceStrings>
       <replace>BridgeWebSocketServer</replace>
@@ -647,7 +642,6 @@
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/DocumentService.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/utils/ImagePrintable.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/responses/Setting.java" />
-        <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/utils/AnnotatedPrintable.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Config.java" />
         <option value="$PROJECT_DIR$/setting.json" />
@@ -656,8 +650,9 @@
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Main.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/interfaces/SerialListener.java" />
         <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java" />
       </list>
     </option>
   </component>
@@ -679,6 +674,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -748,14 +744,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538167245114" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1538167265284" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/dist/log4j2.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -858,7 +853,8 @@
       <workItem from="1537948225292" duration="4496000" />
       <workItem from="1537981250594" duration="6545000" />
       <workItem from="1538069128676" duration="7918000" />
-      <workItem from="1538164109414" duration="3133000" />
+      <workItem from="1538164109414" duration="3752000" />
+      <workItem from="1538220157125" duration="1472000" />
     </task>
     <task id="LOCAL-00001" summary="Added printer service">
       <created>1538075567122</created>
@@ -888,17 +884,24 @@
       <option name="project" value="LOCAL" />
       <updated>1538166896013</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Cleanup">
+      <created>1538167256413</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1538167256413</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24101000" />
+    <option name="totallyTimeSpent" value="26192000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20202559" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20415778" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -907,13 +910,13 @@
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.329718" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.329718" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Build" order="7" weight="0.329718" />
-      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.329718" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.329718" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.329718" />
       <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
@@ -1052,13 +1055,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-312">
-          <caret line="195" column="30" lean-forward="true" selection-start-line="195" selection-start-column="30" selection-end-line="195" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SettingService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
@@ -1100,17 +1096,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/setting.json">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+        <state relative-caret-position="38">
+          <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
+        <state relative-caret-position="874">
           <caret line="56" column="60" selection-start-line="56" selection-start-column="60" selection-end-line="56" selection-end-column="60" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1124,38 +1130,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/SerialService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3676#3677#0" expanded="true" />
-            <element signature="e#3703#3704#0" expanded="true" />
-            <element signature="e#3809#3810#0" expanded="true" />
-            <element signature="e#3842#3843#0" expanded="true" />
-            <element signature="e#3912#3913#0" expanded="true" />
-            <element signature="e#3959#3960#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/BridgeWebSocketServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1287">
-          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+        <state relative-caret-position="138">
+          <caret line="66" column="43" selection-start-line="66" selection-start-column="43" selection-end-line="66" selection-end-column="43" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3468#3469#0" expanded="true" />
-            <element signature="e#3517#3518#0" expanded="true" />
+            <element signature="e#3641#3642#0" expanded="true" />
+            <element signature="e#3690#3691#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/setting.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38">
-          <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+        <state relative-caret-position="209">
+          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/services/PrinterService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="222" column="37" selection-start-line="222" selection-start-column="37" selection-end-line="222" selection-end-column="37" />
         </state>
       </provider>
     </entry>

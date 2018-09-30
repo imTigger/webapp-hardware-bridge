@@ -64,8 +64,18 @@ public class BridgeWebSocketServer extends WebSocketServer implements SerialList
             logger.info("Attempt to print: " + message);
 
             try {
-                PrintDocument[] printDocuments = gson.fromJson(message, PrintDocument[].class);
-                for (PrintDocument printDocument : printDocuments) {
+                if (message.startsWith("[")) {
+                    PrintDocument[] printDocuments = gson.fromJson(message, PrintDocument[].class);
+                    for (PrintDocument printDocument : printDocuments) {
+                        try {
+                            DocumentService.getInstance().prepareDocument(printDocument);
+                            PrinterService.getInstance().printDocument(printDocument);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    }
+                } else {
+                    PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);
                     try {
                         DocumentService.getInstance().prepareDocument(printDocument);
                         PrinterService.getInstance().printDocument(printDocument);
