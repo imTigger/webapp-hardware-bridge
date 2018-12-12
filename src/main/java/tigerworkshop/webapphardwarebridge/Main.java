@@ -8,7 +8,14 @@ import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.services.SerialService;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +52,68 @@ public class Main {
 
         SettingService settingService = SettingService.getInstance();
 
+        if (!SystemTray.isSupported()) {
+            System.out.println("SystemTray is not supported");
+            return;
+        }
+
+        Image image = null;
+        try {
+            final URL url = Main.class.getClassLoader().getResource("blub.gif");
+            image = ImageIO.read(url);
+        } catch (Exception e) {
+
+        }
+
+        final PopupMenu popup = new PopupMenu();
+        final TrayIcon trayIcon = new TrayIcon(image, Config.APP_NAME);
+        final SystemTray tray = SystemTray.getSystemTray();
+
+        // Create a pop-up menu components
+        MenuItem settingItem = new MenuItem("Setting");
+        settingItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().open(new File("setting.json"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        MenuItem logItem = new MenuItem("Log");
+        logItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().open(new File("log"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        //Add components to pop-up menu
+        popup.add(settingItem);
+        popup.add(logItem);
+        popup.addSeparator();
+        popup.add(exitItem);
+
+        trayIcon.setPopupMenu(popup);
+
+        try {
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            System.out.println("TrayIcon could not be added.");
+        }
+
         try {
             int port = settingService.getPort();
             HashMap<String, String> serials = settingService.getSerials();
@@ -67,5 +136,7 @@ public class Main {
             e.printStackTrace();
             System.exit(1);
         }
+
+        trayIcon.displayMessage(Config.APP_NAME, "Service started", TrayIcon.MessageType.INFO);
     }
 }
