@@ -55,14 +55,6 @@ public class DownloadUtil {
 
             FileUtils.copyInputStreamToFile(urlConnection.getInputStream(), outputFile);
 
-            long actualSize = outputFile.length();
-
-            // File size mismatch
-            if (contentLength != actualSize) {
-                outputFile.delete();
-                throw new IOException("Downloaded file size " + actualSize + " does not match server value " + contentLength);
-            }
-
             long timeFinish = System.currentTimeMillis();
             logger.info("File " + path + " downloaded in " + (timeFinish - timeStart) + "ms");
 
