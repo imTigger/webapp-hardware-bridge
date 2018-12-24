@@ -1,0 +1,8 @@
+{
+  "port": 12212,
+  "fallbackToDefaultPrinter": true,
+  "printers": {
+  },
+  "serials": {
+  }
+}
