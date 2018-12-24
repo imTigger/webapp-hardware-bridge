@@ -52,65 +52,61 @@ public class Main {
 
         SettingService settingService = SettingService.getInstance();
 
-        if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
-            return;
-        }
-
-        Image image = null;
+        TrayIcon trayIcon = null;
         try {
+            if (!SystemTray.isSupported()) {
+                System.out.println("SystemTray is not supported");
+                return;
+            }
+
             final URL url = Main.class.getClassLoader().getResource("blub.gif");
-            image = ImageIO.read(url);
-        } catch (Exception e) {
+            final Image image = ImageIO.read(url);
 
-        }
+            final PopupMenu popup = new PopupMenu();
+            trayIcon = new TrayIcon(image, Config.APP_NAME);
+            final SystemTray tray = SystemTray.getSystemTray();
 
-        final PopupMenu popup = new PopupMenu();
-        final TrayIcon trayIcon = new TrayIcon(image, Config.APP_NAME);
-        final SystemTray tray = SystemTray.getSystemTray();
-
-        // Create a pop-up menu components
-        MenuItem settingItem = new MenuItem("Setting");
-        settingItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Desktop.getDesktop().open(new File("setting.json"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+            // Create a pop-up menu components
+            MenuItem settingItem = new MenuItem("Setting");
+            settingItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        Desktop.getDesktop().open(new File("setting.json"));
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-            }
-        });
-        MenuItem logItem = new MenuItem("Log");
-        logItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Desktop.getDesktop().open(new File("log"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+            });
+            MenuItem logItem = new MenuItem("Log");
+            logItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        Desktop.getDesktop().open(new File("log"));
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-            }
-        });
-        MenuItem exitItem = new MenuItem("Exit");
-        exitItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+            });
+            MenuItem exitItem = new MenuItem("Exit");
+            exitItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.exit(0);
+                }
+            });
 
-        //Add components to pop-up menu
-        popup.add(settingItem);
-        popup.add(logItem);
-        popup.addSeparator();
-        popup.add(exitItem);
+            //Add components to pop-up menu
+            popup.add(settingItem);
+            popup.add(logItem);
+            popup.addSeparator();
+            popup.add(exitItem);
 
-        trayIcon.setPopupMenu(popup);
+            trayIcon.setPopupMenu(popup);
 
-        try {
             tray.add(trayIcon);
-        } catch (AWTException e) {
+        } catch (Exception e) {
             System.out.println("TrayIcon could not be added.");
         }
 
@@ -137,6 +133,10 @@ public class Main {
             System.exit(1);
         }
 
-        trayIcon.displayMessage(Config.APP_NAME, "Service started", TrayIcon.MessageType.INFO);
+        try {
+            trayIcon.displayMessage(Config.APP_NAME, "Service started", TrayIcon.MessageType.INFO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
