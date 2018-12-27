@@ -1,12 +1,14 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
-import jssc.SerialPort;
-import jssc.SerialPortException;
+
+import com.fazecast.jSerialComm.SerialPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.BridgeWebSocketServer;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
+
+import java.nio.charset.StandardCharsets;
 
 public class SerialWebSocketService implements WebSocketServiceInterface {
     private final String portName;
@@ -24,7 +26,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
         this.portName = portName;
         this.mappingKey = mappingKey;
-        this.serialPort = new SerialPort(portName);
+        this.serialPort = SerialPort.getCommPort(portName);
 
         this.readThread = new Thread(new Runnable() {
             @Override
@@ -33,30 +35,27 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
                 while (true) {
                     try {
-                        if (serialPort.isOpened()) {
-                            if (serialPort.getInputBufferBytesCount() == 0) {
+                        if (serialPort.isOpen()) {
+                            if (serialPort.bytesAvailable() == 0) {
                                 // No data coming from COM portName
                                 ThreadUtil.silentSleep(10);
                                 continue;
-                            } else if (serialPort.getInputBufferBytesCount() == -1) {
+                            } else if (serialPort.bytesAvailable() == -1) {
                                 // Check if portName closed unexpected (e.g. Unplugged)
                                 serialPort.closePort();
                                 logger.warn("Serial unplugged!");
                                 continue;
                             }
 
-                            String receivedData = serialPort.readString(1);
+                            byte[] receivedData = new byte[1];
+                            serialPort.readBytes(receivedData, 1);
 
                             if (server != null) {
-                                server.onDataReceived(SerialWebSocketService.this, receivedData);
+                                server.onDataReceived(SerialWebSocketService.this, new String(receivedData, StandardCharsets.UTF_8));
                             }
                         } else {
-                            logger.debug("Trying to connect the serial @ " + serialPort.getPortName());
+                            logger.debug("Trying to connect the serial @ " + serialPort.getSystemPortName());
                             serialPort.openPort();
-                            serialPort.setParams(SerialPort.BAUDRATE_9600,
-                                    SerialPort.DATABITS_8,
-                                    SerialPort.STOPBITS_1,
-                                    SerialPort.PARITY_NONE);
                         }
                     } catch (Exception e) {
                         logger.warn("Error: " + e.getMessage());
@@ -72,14 +71,14 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                 logger.debug("Serial Write Thread started for " + portName);
 
                 while (true) {
-                    if (serialPort.isOpened()) {
+                    if (serialPort.isOpen()) {
                         try {
                             if (writeBuffer.length > 0) {
-                                serialPort.writeBytes(writeBuffer);
+                                serialPort.writeBytes(writeBuffer, writeBuffer.length);
                                 writeBuffer = new byte[]{};
                             }
                             ThreadUtil.silentSleep(10);
-                        } catch (SerialPortException e) {
+                        } catch (Exception e) {
                             logger.warn("Error: " + e.getMessage());
                             ThreadUtil.silentSleep(1000);
                         }
