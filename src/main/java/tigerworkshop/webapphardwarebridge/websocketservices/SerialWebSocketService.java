@@ -92,7 +92,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         this.writeThread.start();
     }
 
-    public void send(byte[] message) {
+    private void send(byte[] message) {
         writeBuffer = message;
     }
 

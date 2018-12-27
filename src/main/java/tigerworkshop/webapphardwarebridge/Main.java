@@ -6,6 +6,7 @@ import it.sauronsoftware.junique.JUnique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
+import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
 import java.lang.management.ManagementFactory;
@@ -53,10 +54,15 @@ public class Main {
             try {
                 webSocketServer = new BridgeWebSocketServer(port);
 
+                // Add Serial Services
                 for (Map.Entry<String, String> elem : serials.entrySet()) {
                     SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
                     webSocketServer.addService(serialWebSocketService);
                 }
+
+                // Add Printer Service
+                PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
+                webSocketServer.addService(printerWebSocketService);
 
                 webSocketServer.start();
                 logger.info("WebSocket started on port: " + webSocketServer.getPort());
