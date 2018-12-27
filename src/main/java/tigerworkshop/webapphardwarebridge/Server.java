@@ -13,9 +13,9 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Main {
+public class Server {
 
-    private static Logger logger = LoggerFactory.getLogger("Main");
+    private static Logger logger = LoggerFactory.getLogger("Server");
 
     public static void main(String[] args) {
         boolean alreadyRunning;
