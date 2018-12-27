@@ -12,7 +12,7 @@ import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
 import tigerworkshop.webapphardwarebridge.services.DocumentService;
 import tigerworkshop.webapphardwarebridge.services.PrinterService;
-import tigerworkshop.webapphardwarebridge.services.SerialService;
+import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     private Gson gson = new Gson();
 
     private HashMap<String, ArrayList<WebSocket>> channelClientList = new HashMap<>();
-    private HashMap<String, SerialService> serialServices = new HashMap<>();
+    private HashMap<String, SerialWebSocketService> serialServices = new HashMap<>();
 
     private String serialPrefix = "/serial/";
     private String printerPrefix = "/printer";

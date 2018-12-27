@@ -1,4 +1,4 @@
-package tigerworkshop.webapphardwarebridge.services;
+package tigerworkshop.webapphardwarebridge.websocketservices;
 
 import jssc.SerialPort;
 import jssc.SerialPortException;
@@ -8,7 +8,7 @@ import tigerworkshop.webapphardwarebridge.BridgeWebSocketServer;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
-public class SerialService implements WebSocketServiceInterface {
+public class SerialWebSocketService implements WebSocketServiceInterface {
     private final String portName;
     private final String mappingKey;
     private final SerialPort serialPort;
@@ -19,8 +19,8 @@ public class SerialService implements WebSocketServiceInterface {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private BridgeWebSocketServer server = null;
 
-    public SerialService(String portName, String mappingKey) {
-        logger.info("Starting SerialService on " + portName);
+    public SerialWebSocketService(String portName, String mappingKey) {
+        logger.info("Starting SerialWebSocketService on " + portName);
 
         this.portName = portName;
         this.mappingKey = mappingKey;
@@ -29,7 +29,7 @@ public class SerialService implements WebSocketServiceInterface {
         this.readThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                logger.info("Serial Read Thread started");
+                logger.debug("Serial Read Thread started for " + portName);
 
                 while (true) {
                     try {
@@ -48,10 +48,10 @@ public class SerialService implements WebSocketServiceInterface {
                             String receivedData = serialPort.readString(1);
 
                             if (server != null) {
-                                server.onDataReceived(SerialService.this, receivedData);
+                                server.onDataReceived(SerialWebSocketService.this, receivedData);
                             }
                         } else {
-                            logger.info("Trying to connect the serial @ " + serialPort.getPortName());
+                            logger.debug("Trying to connect the serial @ " + serialPort.getPortName());
                             serialPort.openPort();
                             serialPort.setParams(SerialPort.BAUDRATE_9600,
                                     SerialPort.DATABITS_8,
@@ -69,7 +69,7 @@ public class SerialService implements WebSocketServiceInterface {
         this.writeThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                logger.info("Serial Write Thread started");
+                logger.debug("Serial Write Thread started for " + portName);
 
                 while (true) {
                     if (serialPort.isOpened()) {

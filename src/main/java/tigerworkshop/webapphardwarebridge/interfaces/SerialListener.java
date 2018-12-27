@@ -1,9 +1,9 @@
 package tigerworkshop.webapphardwarebridge.interfaces;
 
-import tigerworkshop.webapphardwarebridge.services.SerialService;
+import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
 public interface SerialListener {
-    void onStart(SerialService serialService);
+    void onStart(SerialWebSocketService serialWebSocketService);
 
-    void onDataReceived(SerialService serialService, String receivedData);
+    void onDataReceived(SerialWebSocketService serialWebSocketService, String receivedData);
 }

@@ -5,8 +5,8 @@ import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.services.SerialService;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
+import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
@@ -54,8 +54,8 @@ public class Main {
                 webSocketServer = new BridgeWebSocketServer(port);
 
                 for (Map.Entry<String, String> elem : serials.entrySet()) {
-                    SerialService serialService = new SerialService(elem.getValue(), elem.getKey());
-                    webSocketServer.addService(serialService);
+                    SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
+                    webSocketServer.addService(serialWebSocketService);
                 }
 
                 webSocketServer.start();
