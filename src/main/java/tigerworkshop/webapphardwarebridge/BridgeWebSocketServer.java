@@ -37,12 +37,12 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         clientList.add(conn);
         channelClientList.put(uri, clientList);
 
-        logger.info(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected to " + handshake.getResourceDescriptor());
+        logger.info(conn.getRemoteSocketAddress().toString() + " connected to " + handshake.getResourceDescriptor());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        logger.debug(conn + " disconnected");
+        logger.debug(conn.getRemoteSocketAddress().toString() + " disconnected");
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             try {
                 conn.send(message);
             } catch (WebsocketNotConnectedException e) {
-                logger.warn("WebsocketNotConnectedException: Removing client from list - " + conn.getRemoteSocketAddress());
+                logger.warn("WebsocketNotConnectedException: Removing client from list");
                 it.remove();
             }
         }
