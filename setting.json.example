@@ -2,6 +2,8 @@
   "port": 12212,
   "fallbackToDefaultPrinter": true,
   "printers": {
+    "LABEL": "KM-200",
+    "INVOICE": "KM-200"
   },
   "serials": {
     "WEIGH": "COM3",
