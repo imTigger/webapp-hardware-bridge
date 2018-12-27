@@ -4,5 +4,7 @@
   "printers": {
   },
   "serials": {
+    "WEIGH": "COM3",
+    "DISPLAY": "COM4"
   }
 }

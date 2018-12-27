@@ -4,10 +4,11 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.interfaces.SerialListener;
+import tigerworkshop.webapphardwarebridge.BridgeWebSocketServer;
+import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
-public class SerialService {
+public class SerialService implements WebSocketServiceInterface {
     private final String portName;
     private final String mappingKey;
     private final SerialPort serialPort;
@@ -16,15 +17,14 @@ public class SerialService {
     private byte[] writeBuffer = {};
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private BridgeWebSocketServer server = null;
 
-    public SerialService(SerialListener listener, String portName, String mappingKey) {
+    public SerialService(String portName, String mappingKey) {
         logger.info("Starting SerialService on " + portName);
 
         this.portName = portName;
         this.mappingKey = mappingKey;
         this.serialPort = new SerialPort(portName);
-
-        listener.onStart(this);
 
         this.readThread = new Thread(new Runnable() {
             @Override
@@ -46,8 +46,9 @@ public class SerialService {
                             }
 
                             String receivedData = serialPort.readString(1);
-                            if (listener != null) {
-                                listener.onDataReceived(SerialService.this, receivedData);
+
+                            if (server != null) {
+                                server.onDataReceived(SerialService.this, receivedData);
                             }
                         } else {
                             logger.info("Trying to connect the serial @ " + serialPort.getPortName());
@@ -91,15 +92,22 @@ public class SerialService {
         this.writeThread.start();
     }
 
-    public String getPortName() {
-        return portName;
-    }
-
-    public String getMappingKey() {
-        return mappingKey;
-    }
-
     public void send(byte[] message) {
         writeBuffer = message;
+    }
+
+    @Override
+    public String getPrefix() {
+        return "/serial/" + mappingKey;
+    }
+
+    @Override
+    public void onDataReceived(String message) {
+        send(message.getBytes());
+    }
+
+    @Override
+    public void setServer(BridgeWebSocketServer server) {
+        this.server = server;
     }
 }

@@ -54,7 +54,8 @@ public class Main {
                 webSocketServer = new BridgeWebSocketServer(port);
 
                 for (Map.Entry<String, String> elem : serials.entrySet()) {
-                    SerialService serialService = new SerialService(webSocketServer, elem.getValue(), elem.getKey());
+                    SerialService serialService = new SerialService(elem.getValue(), elem.getKey());
+                    webSocketServer.addService(serialService);
                 }
 
                 webSocketServer.start();
