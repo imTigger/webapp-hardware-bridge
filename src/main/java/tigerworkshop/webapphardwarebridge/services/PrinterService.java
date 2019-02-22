@@ -39,7 +39,7 @@ public class PrinterService {
     public void printDocument(PrintDocument printDocument) throws Exception {
         logger.info(printDocument.toString());
         try {
-            if (!printDocument.getRawContent().isEmpty()) {
+            if (isRaw(printDocument)) {
                 printRaw(printDocument.getRawContent().getBytes());
             } else if (isImage(printDocument)) {
                 printImage(printDocument);
@@ -74,6 +74,13 @@ public class PrinterService {
     private String findMappedPrinter(String type) {
         logger.trace("findMappedPrinter::" + type);
         return SettingService.getInstance().getMappedPrinter(type);
+    }
+
+    /**
+     * Return if PrintDocument is raw
+     */
+    private Boolean isRaw(PrintDocument printDocument) {
+        return printDocument.getRawContent() != null && !printDocument.getRawContent().isEmpty();
     }
 
     /**

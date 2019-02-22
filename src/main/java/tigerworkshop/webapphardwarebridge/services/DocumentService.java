@@ -56,7 +56,7 @@ public class DocumentService {
     }
 
     public void prepareDocument(PrintDocument printDocument) throws Exception {
-        if (!printDocument.getRawContent().isEmpty()) {
+        if (printDocument.getRawContent() != null && !printDocument.getRawContent().isEmpty()) {
             return;
         }
 
