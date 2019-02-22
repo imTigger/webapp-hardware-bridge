@@ -4,7 +4,7 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.BridgeWebSocketServer;
+import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
@@ -17,7 +17,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     private byte[] writeBuffer = {};
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private BridgeWebSocketServer server = null;
+    private WebSocketServerInterface server = null;
 
     public SerialWebSocketService(String portName, String mappingKey) {
         logger.info("Starting SerialWebSocketService on " + portName);
@@ -107,7 +107,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void setServer(BridgeWebSocketServer server) {
+    public void setServer(WebSocketServerInterface server) {
         this.server = server;
     }
 }
