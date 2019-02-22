@@ -8,6 +8,7 @@ public class PrintDocument {
     String type;
     String url;
     String file_content;
+    String raw_content;
     ArrayList<AnnotatedPrintable.AnnotatedPrintableAnnotation> extras = new ArrayList<>();
 
     public String getType() {
@@ -22,6 +23,10 @@ public class PrintDocument {
         return file_content;
     }
 
+    public String getRawContent() {
+        return raw_content;
+    }
+
     public ArrayList<AnnotatedPrintable.AnnotatedPrintableAnnotation> getExtras() {
         return extras;
     }
@@ -32,6 +37,7 @@ public class PrintDocument {
                 "type='" + type + '\'' +
                 ", url='" + url + '\'' +
                 ", file_content='" + file_content + '\'' +
+                ", raw_content='" + raw_content + '\'' +
                 ", extras=" + extras +
                 '}';
     }

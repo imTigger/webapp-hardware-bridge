@@ -56,7 +56,11 @@ public class DocumentService {
     }
 
     public void prepareDocument(PrintDocument printDocument) throws Exception {
-        if (printDocument.getUrl() == null) {
+        if (!printDocument.getRawContent().isEmpty()) {
+            return;
+        }
+
+        if (printDocument.getUrl() == null && printDocument.getFileContent() == null) {
             throw new Exception("URL is null");
         }
 
