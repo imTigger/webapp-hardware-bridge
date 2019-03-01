@@ -40,7 +40,7 @@ public class PrinterService {
         logger.info(printDocument.toString());
         try {
             if (isRaw(printDocument)) {
-                printRaw(printDocument.getRawContent().getBytes());
+                printRaw(printDocument);
             } else if (isImage(printDocument)) {
                 printImage(printDocument);
             } else if (isPDF(printDocument)) {
@@ -106,25 +106,17 @@ public class PrinterService {
     /**
      * Prints raw bytes to specified printer.
      */
-    private void printRaw(byte[] b) throws PrinterException, IOException {
-        try {
-            AttributeSet attrSet = new HashPrintServiceAttributeSet(new PrinterName("ZH380", null)); //EPSON TM-U220 ReceiptE4
+    private void printRaw(PrintDocument printDocument) throws PrinterException, PrintException {
+        logger.debug("printRaw::" + printDocument);
+        long timeStart = System.currentTimeMillis();
 
-            DocPrintJob job = PrintServiceLookup.lookupPrintServices(null, attrSet)[0].createPrintJob();
-            //PrintServiceLookup.lookupDefaultPrintService().createPrintJob();
+        DocPrintJob docPrintJob = getDocPrintJob(printDocument.getType());
+        Doc doc = new SimpleDoc(printDocument.getRawContent().getBytes(), DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
+        docPrintJob.print(doc, null);
 
-            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
-            Doc doc = new SimpleDoc(b, flavor, null);
-
-            job.print(doc, null);
-            System.out.println("Done !");
-        } catch (javax.print.PrintException pex) {
-            System.out.println("Printer Error " + pex.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        long timeFinish = System.currentTimeMillis();
+        logger.info("Document raw printed in " + (timeFinish - timeStart) + "ms");
     }
-
 
     /**
      * Prints image to specified printer.
