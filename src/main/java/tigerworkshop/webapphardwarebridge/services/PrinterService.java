@@ -11,9 +11,10 @@ import tigerworkshop.webapphardwarebridge.utils.AnnotatedPrintable;
 import tigerworkshop.webapphardwarebridge.utils.ImagePrintable;
 
 import javax.imageio.ImageIO;
-import javax.print.DocPrintJob;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
+import javax.print.*;
+import javax.print.attribute.AttributeSet;
+import javax.print.attribute.HashPrintServiceAttributeSet;
+import javax.print.attribute.standard.PrinterName;
 import java.awt.*;
 import java.awt.print.*;
 import java.io.File;
@@ -38,7 +39,9 @@ public class PrinterService {
     public void printDocument(PrintDocument printDocument) throws Exception {
         logger.info(printDocument.toString());
         try {
-            if (isImage(printDocument)) {
+            if (isRaw(printDocument)) {
+                printRaw(printDocument.getRawContent().getBytes());
+            } else if (isImage(printDocument)) {
                 printImage(printDocument);
             } else if (isPDF(printDocument)) {
                 printPDF(printDocument);
@@ -74,6 +77,13 @@ public class PrinterService {
     }
 
     /**
+     * Return if PrintDocument is raw
+     */
+    private Boolean isRaw(PrintDocument printDocument) {
+        return printDocument.getRawContent() != null && !printDocument.getRawContent().isEmpty();
+    }
+
+    /**
      * Return if PrintDocument is image
      */
     private Boolean isImage(PrintDocument printDocument) {
@@ -91,6 +101,28 @@ public class PrinterService {
         String filename = url.substring(url.lastIndexOf("/") + 1);
 
         return filename.matches("^.*\\.(pdf)$");
+    }
+
+    /**
+     * Prints raw bytes to specified printer.
+     */
+    private void printRaw(byte[] b) throws PrinterException, IOException {
+        try {
+            AttributeSet attrSet = new HashPrintServiceAttributeSet(new PrinterName("ZH380", null)); //EPSON TM-U220 ReceiptE4
+
+            DocPrintJob job = PrintServiceLookup.lookupPrintServices(null, attrSet)[0].createPrintJob();
+            //PrintServiceLookup.lookupDefaultPrintService().createPrintJob();
+
+            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+            Doc doc = new SimpleDoc(b, flavor, null);
+
+            job.print(doc, null);
+            System.out.println("Done !");
+        } catch (javax.print.PrintException pex) {
+            System.out.println("Printer Error " + pex.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

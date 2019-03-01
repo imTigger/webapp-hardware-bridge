@@ -47,29 +47,24 @@ public class Server {
         SettingService settingService = SettingService.getInstance();
 
         try {
+            // Create WebSocket Server
             int port = settingService.getPort();
+            BridgeWebSocketServer webSocketServer = new BridgeWebSocketServer(port);
+
+            // Add Serial Services
             HashMap<String, String> serials = settingService.getSerials();
-
-            BridgeWebSocketServer webSocketServer = null;
-            try {
-                webSocketServer = new BridgeWebSocketServer(port);
-
-                // Add Serial Services
-                for (Map.Entry<String, String> elem : serials.entrySet()) {
-                    SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
-                    webSocketServer.addService(serialWebSocketService);
-                }
-
-                // Add Printer Service
-                PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
-                webSocketServer.addService(printerWebSocketService);
-
-                webSocketServer.start();
-                logger.info("WebSocket started on port: " + webSocketServer.getPort());
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(0);
+            for (Map.Entry<String, String> elem : serials.entrySet()) {
+                SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
+                webSocketServer.addService(serialWebSocketService);
             }
+
+            // Add Printer Service
+            PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
+            webSocketServer.addService(printerWebSocketService);
+
+            // Start WebSocket Server
+            webSocketServer.start();
+            logger.info("WebSocket started on port: " + webSocketServer.getPort());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

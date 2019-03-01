@@ -3,7 +3,7 @@ package tigerworkshop.webapphardwarebridge.websocketservices;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.BridgeWebSocketServer;
+import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
 import tigerworkshop.webapphardwarebridge.services.DocumentService;
@@ -11,7 +11,7 @@ import tigerworkshop.webapphardwarebridge.services.PrinterService;
 
 public class PrinterWebSocketService implements WebSocketServiceInterface {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private BridgeWebSocketServer server = null;
+    private WebSocketServerInterface server = null;
     private Gson gson = new Gson();
 
     public PrinterWebSocketService() {
@@ -53,7 +53,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void setServer(BridgeWebSocketServer server) {
+    public void setServer(WebSocketServerInterface server) {
         this.server = server;
     }
 }
