@@ -13,12 +13,12 @@ public class Configurator extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/setting.fxml"));
 
             Stage loginStage = new Stage();
-            loginStage.setTitle("HELLO");
+            loginStage.setTitle("WebApp Hardware Bridge Configurator");
             loginStage.setScene(new Scene(loader.load()));
             loginStage.setResizable(false);
             loginStage.show();
