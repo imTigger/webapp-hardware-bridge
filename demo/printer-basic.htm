@@ -39,7 +39,8 @@
 	
 	<label>Raw (ESC/POS)</label>
 	<div class="input-group mb-3">
-		<input type="text" id="raw_content" class="form-control" value="&quot;\u001b\u0061\u0000HELLO WORLD\u000a\u001b\u0061\u0001HELLO WORLD\u000a\u001b\u0061\u0002HELLO WORLD\u000a\u000a\u000a&quot;"/>
+		<input class="form-control" id="raw_content" type="text"
+			   value="G0AbQBthAEhlbGxvIFdvcmxkCh0hERthAUVTQy9QT1MgUHJpbnRlciBUZXN0Ch0hABthAkdvb2RieWUgV29ybGQKHVZBAw=="/>
 		<div class="input-group-append">
 			<button class="btn btn-success" onclick="printRaw()">Print</button>
 		</div>
@@ -69,7 +70,7 @@ function printPDFBase64() {
 function printRaw() {
 	printService.submit([{
 		'type': 'RECEIPT',
-		'raw_content': JSON.parse($('#raw_content').val())
+		'raw_content': $('#raw_content').val()
 	}]);
 }
 </script>

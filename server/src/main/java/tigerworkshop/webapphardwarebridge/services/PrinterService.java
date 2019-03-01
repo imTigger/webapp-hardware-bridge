@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.services;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPrintable;
 import org.apache.pdfbox.printing.Scaling;
@@ -12,9 +13,6 @@ import tigerworkshop.webapphardwarebridge.utils.ImagePrintable;
 
 import javax.imageio.ImageIO;
 import javax.print.*;
-import javax.print.attribute.AttributeSet;
-import javax.print.attribute.HashPrintServiceAttributeSet;
-import javax.print.attribute.standard.PrinterName;
 import java.awt.*;
 import java.awt.print.*;
 import java.io.File;
@@ -110,8 +108,10 @@ public class PrinterService {
         logger.debug("printRaw::" + printDocument);
         long timeStart = System.currentTimeMillis();
 
+        byte[] bytes = Base64.decodeBase64(printDocument.getRawContent());
+
         DocPrintJob docPrintJob = getDocPrintJob(printDocument.getType());
-        Doc doc = new SimpleDoc(printDocument.getRawContent().getBytes(), DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
+        Doc doc = new SimpleDoc(bytes, DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
         docPrintJob.print(doc, null);
 
         long timeFinish = System.currentTimeMillis();
