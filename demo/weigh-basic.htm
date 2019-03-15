@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+    <!-- Bootstrap CSS -->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+
+    <title>Weigh Test</title>
+</head>
+<body>
+<main class="container" role="main">
+    <h1 class="mt-5">Weigh Test</h1>
+
+    <hr/>
+
+    <input class="form-control" id="weight" type="text"/>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="websocket-weigh.js"></script>
+<script>
+    WebSocketWeigh({
+        onUpdate: function (weight, stable) {
+            var $element = $("#weight").val(weight);
+            if (stable) {
+                $element.addClass("bg-success").removeClass("bg-warning");
+            } else {
+                $element.addClass("bg-warning").removeClass("bg-success");
+            }
+        }
+    });
+</script>
+</body>
+</html>
