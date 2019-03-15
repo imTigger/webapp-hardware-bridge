@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/configurator/configurator.iml" filepath="$PROJECT_DIR$/.idea/modules/configurator/configurator.iml" group="configurator" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/configurator/configurator_main.iml" filepath="$PROJECT_DIR$/.idea/modules/configurator/configurator_main.iml" group="configurator" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/configurator/configurator_test.iml" filepath="$PROJECT_DIR$/.idea/modules/configurator/configurator_test.iml" group="configurator" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/server.iml" filepath="$PROJECT_DIR$/.idea/modules/server/server.iml" group="server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/server/server_main.iml" group="server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/server/server_test.iml" group="server" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.configurator.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.configurator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.server.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.server.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_main.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_main.iml" group="webapp-hardware-bridge" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_test.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_test.iml" group="webapp-hardware-bridge" />
     </modules>

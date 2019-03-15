@@ -53,12 +53,12 @@ public class SettingService {
         return setting.getSerials();
     }
 
-    public HashMap<String, String> getPrinters() {
-        return setting.getPrinters();
-    }
-
     public void setSerials(HashMap<String, String> serials) {
         setting.setSerials(serials);
+    }
+
+    public HashMap<String, String> getPrinters() {
+        return setting.getPrinters();
     }
 
     public void setPrinters(HashMap<String, String> printers) {

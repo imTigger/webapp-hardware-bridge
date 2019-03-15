@@ -34,7 +34,7 @@ public class Server {
         logger.info("Program Version: " + Config.VERSION);
 
         logger.info("OS Name: " + System.getProperty("os.name"));
-        logger.info("OS Version: " +  System.getProperty("os.version"));
+        logger.info("OS Version: " + System.getProperty("os.version"));
         logger.info("OS Architecture: " + System.getProperty("os.arch"));
 
         logger.info("Java Version: " + System.getProperty("java.version"));

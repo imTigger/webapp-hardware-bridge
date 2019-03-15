@@ -2,8 +2,7 @@
 <configuration status="warn">
     <appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout
-                    pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=black, DEBUG=green bold, TRACE=blue}"/>
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=black, DEBUG=green bold, TRACE=blue}"/>
         </Console>
         <RollingFile name="RollingFile" fileName="log/client.log" filePattern="log/client-%i.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [${hostName}][%t] %-5level %logger{36}.%M() @%L - %msg%n"/>

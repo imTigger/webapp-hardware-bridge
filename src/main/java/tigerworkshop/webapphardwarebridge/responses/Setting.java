@@ -20,12 +20,12 @@ public class Setting {
         return printers;
     }
 
-    public HashMap<String, String> getSerials() {
-        return serials;
-    }
-
     public void setPrinters(HashMap<String, String> printers) {
         this.printers = printers;
+    }
+
+    public HashMap<String, String> getSerials() {
+        return serials;
     }
 
     public void setSerials(HashMap<String, String> serials) {
