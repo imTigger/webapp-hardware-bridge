@@ -14,6 +14,7 @@ import java.util.HashMap;
 public class SettingService {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SettingService.class.getName());
     private static final String SETTING_FILENAME = "setting.json";
+    private static final String SETTING_FALLBACK_FILENAME = "setting.json.example";
     private static SettingService instance = new SettingService();
     private Setting setting = null;
 
@@ -24,8 +25,15 @@ public class SettingService {
             setting = gson.fromJson(reader, Setting.class);
             reader.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+            try {
+                JsonReader reader = new JsonReader(new FileReader(SETTING_FALLBACK_FILENAME));
+                Gson gson = new Gson();
+                setting = gson.fromJson(reader, Setting.class);
+                reader.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.exit(1);
+            }
         }
     }
 

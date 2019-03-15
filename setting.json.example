@@ -1,12 +1,12 @@
 {
-  "port": 12212,
-  "fallbackToDefaultPrinter": true,
-  "printers": {
-    "LABEL": "KM-200",
-    "INVOICE": "KM-200"
-  },
-  "serials": {
-    "WEIGH": "COM3",
-    "DISPLAY": "COM4"
-  }
-}
+   "port": 12212,
+   "fallbackToDefaultPrinter": true,
+   "printers": {
+     "LABEL": "KM-200",
+     "INVOICE": "KM-200"
+   },
+   "serials": {
+     "WEIGH": "COM3",
+     "DISPLAY": "COM4"
+   }
+ }
