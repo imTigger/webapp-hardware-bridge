@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.config.controller;
 
+import com.fazecast.jSerialComm.SerialPort;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,10 +12,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import jssc.SerialPortList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.config.models.ObservableStringPair;
+import tigerworkshop.webapphardwarebridge.services.SettingService;
 
 import javax.print.PrintService;
 import java.awt.*;
@@ -23,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SettingController implements Initializable {
@@ -70,7 +73,7 @@ public class SettingController implements Initializable {
 
         // Serial List
         ObservableList<String> serialList = FXCollections.observableArrayList();
-        serialList.addAll(SerialPortList.getPortNames());
+        serialList.addAll(listSerials());
 
         tableSerial.setEditable(true);
         tableSerial.getSelectionModel().setCellSelectionEnabled(true);
@@ -118,45 +121,54 @@ public class SettingController implements Initializable {
     private void loadValues() {
         logger.debug("loadValues");
 
-        // SerialPortList.getPortNames()
-        ArrayList<ObservableStringPair> arrayList = new ArrayList<>();
-        arrayList.add(ObservableStringPair.of("WEIGH", "COM1"));
-        ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList(arrayList);
+        SettingService settingService = SettingService.getInstance();
+
+        // Serials
+        ArrayList<ObservableStringPair> serialArrayList = new ArrayList<>();
+        HashMap<String, String> portHashMap = settingService.getSerials();
+        for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
+            String key = mapEntry.getKey();
+            String value = mapEntry.getValue();
+            serialArrayList.add(ObservableStringPair.of(key, value));
+        }
+        ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList(serialArrayList);
         tableSerial.setItems(serialMappingList);
 
-        ArrayList<ObservableStringPair> arrayList2 = new ArrayList<>();
-        arrayList2.add(ObservableStringPair.of("LABEL", "Printer 1"));
-        ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList(arrayList2);
+        // Printers
+        ArrayList<ObservableStringPair> printerArrayList = new ArrayList<>();
+        HashMap<String, String> printerHashMap = settingService.getPrinters();
+        for (Map.Entry<String, String> mapEntry : printerHashMap.entrySet()) {
+            String key = mapEntry.getKey();
+            String value = mapEntry.getValue();
+            printerArrayList.add(ObservableStringPair.of(key, value));
+        }
+        ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList(printerArrayList);
         tablePrinter.setItems(printerMappingList);
-
-        /*
-        ObservableList<PrinterMapping> printerMappingList = FXCollections.observableArrayList(PrinterManager.getInstance().getMapping());
-        tablePrinter.setItems(printerMappingList);
-        */
     }
 
     private void saveValues() {
         logger.debug("saveValues");
 
-        /*
-        ObservableList<PrinterMapping> list = tablePrinter.getItems();
-        for(PrinterMapping map : list) {
-            PrinterManager.getInstance().saveMapping(map);
+        ObservableList<ObservableStringPair> list = tablePrinter.getItems();
+        for (ObservableStringPair map : list) {
+            System.out.println(map.toString());
         }
-        */
     }
 
-    /**
-     * Return all printDocument services
-     *
-     * @return PrintService[]
-     */
-    public ArrayList<String> listPrinters() {
+    private ArrayList<String> listPrinters() {
         ArrayList<String> printerList = new ArrayList<>();
         PrintService[] printServices = PrinterJob.lookupPrintServices();
         for (PrintService printService : printServices) {
             printerList.add(printService.getName());
         }
         return printerList;
+    }
+
+    private ArrayList<String> listSerials() {
+        ArrayList<String> portList = new ArrayList<>();
+        for (SerialPort port : SerialPort.getCommPorts()) {
+            portList.add(port.getSystemPortName());
+        }
+        return portList;
     }
 }

@@ -14,7 +14,7 @@
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.5" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.8.1" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.scream3r:jssc:2.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.fazecast:jSerialComm:2.4.2" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.pdfbox:pdfbox:2.0.5" level="project" />
     <orderEntry type="library" name="Gradle: org.bouncycastle:bcprov-jdk16:1.46" level="project" />
     <orderEntry type="library" name="Gradle: de.huxhorn.lilith:de.huxhorn.lilith.3rdparty.junique:1.0.4" level="project" />

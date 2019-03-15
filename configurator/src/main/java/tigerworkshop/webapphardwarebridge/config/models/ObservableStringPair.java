@@ -39,6 +39,14 @@ public class ObservableStringPair {
     public StringProperty rightProperty() {
         return right;
     }
+
+    @Override
+    public String toString() {
+        return "ObservableStringPair{" +
+                "left=" + left +
+                ", right=" + right +
+                '}';
+    }
 }
 
 
