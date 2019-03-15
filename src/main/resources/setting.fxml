@@ -25,17 +25,17 @@
             </rowConstraints>
 
             <TableView fx:id="tableSerial" prefHeight="200.0" prefWidth="320.0" GridPane.columnIndex="1"
-                       GridPane.rowIndex="1" GridPane.rowSpan="4">
+                       GridPane.rowIndex="1" GridPane.rowSpan="4" editable="true">
                 <columns>
-                    <TableColumn fx:id="columnSerialType" editable="false" prefWidth="100.0" text="Serial Type"/>
+                    <TableColumn fx:id="columnSerialType" prefWidth="100.0" text="Serial Type"/>
                     <TableColumn fx:id="columnPort" prefWidth="219.0" text="Port"/>
                 </columns>
             </TableView>
 
             <TableView fx:id="tablePrinter" prefHeight="200.0" prefWidth="320.0" GridPane.columnIndex="2"
-                       GridPane.rowIndex="1" GridPane.rowSpan="4">
+                       GridPane.rowIndex="1" GridPane.rowSpan="4" editable="true">
                 <columns>
-                    <TableColumn fx:id="columnPrintType" editable="false" prefWidth="100.0" text="Print Type"/>
+                    <TableColumn fx:id="columnPrintType" prefWidth="100.0" text="Print Type"/>
                     <TableColumn fx:id="columnPrinter" prefWidth="219.0" text="Printer"/>
                 </columns>
             </TableView>

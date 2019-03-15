@@ -12,6 +12,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.config.models.ObservableStringPair;
@@ -57,10 +58,9 @@ public class SettingController implements Initializable {
         ObservableList<String> printerList = FXCollections.observableArrayList();
         printerList.addAll(listPrinters());
 
-        tablePrinter.setEditable(true);
         tablePrinter.getSelectionModel().setCellSelectionEnabled(true);
-
         columnPrintType.setCellValueFactory(new PropertyValueFactory<>("left"));
+        columnPrintType.setCellFactory(TextFieldTableCell.forTableColumn());
         columnPrinter.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPrinter.setCellFactory(ComboBoxTableCell.forTableColumn(printerList));
 
@@ -68,10 +68,9 @@ public class SettingController implements Initializable {
         ObservableList<String> serialList = FXCollections.observableArrayList();
         serialList.addAll(listSerials());
 
-        tableSerial.setEditable(true);
         tableSerial.getSelectionModel().setCellSelectionEnabled(true);
-
         columnSerialType.setCellValueFactory(new PropertyValueFactory<>("left"));
+        columnSerialType.setCellFactory(TextFieldTableCell.forTableColumn());
         columnPort.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPort.setCellFactory(ComboBoxTableCell.forTableColumn(serialList));
 
