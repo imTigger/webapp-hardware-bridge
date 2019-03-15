@@ -26,26 +26,14 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     @Override
     public void onDataReceived(String message) {
         try {
-            if (message.startsWith("[")) {
-                PrintDocument[] printDocuments = gson.fromJson(message, PrintDocument[].class);
-                for (PrintDocument printDocument : printDocuments) {
-                    try {
-                        DocumentService.getInstance().prepareDocument(printDocument);
-                        PrinterService.getInstance().printDocument(printDocument);
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-            } else if (message.startsWith("{")) {
-                PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);
+            PrintDocument[] printDocuments = gson.fromJson(message, PrintDocument[].class);
+            for (PrintDocument printDocument : printDocuments) {
                 try {
                     DocumentService.getInstance().prepareDocument(printDocument);
                     PrinterService.getInstance().printDocument(printDocument);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-            } else {
-                throw new Exception("Unknown input: " + message);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
