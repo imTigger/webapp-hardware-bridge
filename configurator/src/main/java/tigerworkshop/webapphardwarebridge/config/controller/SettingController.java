@@ -63,13 +63,6 @@ public class SettingController implements Initializable {
         columnPrintType.setCellValueFactory(new PropertyValueFactory<>("left"));
         columnPrinter.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPrinter.setCellFactory(ComboBoxTableCell.forTableColumn(printerList));
-        columnPrinter.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<ObservableStringPair, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent event) {
-                ObservableStringPair printerMapping = (ObservableStringPair) event.getTableView().getItems().get(event.getTablePosition().getRow());
-                printerMapping.setRight((String) event.getNewValue());
-            }
-        });
 
         // Serial List
         ObservableList<String> serialList = FXCollections.observableArrayList();
@@ -81,12 +74,6 @@ public class SettingController implements Initializable {
         columnSerialType.setCellValueFactory(new PropertyValueFactory<>("left"));
         columnPort.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPort.setCellFactory(ComboBoxTableCell.forTableColumn(serialList));
-        columnPort.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<ObservableStringPair, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent event) {
-
-            }
-        });
 
         loadValues();
 
@@ -119,8 +106,6 @@ public class SettingController implements Initializable {
     }
 
     private void loadValues() {
-        logger.debug("loadValues");
-
         SettingService settingService = SettingService.getInstance();
 
         // Serials
@@ -147,12 +132,23 @@ public class SettingController implements Initializable {
     }
 
     private void saveValues() {
-        logger.debug("saveValues");
+        SettingService settingService = SettingService.getInstance();
 
-        ObservableList<ObservableStringPair> list = tablePrinter.getItems();
-        for (ObservableStringPair map : list) {
-            System.out.println(map.toString());
+        HashMap<String, String> printerHashMap = new HashMap<>();
+        ObservableList<ObservableStringPair> printerList = tablePrinter.getItems();
+        for (ObservableStringPair pair : printerList) {
+            printerHashMap.put(pair.getLeft(), pair.getRight());
         }
+
+        HashMap<String, String> serialHashMap = new HashMap<>();
+        ObservableList<ObservableStringPair> serialList = tableSerial.getItems();
+        for (ObservableStringPair pair : serialList) {
+            serialHashMap.put(pair.getLeft(), pair.getRight());
+        }
+
+        settingService.setPrinters(printerHashMap);
+        settingService.setSerials(serialHashMap);
+        settingService.save();
     }
 
     private ArrayList<String> listPrinters() {

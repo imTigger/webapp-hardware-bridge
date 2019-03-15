@@ -23,4 +23,12 @@ public class Setting {
     public HashMap<String, String> getSerials() {
         return serials;
     }
+
+    public void setPrinters(HashMap<String, String> printers) {
+        this.printers = printers;
+    }
+
+    public void setSerials(HashMap<String, String> serials) {
+        this.serials = serials;
+    }
 }
