@@ -1,6 +1,7 @@
 package tigerworkshop.webapphardwarebridge.config.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,11 +9,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.config.models.ObservableStringPair;
@@ -51,6 +53,8 @@ public class SettingController implements Initializable {
     private Button buttonSave;
     @FXML
     private Button buttonReset;
+    private ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
+    private ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -64,6 +68,43 @@ public class SettingController implements Initializable {
         columnPrinter.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPrinter.setCellFactory(ComboBoxTableCell.forTableColumn(printerList));
 
+        tablePrinter.setRowFactory(
+                new Callback<TableView<ObservableStringPair>, TableRow<ObservableStringPair>>() {
+                    @Override
+                    public TableRow<ObservableStringPair> call(TableView<ObservableStringPair> tableView) {
+                        final TableRow<ObservableStringPair> row = new TableRow<>();
+                        final ContextMenu rowMenu = new ContextMenu();
+
+                        MenuItem addItem = new MenuItem("Add");
+                        addItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                printerMappingList.add(ObservableStringPair.of("KEY", "Select Printer"));
+                            }
+                        });
+
+                        MenuItem removeItem = new MenuItem("Delete");
+                        removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                tablePrinter.getItems().remove(row.getItem());
+                            }
+                        });
+                        rowMenu.getItems().addAll(addItem, removeItem);
+
+                        final ContextMenu emptyMenu = new ContextMenu();
+                        emptyMenu.getItems().addAll(addItem);
+
+                        // only display context menu for non-null items:
+                        row.contextMenuProperty().bind(
+                                Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                                        .then(rowMenu)
+                                        .otherwise(emptyMenu));
+                        return row;
+                    }
+                }
+        );
+
         // Serial List
         ObservableList<String> serialList = FXCollections.observableArrayList();
         serialList.addAll(listSerials());
@@ -74,8 +115,44 @@ public class SettingController implements Initializable {
         columnPort.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPort.setCellFactory(ComboBoxTableCell.forTableColumn(serialList));
 
-        loadValues();
+        tableSerial.setRowFactory(
+                new Callback<TableView<ObservableStringPair>, TableRow<ObservableStringPair>>() {
+                    @Override
+                    public TableRow<ObservableStringPair> call(TableView<ObservableStringPair> tableView) {
+                        final TableRow<ObservableStringPair> row = new TableRow<>();
+                        final ContextMenu rowMenu = new ContextMenu();
 
+                        MenuItem addItem = new MenuItem("Add");
+                        addItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                serialMappingList.add(ObservableStringPair.of("KEY", "Select Port"));
+                            }
+                        });
+
+                        MenuItem removeItem = new MenuItem("Delete");
+                        removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent event) {
+                                tableSerial.getItems().remove(row.getItem());
+                            }
+                        });
+                        rowMenu.getItems().addAll(addItem, removeItem);
+
+                        final ContextMenu emptyMenu = new ContextMenu();
+                        emptyMenu.getItems().addAll(addItem);
+
+                        // only display context menu for non-null items:
+                        row.contextMenuProperty().bind(
+                                Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                                        .then(rowMenu)
+                                        .otherwise(emptyMenu));
+                        return row;
+                    }
+                }
+        );
+
+        // Other controls
         buttonLog.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -102,31 +179,29 @@ public class SettingController implements Initializable {
                 loadValues();
             }
         });
+
+        loadValues();
     }
 
     private void loadValues() {
         SettingService settingService = SettingService.getInstance();
 
         // Serials
-        ArrayList<ObservableStringPair> serialArrayList = new ArrayList<>();
         HashMap<String, String> portHashMap = settingService.getSerials();
         for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
             String key = mapEntry.getKey();
             String value = mapEntry.getValue();
-            serialArrayList.add(ObservableStringPair.of(key, value));
+            serialMappingList.add(ObservableStringPair.of(key, value));
         }
-        ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList(serialArrayList);
         tableSerial.setItems(serialMappingList);
 
         // Printers
-        ArrayList<ObservableStringPair> printerArrayList = new ArrayList<>();
         HashMap<String, String> printerHashMap = settingService.getPrinters();
         for (Map.Entry<String, String> mapEntry : printerHashMap.entrySet()) {
             String key = mapEntry.getKey();
             String value = mapEntry.getValue();
-            printerArrayList.add(ObservableStringPair.of(key, value));
+            printerMappingList.add(ObservableStringPair.of(key, value));
         }
-        ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList(printerArrayList);
         tablePrinter.setItems(printerMappingList);
     }
 
