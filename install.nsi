@@ -27,14 +27,15 @@ Section "" ;No components page, name is not important
   
   ; Put file there
   File /r out\artifacts\webapp_hardware_bridge_jar\*
+  File /r jre
   
   File "install.nsi"
   
   ; Create shortcuts
-  CreateShortcut "$DESKTOP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\java.exe" "-jar webapp-hardware-bridge.jar"
-  CreateShortcut "$DESKTOP\WebApp Hardware Bridge (Setting).lnk" "notepad" "$INSTDIR\setting.json"
-  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\java.exe" "-jar webapp-hardware-bridge.jar"
-  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge (Setting).lnk" "notepad" "$INSTDIR\setting.json"
+  CreateShortcut "$DESKTOP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\java.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Server"
+  CreateShortcut "$DESKTOP\WebApp Hardware Bridge (Configurator).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.config.Configurator"
+  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\java.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Server"
+  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge (Configurator).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.config.Configurator"
   
   ; Write the installation path into the registry
   WriteRegStr HKCU "SOFTWARE\WebApp Hardware Bridge" "Install_Dir" "$INSTDIR"
@@ -66,7 +67,3 @@ Section "Uninstall"
   RMDir /r $INSTDIR
 
 SectionEnd
-
-Function .onInstSuccess
-  Exec "notepad $INSTDIR\setting.json"
-FunctionEnd

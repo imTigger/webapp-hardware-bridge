@@ -4,4 +4,6 @@ documents/
 gradle/
 log/
 out/
+jre/
 setting.json
+*.exe
