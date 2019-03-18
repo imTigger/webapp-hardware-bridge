@@ -6,7 +6,6 @@
      "INVOICE": "KM-200"
    },
    "serials": {
-     "WEIGH": "COM3",
-     "DISPLAY": "COM4"
+     "WEIGH": "COM3"
    }
  }
