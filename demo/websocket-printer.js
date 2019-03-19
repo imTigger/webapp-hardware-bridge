@@ -5,13 +5,15 @@ function WebSocketPrinter(options) {
         },
         onDisconnect: function () {
         },
+        onUpdate: function (message) {
+        }
     };
 
     var settings = Object.assign({}, defaults, options);
     var websocket;
 
     var onMessage = function (evt) {
-        var chr = evt.data;
+        settings.onUpdate(evt.data);
     };
 
     var onConnect = function () {

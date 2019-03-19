@@ -52,7 +52,11 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="websocket-printer.js"></script>
 <script>
-    var printService = new WebSocketPrinter();
+    var printService = new WebSocketPrinter({
+        onUpdate: function (message) {
+            alert(message);
+        }
+    });
 
     function printPDF() {
         printService.submit([{
