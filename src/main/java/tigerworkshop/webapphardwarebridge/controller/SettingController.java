@@ -1,6 +1,7 @@
 package tigerworkshop.webapphardwarebridge.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -171,6 +172,7 @@ public class SettingController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 saveValues();
+                Platform.exit();
                 System.exit(0);
             }
         });
