@@ -1,4 +1,4 @@
-package tigerworkshop.webapphardwarebridge.config.controller;
+package tigerworkshop.webapphardwarebridge.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.beans.binding.Bindings;
@@ -17,8 +17,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.config.models.ObservableStringPair;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
+import tigerworkshop.webapphardwarebridge.utils.ObservableStringPair;
 
 import javax.print.PrintService;
 import java.awt.*;

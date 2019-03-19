@@ -1,4 +1,4 @@
-package tigerworkshop.webapphardwarebridge.config;
+package tigerworkshop.webapphardwarebridge;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

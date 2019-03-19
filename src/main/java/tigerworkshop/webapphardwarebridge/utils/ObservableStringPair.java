@@ -1,4 +1,4 @@
-package tigerworkshop.webapphardwarebridge.config.models;
+package tigerworkshop.webapphardwarebridge.utils;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
