@@ -31,7 +31,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         this.readThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                logger.debug("Serial Read Thread started for " + portName);
+                logger.trace("Serial Read Thread started for " + portName);
 
                 while (true) {
                     try {
@@ -54,7 +54,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                                 server.onDataReceived(SerialWebSocketService.this, new String(receivedData, StandardCharsets.UTF_8));
                             }
                         } else {
-                            logger.debug("Trying to connect the serial @ " + serialPort.getSystemPortName());
+                            logger.trace("Trying to connect the serial @ " + serialPort.getSystemPortName());
                             serialPort.openPort();
                         }
                     } catch (Exception e) {
@@ -68,7 +68,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         this.writeThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                logger.debug("Serial Write Thread started for " + portName);
+                logger.trace("Serial Write Thread started for " + portName);
 
                 while (true) {
                     if (serialPort.isOpen()) {
