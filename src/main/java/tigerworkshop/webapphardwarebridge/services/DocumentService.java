@@ -8,7 +8,6 @@ import tigerworkshop.webapphardwarebridge.utils.DownloadUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
 public class DocumentService {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DocumentService.class.getName());
@@ -45,14 +44,6 @@ public class DocumentService {
         urlString = urlString.replace(" ", "%20");
         String filename = urlString.substring(urlString.lastIndexOf("/") + 1);
         return "documents/" + filename;
-    }
-
-    public Boolean prepareDocuments(ArrayList<PrintDocument> printDocuments) throws Exception {
-        for (PrintDocument printDocument : printDocuments) {
-            prepareDocument(printDocument);
-        }
-
-        return true;
     }
 
     public void prepareDocument(PrintDocument printDocument) throws Exception {

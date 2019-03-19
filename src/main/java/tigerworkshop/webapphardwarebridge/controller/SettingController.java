@@ -186,15 +186,6 @@ public class SettingController implements Initializable {
     private void loadValues() {
         SettingService settingService = SettingService.getInstance();
 
-        // Serials
-        HashMap<String, String> portHashMap = settingService.getSerials();
-        for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
-            String key = mapEntry.getKey();
-            String value = mapEntry.getValue();
-            serialMappingList.add(ObservableStringPair.of(key, value));
-        }
-        tableSerial.setItems(serialMappingList);
-
         // Printers
         HashMap<String, String> printerHashMap = settingService.getPrinters();
         for (Map.Entry<String, String> mapEntry : printerHashMap.entrySet()) {
@@ -203,17 +194,28 @@ public class SettingController implements Initializable {
             printerMappingList.add(ObservableStringPair.of(key, value));
         }
         tablePrinter.setItems(printerMappingList);
+
+        // Serials
+        HashMap<String, String> portHashMap = settingService.getSerials();
+        for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
+            String key = mapEntry.getKey();
+            String value = mapEntry.getValue();
+            serialMappingList.add(ObservableStringPair.of(key, value));
+        }
+        tableSerial.setItems(serialMappingList);
     }
 
     private void saveValues() {
         SettingService settingService = SettingService.getInstance();
 
+        // Printers
         HashMap<String, String> printerHashMap = new HashMap<>();
         ObservableList<ObservableStringPair> printerList = tablePrinter.getItems();
         for (ObservableStringPair pair : printerList) {
             printerHashMap.put(pair.getLeft(), pair.getRight());
         }
 
+        // Serials
         HashMap<String, String> serialHashMap = new HashMap<>();
         ObservableList<ObservableStringPair> serialList = tableSerial.getItems();
         for (ObservableStringPair pair : serialList) {
