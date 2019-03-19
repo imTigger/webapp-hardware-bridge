@@ -40,14 +40,12 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     @Override
     public void onDataReceived(String message) {
         try {
-            PrintDocument[] printDocuments = gson.fromJson(message, PrintDocument[].class);
-            for (PrintDocument printDocument : printDocuments) {
-                try {
-                    DocumentService.getInstance().prepareDocument(printDocument);
-                    printDocument(printDocument);
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
+            PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);
+            try {
+                DocumentService.getInstance().prepareDocument(printDocument);
+                printDocument(printDocument);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

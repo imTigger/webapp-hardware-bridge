@@ -36,8 +36,14 @@ function WebSocketPrinter(options) {
         connect();
     };
 
-    this.submit = function (json) {
-        websocket.send(JSON.stringify(json));
+    this.submit = function (data) {
+        if (Array.isArray(data)) {
+            data.forEach(function (element) {
+                websocket.send(JSON.stringify(element));
+            });
+        } else {
+            websocket.send(JSON.stringify(data));
+        }
     };
 
     connect();

@@ -59,25 +59,25 @@
     });
 
     function printPDF() {
-        printService.submit([{
+        printService.submit({
             'type': 'INVOICE',
             'url': $('#url').val()
-        }]);
+        });
     }
 
     function printPDFBase64() {
-        printService.submit([{
+        printService.submit({
             'type': 'INVOICE',
             'url': 'file.pdf',
             'file_content': $('#file_content').val()
-        }]);
+        });
     }
 
     function printRaw() {
-        printService.submit([{
+        printService.submit({
             'type': 'RECEIPT',
             'raw_content': $('#raw_content').val()
-        }]);
+        });
     }
 </script>
 </body>
