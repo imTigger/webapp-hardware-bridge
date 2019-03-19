@@ -52,6 +52,8 @@ public class SettingController implements Initializable {
     @FXML
     private Button buttonSave;
     @FXML
+    private Button buttonSaveAndClose;
+    @FXML
     private Button buttonReset;
     private ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
     private ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
@@ -161,6 +163,15 @@ public class SettingController implements Initializable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        // Save Values
+        buttonSaveAndClose.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                saveValues();
+                System.exit(0);
             }
         });
 

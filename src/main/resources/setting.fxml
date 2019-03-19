@@ -41,6 +41,7 @@
             </TableView>
 
             <HBox alignment="CENTER" spacing="10" GridPane.columnSpan="3" GridPane.rowIndex="5">
+                <Button fx:id="buttonSaveAndClose" text="Save &amp; Close"/>
                 <Button fx:id="buttonSave" text="Save"/>
                 <Button fx:id="buttonReset" text="Reset"/>
                 <Button fx:id="buttonLog" text="Debug Log"/>
