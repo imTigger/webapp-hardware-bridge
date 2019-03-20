@@ -61,6 +61,7 @@ Configurator is provided to setup mappings between keys and printers/serials.
 Therefore web apps do not need to care about the actual printer names.
 
 ## TODOs
+- [ ] Better GUI
 - [ ] Serial JS SDK
 - [ ] Serial settings (Baudrate, data bits, stop bit, parity bit)
 - [ ] Print result feedback
