@@ -17,6 +17,7 @@ Common use cases:
 
 ### Web Direct Print
 - 0-click silent printing in web browsers
+- Download via URL / Base64 encoded file / Base64 encoded binary raw command
 - Support multiple printers, mapped by key
 - Support PDF/PNG/JPG Printing
 - Support RAW/ESC-POS Printing
