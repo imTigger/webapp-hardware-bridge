@@ -2,11 +2,11 @@
 
 WebApp Hardware Bridge (succeeder of "Chrome Hardware Bridge / Chrome Direct Print")
 
-Make it possible for webpages to silent print and access to serial ports.
+Make it possible for WebApp to silent print and access to serial ports.
 
 Common use cases:
-- Web-based POS PDF and receipt silent print
-- Web-based WMS serial weight scale realtime reading
+- Web-based POS - PDF and receipt silent print
+- Web-based WMS - Serial weight scale real-time reading
 
 ## Features
 
