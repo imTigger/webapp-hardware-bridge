@@ -17,14 +17,14 @@ Common use cases:
 
 ### Web Direct Print
 - 0-click silent printing in web browsers
-- Support printers supported, mapped by key
+- Support multiple printers, mapped by key
 - Support PDF/PNG/JPG Printing
 - Support RAW/ESC-POS Printing
 
 ### Web Serial Access
 - Bidirectional communication
 - Serial weigh scale (AWH-SA30 support in SDK)
-- Support multiple printers, mapped by key
+- Support multiple ports, mapped by key
 - Support multiple connection share same serial port
 
 ## How to use?
