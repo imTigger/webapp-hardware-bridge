@@ -34,7 +34,7 @@ Common use cases:
 
 1. Install and setup mapping via Configurator
 
-2. Start "WebApp Hardware Bridge" and it should works
+2. Start "WebApp Hardware Bridge" and start using your WebApp
 
 ### WebApp Side
 
