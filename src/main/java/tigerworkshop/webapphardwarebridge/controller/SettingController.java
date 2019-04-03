@@ -15,9 +15,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.ObservableStringPair;
 
@@ -32,9 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+@SuppressWarnings("Duplicates")
 public class SettingController implements Initializable {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @FXML
     private TableView<ObservableStringPair> tableSerial;
     @FXML
@@ -71,6 +70,14 @@ public class SettingController implements Initializable {
         columnPrinter.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPrinter.setCellFactory(ComboBoxTableCell.forTableColumn(printerList));
 
+        MenuItem addItemPrinter = new MenuItem("Add");
+        addItemPrinter.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                printerMappingList.add(ObservableStringPair.of("KEY", "Select Printer"));
+            }
+        });
+
         tablePrinter.setRowFactory(
                 new Callback<TableView<ObservableStringPair>, TableRow<ObservableStringPair>>() {
                     @Override
@@ -78,25 +85,17 @@ public class SettingController implements Initializable {
                         final TableRow<ObservableStringPair> row = new TableRow<>();
                         final ContextMenu rowMenu = new ContextMenu();
 
-                        MenuItem addItem = new MenuItem("Add");
-                        addItem.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                printerMappingList.add(ObservableStringPair.of("KEY", "Select Printer"));
-                            }
-                        });
-
-                        MenuItem removeItem = new MenuItem("Delete");
-                        removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                        MenuItem removeItemPrinter = new MenuItem("Delete");
+                        removeItemPrinter.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent event) {
                                 tablePrinter.getItems().remove(row.getItem());
                             }
                         });
-                        rowMenu.getItems().addAll(addItem, removeItem);
+                        rowMenu.getItems().addAll(addItemPrinter, removeItemPrinter);
 
                         final ContextMenu emptyMenu = new ContextMenu();
-                        emptyMenu.getItems().addAll(addItem);
+                        emptyMenu.getItems().addAll(addItemPrinter);
 
                         // only display context menu for non-null items:
                         row.contextMenuProperty().bind(
@@ -107,6 +106,17 @@ public class SettingController implements Initializable {
                     }
                 }
         );
+
+        tablePrinter.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent t) {
+                ContextMenu contextMenu = new ContextMenu();
+                contextMenu.getItems().add(addItemPrinter);
+                if (t.getButton() == MouseButton.SECONDARY) {
+                    contextMenu.show(tableSerial, t.getScreenX(), t.getScreenY());
+                }
+            }
+        });
 
         // Serial List
         ObservableList<String> serialList = FXCollections.observableArrayList();
@@ -118,6 +128,14 @@ public class SettingController implements Initializable {
         columnPort.setCellValueFactory(new PropertyValueFactory<>("right"));
         columnPort.setCellFactory(ComboBoxTableCell.forTableColumn(serialList));
 
+        MenuItem addItemSerial = new MenuItem("Add");
+        addItemSerial.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                serialMappingList.add(ObservableStringPair.of("KEY", "Select Port"));
+            }
+        });
+
         tableSerial.setRowFactory(
                 new Callback<TableView<ObservableStringPair>, TableRow<ObservableStringPair>>() {
                     @Override
@@ -125,25 +143,17 @@ public class SettingController implements Initializable {
                         final TableRow<ObservableStringPair> row = new TableRow<>();
                         final ContextMenu rowMenu = new ContextMenu();
 
-                        MenuItem addItem = new MenuItem("Add");
-                        addItem.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                serialMappingList.add(ObservableStringPair.of("KEY", "Select Port"));
-                            }
-                        });
-
-                        MenuItem removeItem = new MenuItem("Delete");
-                        removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                        MenuItem removeItemSerial = new MenuItem("Delete");
+                        removeItemSerial.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent event) {
                                 tableSerial.getItems().remove(row.getItem());
                             }
                         });
-                        rowMenu.getItems().addAll(addItem, removeItem);
+                        rowMenu.getItems().addAll(addItemSerial, removeItemSerial);
 
                         final ContextMenu emptyMenu = new ContextMenu();
-                        emptyMenu.getItems().addAll(addItem);
+                        emptyMenu.getItems().addAll(addItemSerial);
 
                         // only display context menu for non-null items:
                         row.contextMenuProperty().bind(
@@ -154,6 +164,17 @@ public class SettingController implements Initializable {
                     }
                 }
         );
+
+        tableSerial.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent t) {
+                ContextMenu contextMenu = new ContextMenu();
+                contextMenu.getItems().add(addItemSerial);
+                if (t.getButton() == MouseButton.SECONDARY) {
+                    contextMenu.show(tableSerial, t.getScreenX(), t.getScreenY());
+                }
+            }
+        });
 
         // Other controls
         buttonLog.setOnAction(new EventHandler<ActionEvent>() {
