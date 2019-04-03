@@ -2,6 +2,7 @@ package tigerworkshop.webapphardwarebridge.services;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.Config;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
 import tigerworkshop.webapphardwarebridge.utils.DownloadUtil;
 
@@ -14,6 +15,10 @@ public class DocumentService {
     private static DocumentService instance = new DocumentService();
 
     private DocumentService() {
+        File directory = new File(Config.DOCUMENT_PATH);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
     }
 
     public static DocumentService getInstance() {
@@ -43,7 +48,7 @@ public class DocumentService {
     public static String getPathFromUrl(String urlString) {
         urlString = urlString.replace(" ", "%20");
         String filename = urlString.substring(urlString.lastIndexOf("/") + 1);
-        return "documents/" + filename;
+        return Config.DOCUMENT_PATH + filename;
     }
 
     public void prepareDocument(PrintDocument printDocument) throws Exception {
