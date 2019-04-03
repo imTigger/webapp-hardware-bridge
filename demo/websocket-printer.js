@@ -5,22 +5,25 @@ function WebSocketPrinter(options) {
         },
         onDisconnect: function () {
         },
-        onUpdate: function (message) {
-        }
+        onUpdate: function () {
+        },
     };
 
     var settings = Object.assign({}, defaults, options);
     var websocket;
+    var connected = false;
 
     var onMessage = function (evt) {
         settings.onUpdate(evt.data);
     };
 
     var onConnect = function () {
+        connected = true;
         settings.onConnect();
     };
 
     var onDisconnect = function () {
+        connected = false;
         settings.onDisconnect();
         reconnect();
     };
@@ -44,6 +47,10 @@ function WebSocketPrinter(options) {
         } else {
             websocket.send(JSON.stringify(data));
         }
+    };
+
+    this.isConnected = function () {
+        return connected;
     };
 
     connect();
