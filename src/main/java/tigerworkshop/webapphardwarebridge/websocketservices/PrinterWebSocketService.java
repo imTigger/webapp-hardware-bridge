@@ -11,6 +11,7 @@ import tigerworkshop.webapphardwarebridge.Config;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
+import tigerworkshop.webapphardwarebridge.responses.PrintResult;
 import tigerworkshop.webapphardwarebridge.services.DocumentService;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.AnnotatedPrintable;
@@ -74,12 +75,12 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 throw new Exception("Unknown file type: " + printDocument.getUrl());
             }
 
-            server.onDataReceived(this, "Print success");
+            server.onDataReceived(this, gson.toJson(new PrintResult(0, printDocument.getId(), "Success")));
         } catch (Exception e) {
             logger.error("Document Print Error, document deleted!", e);
             DocumentService.deleteFileFromUrl(printDocument.getUrl());
 
-            server.onDataReceived(this, "Print failed");
+            server.onDataReceived(this, gson.toJson(new PrintResult(1, printDocument.getId(), e.getClass().getName() + " - " + e.getMessage())));
 
             throw e;
         }

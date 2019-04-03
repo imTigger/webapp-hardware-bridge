@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class PrintDocument {
     String type;
     String url;
+    String id;
     String file_content;
     String raw_content;
     ArrayList<AnnotatedPrintable.AnnotatedPrintableAnnotation> extras = new ArrayList<>();
@@ -17,6 +18,10 @@ public class PrintDocument {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getFileContent() {
