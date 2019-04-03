@@ -20,15 +20,25 @@
     <label>PDF by URL</label>
     <div class="input-group mb-3">
         <input class="form-control" id="url" type="text" value="https://tcpdf.org/files/examples/example_002.pdf"/>
-
-        <div class="input-group-append">
-            <button class="btn btn-success" onclick="printPDF()">Print</button>
-            <button class="btn btn-primary" onclick="printPDFWithFallback()">Print (With Fallback)</button>
-        </div>
     </div>
 
     <label>Status</label>
     <input class="form-control" id="status"/>
+
+    <div class="py-2">
+        <p>
+            <button class="btn btn-success" onclick="printPDF()">Normal Print</button>
+        </p>
+        <p>
+            <button class="btn btn-primary" onclick="printPDFWithFallback()">Print (With Fallback)</button>
+            Fallback to window.open() if WebApp Hardware Bridge is not running.
+        </p>
+        <p>
+            <button class="btn btn-secondary" onclick="printPDFWithId()">Print (With id)</button>
+            If &quot;id&quot; is submitted, it will be echoed back in onUpdate() thus we can trace back to jobs we
+            submitted
+        </p>
+    </div>
 </main>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -49,6 +59,14 @@
     function printPDF() {
         printService.submit({
             'type': 'INVOICE',
+            'url': $('#url').val()
+        });
+    }
+
+    function printPDFWithId() {
+        printService.submit({
+            'type': 'INVOICE',
+            'id': new Date().getTime(),
             'url': $('#url').val()
         });
     }
