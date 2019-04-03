@@ -61,6 +61,27 @@ Configurator is provided to setup mappings between keys and printers/serials.
 
 Therefore web apps do not need to care about the actual printer names.
 
+## How to build
+
+- JDK 8 with JRE
+- Intelij IDEA (Both Community and Ultimate works)
+- NSIS (Build Windows installer only, optional)
+
+1. An artifact config file is included in git repository.
+
+2. Use Intelij IDEA to "Build artifact" to yield `out\artifacts\webapp_hardware_bridge_jar`.
+
+3. Windows: Drop JRE 8 into `./jre` directory and use NSIS to compile `install.nsi` to yield `whb.exe`
+
+   Mac/Linux: Run the artifact using JRE, installer will be studied later (PR welcome!) 
+
+4. Run Command:
+
+   Server: `java -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Server`
+   
+   Configurator: `javaw -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Configurator`
+
+
 ## TODOs
 - [ ] Better GUI
 - [ ] Serial JS SDK
