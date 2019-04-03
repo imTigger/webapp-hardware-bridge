@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+    <!-- Bootstrap CSS -->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+
+    <title>Printer Test</title>
+</head>
+<body>
+<main class="container" role="main">
+    <h1 class="mt-5">Printer Test</h1>
+
+    <hr/>
+
+    <label>PDF by URL</label>
+    <div class="input-group mb-3">
+        <input class="form-control" id="url" type="text" value="https://tcpdf.org/files/examples/example_002.pdf"/>
+
+        <div class="input-group-append">
+            <button class="btn btn-success" onclick="printPDF()">Print</button>
+            <button class="btn btn-primary" onclick="printPDFWithFallback()">Print (With Fallback)</button>
+        </div>
+    </div>
+
+    <label>Status</label>
+    <input class="form-control" id="status"/>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="websocket-printer.js"></script>
+<script>
+    var printService = new WebSocketPrinter({
+        onConnect: function () {
+            $('#status').val('Connected');
+        },
+        onDisconnect: function () {
+            $('#status').val('Disconnected');
+        },
+        onUpdate: function (message) {
+            $('#status').val(message);
+        },
+    });
+
+    function printPDF() {
+        printService.submit({
+            'type': 'INVOICE',
+            'url': $('#url').val()
+        });
+    }
+
+    function printPDFWithFallback() {
+        if (printService.isConnected()) {
+            printPDF();
+        } else {
+            alert('WebApp Hardware Bridge not running');
+            window.open($('#url').val());
+        }
+    }
+</script>
+</body>
+</html>
