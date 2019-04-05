@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+    <!-- Bootstrap CSS -->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+
+    <title>WebSocket Serial</title>
+</head>
+<body>
+<main class="container" role="main">
+    <h1 class="mt-5">WebSocket Serial</h1>
+
+    <form id="form">
+        <div class="input-group mb-3">
+            <input class="form-control" id="input" name="input" placeholder="Input" type="text" value=""/>
+
+            <div class="input-group-append">
+                <button class="btn btn-success" type="submit">Send</button>
+            </div>
+        </div>
+
+        <p>Output:</p>
+        <pre><code id="output" name="output"></code></pre>
+
+    </form>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script crossorigin="anonymous" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <script src="websocket-serial.js"></script>
+    <script>
+        var serial = new WebSocketSerial({
+            url: 'ws://127.0.0.1:12212/serial/DISPLAY',
+            onMessage: function (message) {
+                $('#output').append(message);
+            }
+        });
+
+        $('#form').on('submit', function (e) {
+            serial.send($('#input').val());
+            e.preventDefault();
+        })
+    </script>
+</main>
+</body>
+</html>
