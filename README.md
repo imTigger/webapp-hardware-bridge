@@ -5,8 +5,9 @@ WebApp Hardware Bridge (succeeder of "Chrome Hardware Bridge / Chrome Direct Pri
 Make it possible for WebApp to perform silent print and access to serial ports.
 
 Common use cases:
-- Web-based POS - PDF and receipt silent print
-- Web-based WMS - Serial weight scale real-time reading
+- Web-based POS - PDF and ESC/POS receipt silent print
+- Web-based WMS - Serial weight scale real-time reading, delivery Note/packing List silent print
+- WebApp that need to read/write to serial ports
 
 ## Features
 
