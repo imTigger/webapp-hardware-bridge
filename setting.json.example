@@ -1,11 +1,14 @@
 {
-   "port": 12212,
-   "fallbackToDefaultPrinter": true,
-   "printers": {
-     "LABEL": "KM-200",
-     "INVOICE": "KM-200"
-   },
-   "serials": {
-     "WEIGH": "COM3"
-   }
- }
+  "address": "127.0.0.1",
+  "port": 12212,
+  "token": "",
+  "fallbackToDefaultPrinter": false,
+  "tokenAuthenticationEnabled": false,
+  "printers": {
+    "LABEL": "KM-200",
+    "INVOICE": "KM-200"
+  },
+  "serials": {
+    "WEIGH": "COM3"
+  }
+}
