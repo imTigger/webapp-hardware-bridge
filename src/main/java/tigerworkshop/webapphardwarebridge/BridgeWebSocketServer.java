@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
+import tigerworkshop.webapphardwarebridge.utils.ConnectionAttachment;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private HashMap<String, ArrayList<WebSocket>> channelClientList = new HashMap<>();
+    private HashMap<String, ArrayList<WebSocket>> channelConnectionList = new HashMap<>();
 
     private ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
 
@@ -27,30 +28,26 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     }
 
     @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
+    public void onOpen(WebSocket connection, ClientHandshake handshake) {
         String uri = handshake.getResourceDescriptor();
+        connection.setAttachment(new ConnectionAttachment(uri, null));
+        addConnectionToChannel(uri, connection);
 
-        ArrayList<WebSocket> clientList = channelClientList.get(uri);
-        if (clientList == null) {
-            clientList = new ArrayList<>();
-        }
-        clientList.add(conn);
-        channelClientList.put(uri, clientList);
-
-        logger.info(conn.getRemoteSocketAddress().toString() + " connected to " + handshake.getResourceDescriptor());
+        logger.info(connection.getRemoteSocketAddress().toString() + " connected to " + uri);
     }
 
     @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        logger.debug(conn.getRemoteSocketAddress().toString() + " disconnected");
+    public void onClose(WebSocket connection, int code, String reason, boolean remote) {
+        removeConnectionFromChannel(((ConnectionAttachment) connection.getAttachment()).getUri(), connection);
+        logger.debug(connection.getRemoteSocketAddress().toString() + " disconnected, reason: " + reason);
     }
 
     @Override
-    public void onMessage(WebSocket conn, String message) {
-        logger.info("onMessage: " + conn + ": " + message);
+    public void onMessage(WebSocket connection, String message) {
+        logger.info("onMessage: " + connection + ": " + message);
 
         for (WebSocketServiceInterface service : services) {
-            if (conn.getResourceDescriptor().startsWith(service.getPrefix())) {
+            if (connection.getResourceDescriptor().startsWith(service.getPrefix())) {
                 logger.info("Attempt to send: " + message + " to prefix: " + service.getPrefix());
                 service.onDataReceived(message);
             }
@@ -79,21 +76,41 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             logger.trace("Received data from prefix: " + service.getPrefix() + ", Data: " + message);
         }
 
-        ArrayList<WebSocket> clientList = channelClientList.get(service.getPrefix());
+        ArrayList<WebSocket> connectionList = channelConnectionList.get(service.getPrefix());
 
-        if (clientList == null) {
-            logger.trace("clientList is null, ignoring the message");
+        if (connectionList == null) {
+            logger.trace("connectionList is null, ignoring the message");
             return;
         }
 
-        for (Iterator<WebSocket> it = clientList.iterator(); it.hasNext(); ) {
+        for (Iterator<WebSocket> it = connectionList.iterator(); it.hasNext(); ) {
             WebSocket conn = it.next();
             try {
                 conn.send(message);
             } catch (WebsocketNotConnectedException e) {
-                logger.warn("WebsocketNotConnectedException: Removing client from list");
+                logger.warn("WebsocketNotConnectedException: Removing connection from list");
                 it.remove();
             }
         }
+    }
+
+    private ArrayList<WebSocket> getConnectionListForChannel(String uri) {
+        ArrayList<WebSocket> connectionList = channelConnectionList.get(uri);
+        if (connectionList == null) {
+            connectionList = new ArrayList<>();
+        }
+        return connectionList;
+    }
+
+    private void addConnectionToChannel(String uri, WebSocket conn) {
+        ArrayList<WebSocket> connectionList = getConnectionListForChannel(uri);
+        connectionList.add(conn);
+        channelConnectionList.put(uri, connectionList);
+    }
+
+    private void removeConnectionFromChannel(String uri, WebSocket conn) {
+        ArrayList<WebSocket> connectionList = getConnectionListForChannel(uri);
+        connectionList.remove(conn);
+        channelConnectionList.put(uri, connectionList);
     }
 }
