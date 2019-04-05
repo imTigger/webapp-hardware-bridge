@@ -48,8 +48,9 @@ public class Server {
 
         try {
             // Create WebSocket Server
+            String address = settingService.getAddress();
             int port = settingService.getPort();
-            BridgeWebSocketServer webSocketServer = new BridgeWebSocketServer(port);
+            BridgeWebSocketServer webSocketServer = new BridgeWebSocketServer(address, port);
 
             // Add Serial Services
             HashMap<String, String> serials = settingService.getSerials();

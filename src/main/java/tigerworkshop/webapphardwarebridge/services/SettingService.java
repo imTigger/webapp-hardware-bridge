@@ -55,6 +55,10 @@ public class SettingService {
         reader.close();
     }
 
+    public String getAddress() {
+        return setting.getAddress();
+    }
+
     public int getPort() {
         return setting.getPort();
     }

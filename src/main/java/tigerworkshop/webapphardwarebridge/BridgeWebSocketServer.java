@@ -33,8 +33,8 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     private SettingService settingService = SettingService.getInstance();
 
-    public BridgeWebSocketServer(int port) {
-        super(new InetSocketAddress(port));
+    public BridgeWebSocketServer(String address, int port) {
+        super(new InetSocketAddress(address, port));
     }
 
     @Override

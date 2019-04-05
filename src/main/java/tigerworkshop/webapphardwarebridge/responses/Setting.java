@@ -3,12 +3,17 @@ package tigerworkshop.webapphardwarebridge.responses;
 import java.util.HashMap;
 
 public class Setting {
+    String address = "127.0.0.1";
     int port = 12212;
     String token = "";
     boolean fallbackToDefaultPrinter = false;
     boolean tokenAuthenticationEnabled = false;
     HashMap<String, String> printers = new HashMap<>();
     HashMap<String, String> serials = new HashMap<>();
+
+    public String getAddress() {
+        return address;
+    }
 
     public int getPort() {
         return port;
