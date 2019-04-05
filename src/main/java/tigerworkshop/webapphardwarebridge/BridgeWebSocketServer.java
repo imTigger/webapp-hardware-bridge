@@ -4,12 +4,14 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
+import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.ConnectionAttachment;
 
 import java.net.InetSocketAddress;
@@ -29,6 +31,8 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     private ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
 
+    private SettingService settingService = SettingService.getInstance();
+
     public BridgeWebSocketServer(int port) {
         super(new InetSocketAddress(port));
     }
@@ -41,10 +45,17 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             URI uri = new URI(descriptor);
             String channel = uri.getPath();
             List<NameValuePair> params = URLEncodedUtils.parse(uri, Charset.forName("UTF-8"));
-            connection.setAttachment(new ConnectionAttachment(channel, params, null));
+            String token = getToken(params);
+
+            if (settingService.getTokenAuthenticationEnabled() && (token == null || !token.equals(settingService.getToken()))) {
+                connection.close(CloseFrame.REFUSE, "Token Mismatch");
+                return;
+            }
+
+            connection.setAttachment(new ConnectionAttachment(channel, params, token));
             addConnectionToChannel(channel, connection);
 
-            logger.info(connection.getRemoteSocketAddress().toString() + " connected to " + descriptor);
+            logger.info(connection.getRemoteSocketAddress().toString() + " connected to " + channel);
         } catch (URISyntaxException e) {
             logger.error(connection.getRemoteSocketAddress().toString() + " error", e);
             connection.close();
@@ -53,7 +64,9 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     @Override
     public void onClose(WebSocket connection, int code, String reason, boolean remote) {
-        removeConnectionFromChannel(((ConnectionAttachment) connection.getAttachment()).getChannel(), connection);
+        if (connection.getAttachment() != null) {
+            removeConnectionFromChannel(((ConnectionAttachment) connection.getAttachment()).getChannel(), connection);
+        }
         logger.debug(connection.getRemoteSocketAddress().toString() + " disconnected, reason: " + reason);
     }
 
@@ -107,6 +120,15 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
                 it.remove();
             }
         }
+    }
+
+    private String getToken(List<NameValuePair> params) {
+        for (NameValuePair pair : params) {
+            if (pair.getName().equals("access_token")) {
+                return pair.getValue();
+            }
+        }
+        return null;
     }
 
     private ArrayList<WebSocket> getConnectionListForChannel(String uri) {

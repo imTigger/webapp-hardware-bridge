@@ -59,6 +59,14 @@ public class SettingService {
         return setting.getPort();
     }
 
+    public String getToken() {
+        return setting.getToken();
+    }
+
+    public boolean getTokenAuthenticationEnabled() {
+        return setting.getTokenAuthenticationEnabled();
+    }
+
     public boolean getFallbackToDefaultPrinter() {
         return setting.getFallbackToDefaultPrinter();
     }
