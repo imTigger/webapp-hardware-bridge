@@ -1,5 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ClientHandshake;
@@ -11,9 +13,13 @@ import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ConnectionAttachment;
 
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class BridgeWebSocketServer extends WebSocketServer implements WebSocketServerInterface {
 
@@ -29,16 +35,25 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     @Override
     public void onOpen(WebSocket connection, ClientHandshake handshake) {
-        String uri = handshake.getResourceDescriptor();
-        connection.setAttachment(new ConnectionAttachment(uri, null));
-        addConnectionToChannel(uri, connection);
+        try {
+            String descriptor = handshake.getResourceDescriptor();
 
-        logger.info(connection.getRemoteSocketAddress().toString() + " connected to " + uri);
+            URI uri = new URI(descriptor);
+            String channel = uri.getPath();
+            List<NameValuePair> params = URLEncodedUtils.parse(uri, Charset.forName("UTF-8"));
+            connection.setAttachment(new ConnectionAttachment(channel, params, null));
+            addConnectionToChannel(channel, connection);
+
+            logger.info(connection.getRemoteSocketAddress().toString() + " connected to " + descriptor);
+        } catch (URISyntaxException e) {
+            logger.error(connection.getRemoteSocketAddress().toString() + " error", e);
+            connection.close();
+        }
     }
 
     @Override
     public void onClose(WebSocket connection, int code, String reason, boolean remote) {
-        removeConnectionFromChannel(((ConnectionAttachment) connection.getAttachment()).getUri(), connection);
+        removeConnectionFromChannel(((ConnectionAttachment) connection.getAttachment()).getChannel(), connection);
         logger.debug(connection.getRemoteSocketAddress().toString() + " disconnected, reason: " + reason);
     }
 
