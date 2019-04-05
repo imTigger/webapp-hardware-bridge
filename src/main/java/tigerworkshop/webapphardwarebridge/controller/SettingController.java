@@ -54,9 +54,13 @@ public class SettingController implements Initializable {
     @FXML
     private Button buttonSaveAndClose;
     @FXML
+    private Button buttonLoadDefault;
+    @FXML
     private Button buttonReset;
     private ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
     private ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
+
+    private SettingService settingService = SettingService.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -206,20 +210,45 @@ public class SettingController implements Initializable {
             }
         });
 
+        // Default Values
+        buttonLoadDefault.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                loadDefaultValues();
+            }
+        });
+
         // Reset Values
         buttonReset.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                loadValues();
+                loadCurrentValues();
             }
         });
 
         loadValues();
     }
 
-    private void loadValues() {
-        SettingService settingService = SettingService.getInstance();
+    private void loadCurrentValues() {
+        try {
+            settingService.loadCurrent();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        loadValues();
+    }
 
+
+    private void loadDefaultValues() {
+        try {
+            settingService.loadDefault();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        loadValues();
+    }
+
+    private void loadValues() {
         // Printers
         printerMappingList.clear();
         HashMap<String, String> printerHashMap = settingService.getPrinters();
@@ -242,8 +271,6 @@ public class SettingController implements Initializable {
     }
 
     private void saveValues() {
-        SettingService settingService = SettingService.getInstance();
-
         // Printers
         HashMap<String, String> printerHashMap = new HashMap<>();
         ObservableList<ObservableStringPair> printerList = tablePrinter.getItems();

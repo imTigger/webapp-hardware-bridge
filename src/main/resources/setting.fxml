@@ -44,6 +44,7 @@
                 <Button fx:id="buttonSaveAndClose" text="Save &amp; Close"/>
                 <Button fx:id="buttonSave" text="Save"/>
                 <Button fx:id="buttonReset" text="Reset"/>
+                <Button fx:id="buttonLoadDefault" text="Load Default"/>
                 <Button fx:id="buttonLog" text="Debug Log"/>
             </HBox>
         </GridPane>
