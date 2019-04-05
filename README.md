@@ -24,9 +24,9 @@ Common use cases:
 
 ### Web Serial Access
 - Bidirectional communication
-- Serial weigh scale (AWH-SA30 support in SDK)
 - Support multiple ports, mapped by key
 - Support multiple connection share same serial port
+- Serial weigh scale (AWH-SA30 supported out-of-box in JS SDK)
 
 ## How to use?
 
@@ -84,9 +84,7 @@ Therefore web apps do not need to care about the actual printer names.
 
 ## TODOs
 - [ ] Better GUI
-- [ ] Serial JS SDK
 - [ ] Serial settings (Baudrate, data bits, stop bit, parity bit)
-- [ ] Print result feedback
 - [ ] Authentication
 
 Any other ideas? Fork and PR are welcome!
