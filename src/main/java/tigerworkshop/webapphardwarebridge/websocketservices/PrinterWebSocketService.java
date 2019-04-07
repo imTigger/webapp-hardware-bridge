@@ -34,11 +34,6 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public String getPrefix() {
-        return "/printer";
-    }
-
-    @Override
     public void onDataReceived(String message) {
         try {
             PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);
@@ -56,8 +51,12 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     @Override
     public void setServer(WebSocketServerInterface server) {
         this.server = server;
+        server.subscribe(this, getChannel());
     }
 
+    private String getChannel() {
+        return "/printer";
+    }
 
     /**
      * Prints a PrintDocument
@@ -75,12 +74,12 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 throw new Exception("Unknown file type: " + printDocument.getUrl());
             }
 
-            server.onDataReceived(this, gson.toJson(new PrintResult(0, printDocument.getId(), "Success")));
+            server.onDataReceived(getChannel(), gson.toJson(new PrintResult(0, printDocument.getId(), "Success")));
         } catch (Exception e) {
             logger.error("Document Print Error, document deleted!", e);
             DocumentService.deleteFileFromUrl(printDocument.getUrl());
 
-            server.onDataReceived(this, gson.toJson(new PrintResult(1, printDocument.getId(), e.getClass().getName() + " - " + e.getMessage())));
+            server.onDataReceived(getChannel(), gson.toJson(new PrintResult(1, printDocument.getId(), e.getClass().getName() + " - " + e.getMessage())));
 
             throw e;
         }

@@ -56,12 +56,12 @@ public class Server {
             HashMap<String, String> serials = settingService.getSerials();
             for (Map.Entry<String, String> elem : serials.entrySet()) {
                 SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
-                webSocketServer.addService(serialWebSocketService);
+                serialWebSocketService.setServer(webSocketServer);
             }
 
             // Add Printer Service
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
-            webSocketServer.addService(printerWebSocketService);
+            printerWebSocketService.setServer(webSocketServer);
 
             // Start WebSocket Server
             webSocketServer.start();

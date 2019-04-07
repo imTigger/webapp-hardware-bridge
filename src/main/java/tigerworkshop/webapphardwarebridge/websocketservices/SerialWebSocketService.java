@@ -50,7 +50,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                             serialPort.readBytes(receivedData, 1);
 
                             if (server != null) {
-                                server.onDataReceived(SerialWebSocketService.this, new String(receivedData, StandardCharsets.UTF_8));
+                                server.onDataReceived(getChannel(), new String(receivedData, StandardCharsets.UTF_8));
                             }
                         } else {
                             logger.trace("Trying to connect the serial @ " + serialPort.getSystemPortName());
@@ -90,15 +90,6 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         this.writeThread.start();
     }
 
-    private void send(byte[] message) {
-        writeBuffer = message;
-    }
-
-    @Override
-    public String getPrefix() {
-        return "/serial/" + mappingKey;
-    }
-
     @Override
     public void onDataReceived(String message) {
         send(message.getBytes());
@@ -107,5 +98,14 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     @Override
     public void setServer(WebSocketServerInterface server) {
         this.server = server;
+        server.subscribe(this, getChannel());
+    }
+
+    private void send(byte[] message) {
+        writeBuffer = message;
+    }
+
+    private String getChannel() {
+        return "/serial/" + mappingKey;
     }
 }
