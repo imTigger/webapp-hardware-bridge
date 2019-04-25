@@ -8,6 +8,7 @@ public class PrintDocument {
     String type;
     String url;
     String id;
+    Integer qty = 1;
     String file_content;
     String raw_content;
     ArrayList<AnnotatedPrintable.AnnotatedPrintableAnnotation> extras = new ArrayList<>();
@@ -22,6 +23,10 @@ public class PrintDocument {
 
     public String getId() {
         return id;
+    }
+
+    public Integer getQty() {
+        return qty;
     }
 
     public String getFileContent() {
@@ -41,6 +46,8 @@ public class PrintDocument {
         return "PrintDocument{" +
                 "type='" + type + '\'' +
                 ", url='" + url + '\'' +
+                ", id='" + id + '\'' +
+                ", qty=" + qty +
                 ", file_content='" + file_content + '\'' +
                 ", raw_content='" + raw_content + '\'' +
                 ", extras=" + extras +

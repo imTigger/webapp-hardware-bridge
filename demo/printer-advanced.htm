@@ -38,6 +38,11 @@
             If &quot;id&quot; is submitted, it will be echoed back in onUpdate() thus we can trace back to jobs we
             submitted
         </p>
+        <p>
+            <button class="btn btn-info" onclick="printPDFWithQty()">Print (With Qty)</button>
+            <input class="form-control" id="qty" type="number" value="3"/>
+            If &quot;qty&quot; is submitted, specified copies of documents will be printed.
+        </p>
     </div>
 </main>
 
@@ -70,6 +75,15 @@
             'url': $('#url').val()
         });
     }
+
+    function printPDFWithQty() {
+        printService.submit({
+            'type': 'INVOICE',
+            'qty': $('#qty').val(),
+            'url': $('#url').val()
+        });
+    }
+
 
     function printPDFWithFallback() {
         if (printService.isConnected()) {

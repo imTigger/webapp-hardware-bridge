@@ -62,7 +62,6 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Prints a PrintDocument
      */
     public void printDocument(PrintDocument printDocument) throws Exception {
-        logger.info(printDocument.toString());
         try {
             if (isRaw(printDocument)) {
                 printRaw(printDocument);
@@ -176,6 +175,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         job.setPageable(book);
         job.setJobName("WebApp Hardware Bridge Image");
+        job.setCopies(printDocument.getQty());
         job.print();
 
         long timeFinish = System.currentTimeMillis();
@@ -238,6 +238,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         job.setPageable(book);
         job.setJobName("WebApp Hardware Bridge PDF");
+        job.setCopies(printDocument.getQty());
         job.print();
 
         long timeFinish = System.currentTimeMillis();
