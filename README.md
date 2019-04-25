@@ -64,7 +64,7 @@ Therefore web apps do not need to care about the actual printer names.
 
 ## How to build
 
-- JDK 8 with JRE
+- JDK 8 with JRE, [Amazon Corretto 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html) Recommanded
 - Intelij IDEA (Both Community and Ultimate works)
 - NSIS (Build Windows installer only, optional)
 
