@@ -37,14 +37,11 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     public void onDataReceived(String message) {
         try {
             PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);
-            try {
-                DocumentService.getInstance().prepareDocument(printDocument);
-                printDocument(printDocument);
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
+            DocumentService.getInstance().prepareDocument(printDocument);
+            printDocument(printDocument);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getClass().getCanonicalName());
+            logger.debug(e.getMessage(), e);
         }
     }
 
@@ -75,7 +72,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
             server.onDataReceived(getChannel(), gson.toJson(new PrintResult(0, printDocument.getId(), "Success")));
         } catch (Exception e) {
-            logger.error("Document Print Error, document deleted!", e);
+            logger.error("Document Print Error, deleting downloaded document");
             DocumentService.deleteFileFromUrl(printDocument.getUrl());
 
             server.onDataReceived(getChannel(), gson.toJson(new PrintResult(1, printDocument.getId(), e.getClass().getName() + " - " + e.getMessage())));
@@ -210,41 +207,49 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         paper.setImageableArea(0, 0, width, height);
         pageFormat.setPaper(paper);
 
-        PDDocument document = PDDocument.load(new File(filename));
+        PDDocument document = null;
+        try {
+            document = PDDocument.load(new File(filename));
 
-        Book book = new Book();
-        for (int i = 0; i < document.getNumberOfPages(); i += 1) {
-            // Rotate Page Automatically
-            if (Config.PDF_AUTO_ROTATE) {
-                if (document.getPage(i).getCropBox().getWidth() > document.getPage(i).getCropBox().getHeight()) {
-                    pageFormat.setOrientation(PageFormat.LANDSCAPE);
+            Book book = new Book();
+            for (int i = 0; i < document.getNumberOfPages(); i += 1) {
+                // Rotate Page Automatically
+                if (Config.PDF_AUTO_ROTATE) {
+                    if (document.getPage(i).getCropBox().getWidth() > document.getPage(i).getCropBox().getHeight()) {
+                        pageFormat.setOrientation(PageFormat.LANDSCAPE);
+                    } else {
+                        pageFormat.setOrientation(PageFormat.PORTRAIT);
+                    }
+                }
+
+                AnnotatedPrintable printable;
+                if (System.getProperty("os.name").contains("Mac OS X")) {
+                    printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT, false, 203));
                 } else {
-                    pageFormat.setOrientation(PageFormat.PORTRAIT);
+                    printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT));
+                }
+
+                for (AnnotatedPrintable.AnnotatedPrintableAnnotation printDocumentExtra : printDocument.getExtras()) {
+                    printable.addAnnotation(printDocumentExtra);
+                }
+                book.append(printable, pageFormat);
+            }
+
+            job.setPageable(book);
+            job.setJobName("WebApp Hardware Bridge PDF");
+            job.setCopies(printDocument.getQty());
+            job.print();
+
+            long timeFinish = System.currentTimeMillis();
+            logger.info("Document " + filename + " printed in " + (timeFinish - timeStart) + "ms");
+        } finally {
+            if (document != null) {
+                try {
+                    document.close();
+                } catch (Exception e) {
                 }
             }
-
-            AnnotatedPrintable printable;
-            if (System.getProperty("os.name").contains("Mac OS X")) {
-                printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT, false, 203));
-            } else {
-                printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT));
-            }
-
-            for (AnnotatedPrintable.AnnotatedPrintableAnnotation printDocumentExtra : printDocument.getExtras()) {
-                printable.addAnnotation(printDocumentExtra);
-            }
-            book.append(printable, pageFormat);
         }
-
-        job.setPageable(book);
-        job.setJobName("WebApp Hardware Bridge PDF");
-        job.setCopies(printDocument.getQty());
-        job.print();
-
-        long timeFinish = System.currentTimeMillis();
-        logger.info("Document " + filename + " printed in " + (timeFinish - timeStart) + "ms");
-
-        document.close();
     }
 
     /**
@@ -258,14 +263,14 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
             for (PrintService service : services) {
                 if (service.getName().equalsIgnoreCase(printerName)) {
-                    logger.info("Creating print job to printer: " + service.getName());
+                    logger.info("Sending print job type: " + type + " to printer: " + service.getName());
                     return service.createPrintJob();
                 }
             }
         }
 
         if (SettingService.getInstance().getFallbackToDefaultPrinter()) {
-            logger.info("No matched printer: " + printerName + ", falling back to default printer");
+            logger.info("No mapped print job type: " + type + ", falling back to default printer");
             return PrintServiceLookup.lookupDefaultPrintService().createPrintJob();
         } else {
             throw new PrinterException("No matched printer: " + type);
