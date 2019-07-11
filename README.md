@@ -81,11 +81,15 @@ Therefore web apps do not need to care about the actual printer names.
    Server: `java -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Server`
    
    Configurator: `javaw -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Configurator`
+## Known Issue
 
+- Browser refuse to connect to non-Secure WebSocket server
+  Firefox Workaround: Change "network.websocket.allowInsecureFromHTTPS" to true in about:config
 
 ## TODOs
 - [ ] Better GUI
 - [ ] Serial settings (Baudrate, data bits, stop bit, parity bit)
 - [ ] Authentication
+- [ ] HTTPS / WSS support
 
 Any other ideas? Fork and PR are welcome!
