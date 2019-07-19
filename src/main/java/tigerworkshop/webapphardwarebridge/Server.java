@@ -3,9 +3,11 @@ package tigerworkshop.webapphardwarebridge;
 import com.sun.management.OperatingSystemMXBean;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
+import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
+import tigerworkshop.webapphardwarebridge.utils.TLSUtil;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
@@ -62,6 +64,11 @@ public class Server {
             // Add Printer Service
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
             printerWebSocketService.setServer(webSocketServer);
+
+            // SSL
+            if (settingService.getTLSEnabled()) {
+                webSocketServer.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(TLSUtil.getContext()));
+            }
 
             // Start WebSocket Server
             webSocketServer.start();

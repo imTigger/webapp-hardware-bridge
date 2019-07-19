@@ -67,6 +67,10 @@ public class SettingService {
         return setting.getToken();
     }
 
+    public boolean getTLSEnabled() {
+        return setting.getTLSEnabled();
+    }
+
     public boolean getTokenAuthenticationEnabled() {
         return setting.getTokenAuthenticationEnabled();
     }

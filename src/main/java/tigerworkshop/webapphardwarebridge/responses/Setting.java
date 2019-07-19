@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class Setting {
     String address = "127.0.0.1";
     int port = 12212;
+    boolean tls_enabled = false;
     String token = "";
     boolean fallbackToDefaultPrinter = false;
     boolean tokenAuthenticationEnabled = false;
@@ -21,6 +22,10 @@ public class Setting {
 
     public String getToken() {
         return token;
+    }
+
+    public boolean getTLSEnabled() {
+        return tls_enabled;
     }
 
     public boolean getFallbackToDefaultPrinter() {
