@@ -2,6 +2,7 @@
   "address": "127.0.0.1",
   "port": 12212,
   "token": "",
+  "tls_enabled": false,
   "fallbackToDefaultPrinter": false,
   "tokenAuthenticationEnabled": false,
   "printers": {
