@@ -1,0 +1,23 @@
+{
+  "address": "127.0.0.1",
+  "bind": "0.0.0.0",
+  "port": 12212,
+  "fallbackToDefaultPrinter": false,
+  "authentication": {
+    "enabled": false,
+    "token": ""
+  },
+  "tls": {
+    "enabled": true,
+    "selfSigned": true,
+    "cert": "tls/default-cert.pem",
+    "key": "tls/default-key.pem"
+  },
+  "printers": {
+    "LABEL": "KM-200",
+    "INVOICE": "KM-200"
+  },
+  "serials": {
+    "WEIGH": "COM5"
+  }
+}

@@ -28,7 +28,7 @@
       <element id="library" level="project" name="Gradle: junit:junit:4.12" />
       <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
       <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-api:2.11.2" />
-      <element id="file-copy" path="$PROJECT_DIR$/setting.json.example" />
+      <element id="file-copy" path="$PROJECT_DIR$/setting.default.json" />
     </root>
   </artifact>
 </component>

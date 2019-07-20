@@ -12,6 +12,7 @@ import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -45,24 +46,21 @@ public class TLSUtil {
     private static final String CERTIFICATE_DOMAIN = "CN=127.0.0.1";
     private static final int CERTIFICATE_BITS = 2048;
 
-    private static final String CERTIFICATE_PATH = "tls/tls.crt";
-    private static final String KEY_PATH = "tls/tls.key";
-
     private static final String KEYSTORE_PASSWORD = "webapp-hardware-bridge";
     private static final String KEYSTORE_CERTIFICATE_ALIAS = "webapp-hardware-bridge-cert";
     private static final String KEYSTORE_KEY_ALIAS = "webapp-hardware-bridge-key";
 
     private static Logger logger = LoggerFactory.getLogger("TLSUtil");
 
-    public static SSLContext getContext() throws Exception {
+    public static SSLContext getContext(String certificatePath, String keyPath) throws Exception {
         try {
             logger.debug("Creating SSLContext");
 
-            File certificate = new File(CERTIFICATE_PATH);
-            File privateKey = new File(KEY_PATH);
+            File certificate = new File(certificatePath);
+            File privateKey = new File(keyPath);
 
             byte[] certBytes = parseDERFromPEM(getBytes(certificate), "-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----");
-            byte[] keyBytes = parseDERFromPEM(getBytes(privateKey), "-----BEGIN RSA PRIVATE KEY-----", "-----END RSA PRIVATE KEY-----");
+            byte[] keyBytes = parseDERFromPEM(getBytes(privateKey), "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
 
             X509Certificate cert = generateCertificateFromDER(certBytes);
             RSAPrivateKey key = generatePrivateKeyFromDER(keyBytes);
@@ -83,14 +81,14 @@ public class TLSUtil {
 
             return sslContext;
         } catch (Exception e) {
-            logger.error("Failed creating SSLContext:" + e.getMessage(), e);
+            logger.error("Failed creating SSLContext:" + e.getMessage());
             throw e;
         }
     }
 
-    // Workaround: TLSv1.2 cause problem in Firefox
-    public static CustomSSLWebSocketServerFactory getSecureFactory() throws Exception {
-        SSLContext sslContext = getContext();
+    // Workaround for some browsers
+    public static CustomSSLWebSocketServerFactory getSecureFactory(String certificatePath, String keyPath) throws Exception {
+        SSLContext sslContext = getContext(certificatePath, keyPath);
         SSLEngine engine = sslContext.createSSLEngine();
 
         List<String> ciphers = new ArrayList<>(Arrays.asList(engine.getEnabledCipherSuites()));
@@ -98,20 +96,24 @@ public class TLSUtil {
         ciphers.remove("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"); // Cause problem in Firefox
 
         List<String> protocols = new ArrayList<>(Arrays.asList(engine.getEnabledProtocols()));
-        protocols.remove("SSLv2Hello");
-        protocols.remove("SSLv3");
-        // protocols.remove("TLSv1.2"); // Cause problem in Firefox
+        //protocols.remove("SSLv2Hello");
+        //protocols.remove("SSLv3");
+        //protocols.remove("TLSv1.2"); // Cause problem in Firefox
 
         return new CustomSSLWebSocketServerFactory(sslContext, protocols.toArray(new String[]{}), ciphers.toArray(new String[]{}));
     }
 
-    public static void generateSelfSignedCertificate(String address) throws OperatorCreationException, CertificateException, CertIOException, NoSuchAlgorithmException {
+    public static Boolean isCertificateAndKeyExist(String certificatePath, String keyPath) {
+        File certificate = new File(certificatePath);
+        File privateKey = new File(keyPath);
+
+        return certificate.exists() && privateKey.exists();
+    }
+
+    public static void generateSelfSignedCertificate(String address, String certificatePath, String keyPath) throws OperatorCreationException, CertificateException, CertIOException, NoSuchAlgorithmException {
         Security.addProvider(new BouncyCastleProvider());
 
-        File certificate = new File(CERTIFICATE_PATH);
-        File privateKey = new File(KEY_PATH);
-
-        if (!certificate.exists() || !privateKey.exists()) {
+        if (!isCertificateAndKeyExist(certificatePath, keyPath)) {
             try {
                 logger.info("Certificate or private key does not exist, attempt to generate.");
 
@@ -142,8 +144,8 @@ public class TLSUtil {
 
                 logger.info("Certificate and private key generated.");
 
-                saveKey(keyPair.getPrivate());
-                saveCert(cert);
+                saveCert(cert, certificatePath);
+                saveKey(keyPair.getPrivate(), keyPath);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw e;
@@ -162,9 +164,7 @@ public class TLSUtil {
 
     private static RSAPrivateKey generatePrivateKeyFromDER(byte[] keyBytes) throws InvalidKeySpecException, NoSuchAlgorithmException {
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-
         KeyFactory factory = KeyFactory.getInstance("RSA");
-
         return (RSAPrivateKey) factory.generatePrivate(spec);
     }
 
@@ -174,19 +174,9 @@ public class TLSUtil {
         return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
     }
 
-    private static void saveKey(PrivateKey key) {
+    private static void saveCert(X509Certificate cert, String certificatePath) {
         try {
-            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(new File(KEY_PATH)));
-            writer.writeObject(key);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveCert(X509Certificate cert) {
-        try {
-            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(new File(CERTIFICATE_PATH)));
+            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(new File(certificatePath)));
             writer.writeObject(cert);
             writer.close();
         } catch (IOException e) {
@@ -194,17 +184,23 @@ public class TLSUtil {
         }
     }
 
-    private static byte[] getBytes(File file) {
-        byte[] bytesArray = new byte[(int) file.length()];
-
-        FileInputStream fis;
+    private static void saveKey(PrivateKey key, String keyPath) {
         try {
-            fis = new FileInputStream(file);
-            fis.read(bytesArray);
-            fis.close();
+            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(new File(keyPath)));
+            writer.writeObject(new JcaPKCS8Generator(key, null));
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static byte[] getBytes(File file) throws Exception {
+        byte[] bytesArray = new byte[(int) file.length()];
+
+        FileInputStream fis = new FileInputStream(file);
+        fis.read(bytesArray);
+        fis.close();
+
         return bytesArray;
     }
 }

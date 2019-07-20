@@ -5,6 +5,7 @@ import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.TLSUtil;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
@@ -34,27 +35,26 @@ public class Server {
         logger.info("Application Started");
         logger.info("Program Version: " + Config.VERSION);
 
-        logger.info("OS Name: " + System.getProperty("os.name"));
-        logger.info("OS Version: " + System.getProperty("os.version"));
-        logger.info("OS Architecture: " + System.getProperty("os.arch"));
+        logger.debug("OS Name: " + System.getProperty("os.name"));
+        logger.debug("OS Version: " + System.getProperty("os.version"));
+        logger.debug("OS Architecture: " + System.getProperty("os.arch"));
 
-        logger.info("Java Version: " + System.getProperty("java.version"));
-        logger.info("Java Vendor: " + System.getProperty("java.vendor"));
+        logger.debug("Java Version: " + System.getProperty("java.version"));
+        logger.debug("Java Vendor: " + System.getProperty("java.vendor"));
 
-        logger.info("Available processors (cores): " + Runtime.getRuntime().availableProcessors());
-        logger.info("JVM Maximum memory (bytes): " + Runtime.getRuntime().maxMemory());
-        logger.info("System memory (bytes): " + ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize());
+        logger.debug("Available processors (cores): " + Runtime.getRuntime().availableProcessors());
+        logger.debug("JVM Maximum memory (bytes): " + Runtime.getRuntime().maxMemory());
+        logger.debug("System memory (bytes): " + ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize());
 
         SettingService settingService = SettingService.getInstance();
+        Setting setting = settingService.getSetting();
 
         try {
             // Create WebSocket Server
-            String address = settingService.getAddress();
-            int port = settingService.getPort();
-            BridgeWebSocketServer webSocketServer = new BridgeWebSocketServer(address, port);
+            BridgeWebSocketServer webSocketServer = new BridgeWebSocketServer(setting.getBind(), setting.getPort());
 
             // Add Serial Services
-            HashMap<String, String> serials = settingService.getSerials();
+            HashMap<String, String> serials = setting.getSerials();
             for (Map.Entry<String, String> elem : serials.entrySet()) {
                 SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
                 serialWebSocketService.setServer(webSocketServer);
@@ -65,18 +65,20 @@ public class Server {
             printerWebSocketService.setServer(webSocketServer);
 
             // WSS/TLS Options
-            if (settingService.getTLSEnabled()) {
-                TLSUtil.generateSelfSignedCertificate(settingService.getAddress());
+            if (setting.getTLSEnabled()) {
+                if (setting.getTLSSelfSigned()) {
+                    logger.info("TLS Enabled with self-signed certificate");
+                    TLSUtil.generateSelfSignedCertificate(setting.getAddress(), setting.getTLSCert(), setting.getTLSKey());
+                    logger.info("For first time setup, open in browser and trust the certificate: " + setting.getUri().replace("wss", "https"));
+                }
 
-                logger.info("TLS Enabled: For first time setup, open in browser and trust the certificate: " + settingService.getUri().replace("wss", "https"));
-
-                webSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory());
+                webSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory(setting.getTLSCert(), setting.getTLSKey()));
             }
 
             // Start WebSocket Server
             webSocketServer.start();
 
-            logger.info("WebSocket started on port: " + webSocketServer.getPort() + ", " + settingService.getUri());
+            logger.info("WebSocket started on port: " + webSocketServer.getPort() + ", " + setting.getUri());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

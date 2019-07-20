@@ -29,6 +29,8 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     private WebSocketServerInterface server = null;
     private Gson gson = new Gson();
 
+    private SettingService settingService = SettingService.getInstance();
+
     public PrinterWebSocketService() {
         logger.info("Starting PrinterWebSocketService");
     }
@@ -86,7 +88,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      */
     private String findMappedPrinter(String type) {
         logger.trace("findMappedPrinter::" + type);
-        return SettingService.getInstance().getMappedPrinter(type);
+        return settingService.getSetting().getPrinters().get(type);
     }
 
     /**
@@ -269,7 +271,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             }
         }
 
-        if (SettingService.getInstance().getFallbackToDefaultPrinter()) {
+        if (settingService.getSetting().getFallbackToDefaultPrinter()) {
             logger.info("No mapped print job type: " + type + ", falling back to default printer");
             return PrintServiceLookup.lookupDefaultPrintService().createPrintJob();
         } else {

@@ -251,7 +251,7 @@ public class SettingController implements Initializable {
     private void loadValues() {
         // Printers
         printerMappingList.clear();
-        HashMap<String, String> printerHashMap = settingService.getPrinters();
+        HashMap<String, String> printerHashMap = settingService.getSetting().getPrinters();
         for (Map.Entry<String, String> mapEntry : printerHashMap.entrySet()) {
             String key = mapEntry.getKey();
             String value = mapEntry.getValue();
@@ -261,7 +261,7 @@ public class SettingController implements Initializable {
 
         // Serials
         serialMappingList.clear();
-        HashMap<String, String> portHashMap = settingService.getSerials();
+        HashMap<String, String> portHashMap = settingService.getSetting().getSerials();
         for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
             String key = mapEntry.getKey();
             String value = mapEntry.getValue();
@@ -285,8 +285,8 @@ public class SettingController implements Initializable {
             serialHashMap.put(pair.getLeft(), pair.getRight());
         }
 
-        settingService.setPrinters(printerHashMap);
-        settingService.setSerials(serialHashMap);
+        settingService.getSetting().setPrinters(printerHashMap);
+        settingService.getSetting().setSerials(serialHashMap);
         settingService.save();
     }
 

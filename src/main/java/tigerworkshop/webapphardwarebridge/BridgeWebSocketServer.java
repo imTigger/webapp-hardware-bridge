@@ -46,7 +46,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             List<NameValuePair> params = URLEncodedUtils.parse(uri, Charset.forName("UTF-8"));
             String token = getToken(params);
 
-            if (settingService.getTokenAuthenticationEnabled() && (token == null || !token.equals(settingService.getToken()))) {
+            if (settingService.getSetting().getAuthenticationEnabled() && (token == null || !token.equals(settingService.getSetting().getAuthenticationToken()))) {
                 connection.close(CloseFrame.REFUSE, "Token Mismatch");
                 return;
             }
