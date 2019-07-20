@@ -144,6 +144,11 @@ public class TLSUtil {
 
                 logger.info("Certificate and private key generated.");
 
+                File directory = new File("tls");
+                if (!directory.isDirectory()) {
+                    directory.mkdir();
+                }
+
                 saveCert(cert, certificatePath);
                 saveKey(keyPair.getPrivate(), keyPath);
             } catch (Exception e) {
