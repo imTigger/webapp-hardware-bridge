@@ -69,8 +69,8 @@ Therefore web apps do not need to care about the actual printer names.
 
 ## FAQs
 
-[Build from source](../../wiki/Build-from-source)
-[HTTPS/WSS Support](../../wiki/HTTPS-WSS-Support)
+- [Build from source](../../wiki/Build-from-source)
+- [HTTPS/WSS Support](../../wiki/HTTPS-WSS-Support)
 
 ## TODOs
 - [ ] Better GUI
