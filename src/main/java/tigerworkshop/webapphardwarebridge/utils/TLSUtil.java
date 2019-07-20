@@ -93,10 +93,13 @@ public class TLSUtil {
         SSLEngine engine = sslContext.createSSLEngine();
 
         List<String> ciphers = new ArrayList<>(Arrays.asList(engine.getEnabledCipherSuites()));
+        ciphers.remove("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"); // Cause problem in Firefox
+        ciphers.remove("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"); // Cause problem in Firefox
+
         List<String> protocols = new ArrayList<>(Arrays.asList(engine.getEnabledProtocols()));
         protocols.remove("SSLv2Hello");
         protocols.remove("SSLv3");
-        protocols.remove("TLSv1.2"); // Cause problem in Firefox
+        // protocols.remove("TLSv1.2"); // Cause problem in Firefox
 
         return new CustomSSLWebSocketServerFactory(sslContext, protocols.toArray(new String[]{}), ciphers.toArray(new String[]{}));
     }
