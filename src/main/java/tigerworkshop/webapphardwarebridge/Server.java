@@ -3,7 +3,6 @@ package tigerworkshop.webapphardwarebridge;
 import com.sun.management.OperatingSystemMXBean;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
-import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
@@ -65,14 +64,19 @@ public class Server {
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
             printerWebSocketService.setServer(webSocketServer);
 
-            // SSL
+            // WSS/TLS Options
             if (settingService.getTLSEnabled()) {
-                webSocketServer.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(TLSUtil.getContext()));
+                TLSUtil.generateSelfSignedCertificate(settingService.getAddress());
+
+                logger.info("TLS Enabled: For first time setup, open in browser and trust the certificate: " + settingService.getUri().replace("wss", "https"));
+
+                webSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory());
             }
 
             // Start WebSocket Server
             webSocketServer.start();
-            logger.info("WebSocket started on port: " + webSocketServer.getPort());
+
+            logger.info("WebSocket started on port: " + webSocketServer.getPort() + ", " + settingService.getUri());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

@@ -103,6 +103,10 @@ public class SettingService {
         return setting.getPrinters().get(key);
     }
 
+    public String getUri() {
+        return (getTLSEnabled() ? "wss" : "ws") + "://" + getAddress() + ":" + getPort();
+    }
+
     public void save() {
         try {
             Writer writer = new FileWriter(SETTING_FILENAME);

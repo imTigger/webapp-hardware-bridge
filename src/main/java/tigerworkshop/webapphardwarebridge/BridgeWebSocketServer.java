@@ -66,7 +66,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         if (connection.getAttachment() != null) {
             removeSocketFromChannel(((ConnectionAttachment) connection.getAttachment()).getChannel(), connection);
         }
-        logger.debug(connection.getRemoteSocketAddress().toString() + " disconnected, reason: " + reason);
+        logger.info(connection.getRemoteSocketAddress().toString() + " disconnected");
     }
 
     /*
@@ -94,7 +94,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     @Override
     public void onStart() {
         logger.info("BridgeWebSocketServer started");
-        setConnectionLostTimeout(30);
+        setConnectionLostTimeout(1);
     }
 
     /*
