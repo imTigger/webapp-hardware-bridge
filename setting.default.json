@@ -8,7 +8,7 @@
     "token": ""
   },
   "tls": {
-    "enabled": true,
+    "enabled": false,
     "selfSigned": true,
     "cert": "tls/default-cert.pem",
     "key": "tls/default-key.pem"
