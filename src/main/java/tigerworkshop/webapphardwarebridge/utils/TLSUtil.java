@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import com.google.common.net.InetAddresses;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
@@ -128,10 +129,13 @@ public class TLSUtil {
 
                 X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(issuer, serialNumber, validFrom, validTo, subject, subPubKeyInfo);
 
-                if (!address.equals("127.0.0.1")) {
-                    final GeneralNames subjectAltNames = new GeneralNames(new GeneralName(GeneralName.iPAddress, address));
-                    certificateBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
+                final GeneralNames subjectAltNames;
+                if (InetAddresses.isInetAddress(address)) {
+                    subjectAltNames = new GeneralNames(new GeneralName(GeneralName.iPAddress, address));
+                } else {
+                    subjectAltNames = new GeneralNames(new GeneralName(GeneralName.dNSName, address));
                 }
+                certificateBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
 
                 X509CertificateHolder certificateHolder = certificateBuilder.build(signer);
                 X509Certificate cert = new JcaX509CertificateConverter().getCertificate(certificateHolder);
