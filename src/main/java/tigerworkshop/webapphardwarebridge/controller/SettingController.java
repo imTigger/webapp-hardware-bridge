@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -18,6 +19,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
+import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.ObservableStringPair;
 
@@ -35,6 +37,27 @@ import java.util.ResourceBundle;
 @SuppressWarnings("Duplicates")
 public class SettingController implements Initializable {
     @FXML
+    private TextField textBind;
+    @FXML
+    private TextField textAddress;
+    @FXML
+    private TextField textPort;
+
+    @FXML
+    private CheckBox checkboxTlsEnabled;
+    @FXML
+    private CheckBox checkboxTLSSelfSigned;
+    @FXML
+    private TextField textTLSCert;
+    @FXML
+    private TextField textTLSKey;
+
+    @FXML
+    private CheckBox checkboxAuthenticationEnabled;
+    @FXML
+    private TextField textAuthenticationToken;
+
+    @FXML
     private TableView<ObservableStringPair> tableSerial;
     @FXML
     private TableColumn<ObservableStringPair, String> columnSerialType;
@@ -48,6 +71,9 @@ public class SettingController implements Initializable {
     @FXML
     private TableColumn<ObservableStringPair, String> columnPrinter;
     @FXML
+    private CheckBox checkboxFallbackToDefaultPrinter;
+
+    @FXML
     private Button buttonLog;
     @FXML
     private Button buttonSave;
@@ -57,6 +83,7 @@ public class SettingController implements Initializable {
     private Button buttonLoadDefault;
     @FXML
     private Button buttonReset;
+
     private ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
     private ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
 
@@ -248,48 +275,6 @@ public class SettingController implements Initializable {
         loadValues();
     }
 
-    private void loadValues() {
-        // Printers
-        printerMappingList.clear();
-        HashMap<String, String> printerHashMap = settingService.getSetting().getPrinters();
-        for (Map.Entry<String, String> mapEntry : printerHashMap.entrySet()) {
-            String key = mapEntry.getKey();
-            String value = mapEntry.getValue();
-            printerMappingList.add(ObservableStringPair.of(key, value));
-        }
-        tablePrinter.setItems(printerMappingList);
-
-        // Serials
-        serialMappingList.clear();
-        HashMap<String, String> portHashMap = settingService.getSetting().getSerials();
-        for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
-            String key = mapEntry.getKey();
-            String value = mapEntry.getValue();
-            serialMappingList.add(ObservableStringPair.of(key, value));
-        }
-        tableSerial.setItems(serialMappingList);
-    }
-
-    private void saveValues() {
-        // Printers
-        HashMap<String, String> printerHashMap = new HashMap<>();
-        ObservableList<ObservableStringPair> printerList = tablePrinter.getItems();
-        for (ObservableStringPair pair : printerList) {
-            printerHashMap.put(pair.getLeft(), pair.getRight());
-        }
-
-        // Serials
-        HashMap<String, String> serialHashMap = new HashMap<>();
-        ObservableList<ObservableStringPair> serialList = tableSerial.getItems();
-        for (ObservableStringPair pair : serialList) {
-            serialHashMap.put(pair.getLeft(), pair.getRight());
-        }
-
-        settingService.getSetting().setPrinters(printerHashMap);
-        settingService.getSetting().setSerials(serialHashMap);
-        settingService.save();
-    }
-
     private ArrayList<String> listPrinters() {
         ArrayList<String> printerList = new ArrayList<>();
         PrintService[] printServices = PrinterJob.lookupPrintServices();
@@ -305,5 +290,83 @@ public class SettingController implements Initializable {
             portList.add(port.getSystemPortName());
         }
         return portList;
+    }
+
+    private void loadValues() {
+        Setting setting = settingService.getSetting();
+
+        // General
+        textBind.setText(setting.getBind());
+        textAddress.setText(setting.getAddress());
+        textPort.setText(Integer.toString(setting.getPort()));
+
+        // TLS
+        checkboxTlsEnabled.setSelected(setting.getTLSEnabled());
+        checkboxTLSSelfSigned.setSelected(setting.getTLSSelfSigned());
+        textTLSCert.setText(setting.getTLSCert());
+        textTLSKey.setText(setting.getTLSKey());
+
+        // Authentication
+        checkboxAuthenticationEnabled.setSelected(setting.getAuthenticationEnabled());
+        textAuthenticationToken.setText(setting.getAuthenticationToken());
+
+        // Printers
+        printerMappingList.clear();
+        HashMap<String, String> printerHashMap = setting.getPrinters();
+        for (Map.Entry<String, String> mapEntry : printerHashMap.entrySet()) {
+            String key = mapEntry.getKey();
+            String value = mapEntry.getValue();
+            printerMappingList.add(ObservableStringPair.of(key, value));
+        }
+        tablePrinter.setItems(printerMappingList);
+        checkboxFallbackToDefaultPrinter.setSelected(setting.getFallbackToDefaultPrinter());
+
+        // Serials
+        serialMappingList.clear();
+        HashMap<String, String> portHashMap = setting.getSerials();
+        for (Map.Entry<String, String> mapEntry : portHashMap.entrySet()) {
+            String key = mapEntry.getKey();
+            String value = mapEntry.getValue();
+            serialMappingList.add(ObservableStringPair.of(key, value));
+        }
+        tableSerial.setItems(serialMappingList);
+    }
+
+    private void saveValues() {
+        Setting setting = settingService.getSetting();
+
+        // General
+        setting.setAddress(textAddress.getText());
+        setting.setBind(textBind.getText());
+        setting.setPort(Integer.parseInt(textPort.getText()));
+
+        // TLS
+        setting.setTLSEnabled(checkboxTlsEnabled.isSelected());
+        setting.setTLSSelfSigned(checkboxTLSSelfSigned.isSelected());
+        setting.setTLSCert(textTLSCert.getText());
+        setting.setTLSKey(textTLSKey.getText());
+
+        // Authentication
+        setting.setAuthenticationEnabled(checkboxAuthenticationEnabled.isSelected());
+        setting.setAuthenticationToken(textAuthenticationToken.getText());
+
+        // Printers
+        HashMap<String, String> printerHashMap = new HashMap<>();
+        ObservableList<ObservableStringPair> printerList = tablePrinter.getItems();
+        for (ObservableStringPair pair : printerList) {
+            printerHashMap.put(pair.getLeft(), pair.getRight());
+        }
+        setting.setPrinters(printerHashMap);
+        setting.setFallbackToDefaultPrinter(checkboxFallbackToDefaultPrinter.isSelected());
+
+        // Serials
+        HashMap<String, String> serialHashMap = new HashMap<>();
+        ObservableList<ObservableStringPair> serialList = tableSerial.getItems();
+        for (ObservableStringPair pair : serialList) {
+            serialHashMap.put(pair.getLeft(), pair.getRight());
+        }
+        setting.setSerials(serialHashMap);
+
+        settingService.save();
     }
 }

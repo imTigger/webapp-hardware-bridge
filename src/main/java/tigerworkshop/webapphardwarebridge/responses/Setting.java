@@ -63,12 +63,52 @@ public class Setting {
         return (String) tls.get("key");
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setBind(String bind) {
+        this.bind = bind;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setAuthenticationEnabled(Boolean value) {
+        authentication.put("enabled", value);
+    }
+
+    public void setAuthenticationToken(String value) {
+        authentication.put("token", value);
+    }
+
+    public void setTLSSelfSigned(Boolean value) {
+        tls.put("selfSigned", value);
+    }
+
+    public void setTLSCert(String value) {
+        tls.put("cert", value);
+    }
+
+    public void setTLSKey(String value) {
+        tls.put("key", value);
+    }
+
+    public void setTLSEnabled(Boolean value) {
+        tls.put("enabled", value);
+    }
+
     public HashMap<String, String> getPrinters() {
         return printers;
     }
 
     public void setPrinters(HashMap<String, String> printers) {
         this.printers = printers;
+    }
+
+    public void setFallbackToDefaultPrinter(boolean fallbackToDefaultPrinter) {
+        this.fallbackToDefaultPrinter = fallbackToDefaultPrinter;
     }
 
     public HashMap<String, String> getSerials() {
