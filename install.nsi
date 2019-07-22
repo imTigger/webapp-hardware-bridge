@@ -60,8 +60,9 @@ Section "Uninstall"
   
   ; Delete shortcuts
   Delete "$DESKTOP\WebApp Hardware Bridge.lnk"
+  Delete "$DESKTOP\WebApp Hardware Bridge (Configurator).lnk"
   Delete "$SMPROGRAMS\WebApp Hardware Bridge.lnk"
-  Delete "$SMPROGRAMS\WebApp Hardware Bridge (Setting).lnk"
+  Delete "$SMPROGRAMS\WebApp Hardware Bridge (Configurator).lnk"
   
   ; Remove files and uninstaller
   RMDir /r $INSTDIR
