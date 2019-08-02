@@ -17,7 +17,7 @@ import tigerworkshop.webapphardwarebridge.utils.ConnectionAttachment;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +43,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
             URI uri = new URI(descriptor);
             String channel = uri.getPath();
-            List<NameValuePair> params = URLEncodedUtils.parse(uri, Charset.forName("UTF-8"));
+            List<NameValuePair> params = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8);
             String token = getToken(params);
 
             if (settingService.getSetting().getAuthenticationEnabled() && (token == null || !token.equals(settingService.getSetting().getAuthenticationToken()))) {
@@ -79,11 +79,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
         String channel = ((ConnectionAttachment) connection.getAttachment()).getChannel();
 
-        ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
-        for (WebSocketServiceInterface service : services) {
-            logger.trace("Attempt to send: " + message + " to channel: " + channel);
-            service.onDataReceived(message);
-        }
+        processMessage(channel, message);
     }
 
     @Override
@@ -103,6 +99,10 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     @Override
     public void onDataReceived(String channel, String message) {
         logger.trace("Received data from channel: " + channel + ", Data: " + message);
+
+        if (channel.equals("proxy")) {
+            processMessage("/printer", message);
+        }
 
         ArrayList<WebSocket> connectionList = socketChannelSubscriptions.get(channel);
 
@@ -141,6 +141,14 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         return null;
     }
 
+    private void processMessage(String channel, String message) {
+        ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
+        for (WebSocketServiceInterface service : services) {
+            logger.trace("Attempt to send: " + message + " to channel: " + channel);
+            service.onDataReceived(message);
+        }
+    }
+
     private ArrayList<WebSocket> getSocketListForChannel(String channel) {
         ArrayList<WebSocket> socketList = socketChannelSubscriptions.get(channel);
         if (socketList == null) {
@@ -162,15 +170,26 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     }
 
     private ArrayList<WebSocketServiceInterface> getServiceListForChannel(String channel) {
-        ArrayList<WebSocketServiceInterface> socketList = serviceChannelSubscriptions.get(channel);
-        if (socketList == null) {
-            return new ArrayList<>();
+        ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
+
+        ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.get(channel);
+        if (serviceList != null) {
+            services.addAll(serviceList);
         }
-        return socketList;
+
+        ArrayList<WebSocketServiceInterface> serviceListWildcard = serviceChannelSubscriptions.get("*");
+        if (serviceListWildcard != null) {
+            services.addAll(serviceListWildcard);
+        }
+
+        return services;
     }
 
     private void addServiceToChannel(String channel, WebSocketServiceInterface socket) {
-        ArrayList<WebSocketServiceInterface> serviceList = getServiceListForChannel(channel);
+        ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.get(channel);
+        if (serviceList == null) {
+            serviceList = new ArrayList<>();
+        }
         serviceList.add(socket);
         serviceChannelSubscriptions.put(channel, serviceList);
     }

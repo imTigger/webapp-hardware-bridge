@@ -9,6 +9,7 @@ import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.TLSUtil;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
+import tigerworkshop.webapphardwarebridge.websocketservices.ProxyClientWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
 import java.lang.management.ManagementFactory;
@@ -63,6 +64,10 @@ public class Server {
             // Add Printer Service
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
             printerWebSocketService.setServer(webSocketServer);
+
+            // Add Proxy Client Service
+            ProxyClientWebSocketService proxyClientWebSocketService = new ProxyClientWebSocketService();
+            proxyClientWebSocketService.setServer(webSocketServer);
 
             // WSS/TLS Options
             if (setting.getTLSEnabled()) {
