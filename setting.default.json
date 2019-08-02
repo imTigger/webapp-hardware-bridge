@@ -13,6 +13,10 @@
     "cert": "tls/default-cert.pem",
     "key": "tls/default-key.pem"
   },
+  "cloudProxy": {
+    "enabled": false,
+    "url": "wss://127.0.0.1:22212"
+  },
   "printers": {
     "LABEL": "KM-200",
     "INVOICE": "KM-200"
