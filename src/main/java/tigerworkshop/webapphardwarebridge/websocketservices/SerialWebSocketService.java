@@ -13,8 +13,6 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     private final String portName;
     private final String mappingKey;
     private final SerialPort serialPort;
-    private final Thread writeThread;
-    private final Thread readThread;
     private byte[] writeBuffer = {};
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -26,8 +24,11 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         this.portName = portName;
         this.mappingKey = mappingKey;
         this.serialPort = SerialPort.getCommPort(portName);
+    }
 
-        this.readThread = new Thread(new Runnable() {
+    @Override
+    public void start() {
+        Thread readThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 logger.trace("Serial Read Thread started for " + portName);
@@ -64,7 +65,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
             }
         });
 
-        this.writeThread = new Thread(new Runnable() {
+        Thread writeThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 logger.trace("Serial Write Thread started for " + portName);
@@ -86,8 +87,8 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
             }
         });
 
-        this.readThread.start();
-        this.writeThread.start();
+        readThread.start();
+        writeThread.start();
     }
 
     @Override

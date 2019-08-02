@@ -60,16 +60,19 @@ public class Server {
             for (Map.Entry<String, String> elem : serials.entrySet()) {
                 SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
                 serialWebSocketService.setServer(webSocketServer);
+                serialWebSocketService.start();
             }
 
             // Add Printer Service
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
             printerWebSocketService.setServer(webSocketServer);
+            printerWebSocketService.start();
 
             // Add Cloud Proxy Client Service
             if (setting.getCloudProxyEnabled()) {
                 CloudProxyClientWebSocketService cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService();
                 cloudProxyClientWebSocketService.setServer(webSocketServer);
+                cloudProxyClientWebSocketService.start();
             }
 
             // WSS/TLS Options
@@ -86,7 +89,7 @@ public class Server {
             // Start WebSocket Server
             webSocketServer.start();
 
-            logger.info("WebSocket started on port: " + webSocketServer.getPort() + ", " + setting.getUri());
+            logger.info("WebSocket started on " + setting.getUri());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

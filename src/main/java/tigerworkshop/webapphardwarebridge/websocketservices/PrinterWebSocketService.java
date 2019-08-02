@@ -36,6 +36,11 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
+    public void start() {
+        server.subscribe(this, getChannel());
+    }
+
+    @Override
     public void onDataReceived(String message) {
         try {
             PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);
@@ -50,7 +55,6 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     @Override
     public void setServer(WebSocketServerInterface server) {
         this.server = server;
-        server.subscribe(this, getChannel());
     }
 
     private String getChannel() {
