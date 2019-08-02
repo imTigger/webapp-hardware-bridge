@@ -20,6 +20,11 @@ public class Setting {
         put("key", "tls/default-key.pem");
     }};
 
+    HashMap<String, Object> cloudProxy = new HashMap<String, Object>() {{
+        put("enabled", false);
+        put("url", "ws://127.0.0.1:22212");
+    }};
+
     HashMap<String, String> printers = new HashMap<>();
     HashMap<String, String> serials = new HashMap<>();
 
@@ -97,6 +102,14 @@ public class Setting {
 
     public void setTLSEnabled(Boolean value) {
         tls.put("enabled", value);
+    }
+
+    public Boolean getCloudProxyEnabled() {
+        return (boolean) cloudProxy.get("enabled");
+    }
+
+    public String getCloudProxyUrl() {
+        return (String) cloudProxy.get("url");
     }
 
     public HashMap<String, String> getPrinters() {

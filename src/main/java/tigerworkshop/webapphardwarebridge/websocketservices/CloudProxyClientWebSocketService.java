@@ -11,17 +11,17 @@ import tigerworkshop.webapphardwarebridge.services.SettingService;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ProxyClientWebSocketService implements WebSocketServiceInterface {
-    ProxyWebSockerClient client;
+public class CloudProxyClientWebSocketService implements WebSocketServiceInterface {
+    CloudProxyWebSockerClient client;
     private Logger logger = LoggerFactory.getLogger(getClass());
     private WebSocketServerInterface server = null;
     private SettingService settingService = SettingService.getInstance();
 
-    public ProxyClientWebSocketService() {
+    public CloudProxyClientWebSocketService() {
         logger.info("Starting ProxyClientWebSocketService");
 
         try {
-            client = new ProxyWebSockerClient(new URI("ws://127.0.0.1:22212/client"));
+            client = new CloudProxyWebSockerClient(new URI(settingService.getSetting().getCloudProxyUrl()));
             client.connect();
         } catch (URISyntaxException e) {
             logger.error(e.getMessage(), e);
@@ -40,11 +40,11 @@ public class ProxyClientWebSocketService implements WebSocketServiceInterface {
         client.setServer(server);
     }
 
-    public static class ProxyWebSockerClient extends WebSocketClient {
+    public static class CloudProxyWebSockerClient extends WebSocketClient {
         private WebSocketServerInterface server;
         private Logger logger = LoggerFactory.getLogger(getClass());
 
-        ProxyWebSockerClient(URI serverUri) {
+        CloudProxyWebSockerClient(URI serverUri) {
             super(serverUri);
         }
 
@@ -61,7 +61,7 @@ public class ProxyClientWebSocketService implements WebSocketServiceInterface {
 
         @Override
         public void onClose(int code, String reason, boolean remote) {
-            logger.info("ProxyClientWebSocketService connection closed");
+            logger.info("ProxyClientWebSocketService connection closed, reason: " + reason);
         }
 
         @Override
