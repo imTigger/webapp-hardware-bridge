@@ -23,8 +23,7 @@
                 <RowConstraints/>
             </rowConstraints>
 
-            <TitledPane GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" text="General"
-                        collapsible="false">
+            <TitledPane GridPane.columnIndex="0" GridPane.rowIndex="0" prefHeight="150" text="General" collapsible="false">
                 <HBox spacing="30">
                     <VBox spacing="5">
                         <children>
@@ -36,10 +35,6 @@
                                 <Label text="Address" prefWidth="100"/>
                                 <TextField prefWidth="220" fx:id="textAddress"/>
                             </HBox>
-                        </children>
-                    </VBox>
-                    <VBox spacing="5">
-                        <children>
                             <HBox>
                                 <Label text="Port" prefWidth="100"/>
                                 <TextField prefWidth="220" id="" fx:id="textPort"/>
@@ -49,7 +44,21 @@
                 </HBox>
             </TitledPane>
 
-            <TitledPane GridPane.columnIndex="0" GridPane.rowIndex="1" text="TLS" prefHeight="150" collapsible="false">
+            <TitledPane GridPane.columnIndex="1" GridPane.rowIndex="0" prefHeight="150" text="Cloud Proxy" collapsible="false">
+                <HBox spacing="30">
+                    <VBox spacing="5">
+                        <children>
+                            <CheckBox mnemonicParsing="false" text="Cloud Proxy Enabled" fx:id="checkboxCloudProxyEnabled"/>
+                            <HBox>
+                                <Label text="URL" prefWidth="100"/>
+                                <TextField prefWidth="220" id="" fx:id="textCloudProxyUrl"/>
+                            </HBox>
+                        </children>
+                    </VBox>
+                </HBox>
+            </TitledPane>
+
+            <TitledPane GridPane.columnIndex="0" GridPane.rowIndex="1" text="TLS" prefHeight="180" collapsible="false">
                 <VBox spacing="5">
                     <children>
                         <CheckBox mnemonicParsing="false" text="TLS Enabled" fx:id="checkboxTlsEnabled"/>
@@ -62,11 +71,15 @@
                             <Label text="Key Path" prefWidth="100"/>
                             <TextField prefWidth="220" fx:id="textTLSKey"/>
                         </HBox>
+                        <HBox>
+                            <Label text="Ca Bundle" prefWidth="100"/>
+                            <TextField prefWidth="220" fx:id="textTLSCaBundle"/>
+                        </HBox>
                     </children>
                 </VBox>
             </TitledPane>
 
-            <TitledPane GridPane.columnIndex="1" GridPane.rowIndex="1" text="Authentication" prefHeight="150"
+            <TitledPane GridPane.columnIndex="1" GridPane.rowIndex="1" text="Authentication" prefHeight="180"
                         collapsible="false">
                 <VBox spacing="5">
                     <children>

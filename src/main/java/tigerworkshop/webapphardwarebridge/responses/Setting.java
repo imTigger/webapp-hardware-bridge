@@ -18,6 +18,7 @@ public class Setting {
         put("selfSigned", true);
         put("cert", "tls/default-cert.pem");
         put("key", "tls/default-key.pem");
+        put("caBundle", "");
     }};
 
     HashMap<String, Object> cloudProxy = new HashMap<String, Object>() {{
@@ -68,6 +69,10 @@ public class Setting {
         return (String) tls.get("key");
     }
 
+    public String getTLSCaBundle() {
+        return (String) tls.get("caBundle");
+    }
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -78,6 +83,14 @@ public class Setting {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public void setTLSCaBundle(String value) {
+        tls.put("caBundle", value);
+    }
+
+    public void setCloudProxyEnabled(Boolean value) {
+        this.cloudProxy.put("enabled", value);
     }
 
     public void setAuthenticationEnabled(Boolean value) {
@@ -98,6 +111,10 @@ public class Setting {
 
     public void setTLSKey(String value) {
         tls.put("key", value);
+    }
+
+    public void setCloudProxyUrl(String value) {
+        this.cloudProxy.put("url", value);
     }
 
     public void setTLSEnabled(Boolean value) {

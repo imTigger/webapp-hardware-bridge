@@ -44,6 +44,11 @@ public class SettingController implements Initializable {
     private TextField textPort;
 
     @FXML
+    private CheckBox checkboxCloudProxyEnabled;
+    @FXML
+    private TextField textCloudProxyUrl;
+
+    @FXML
     private CheckBox checkboxTlsEnabled;
     @FXML
     private CheckBox checkboxTLSSelfSigned;
@@ -51,6 +56,8 @@ public class SettingController implements Initializable {
     private TextField textTLSCert;
     @FXML
     private TextField textTLSKey;
+    @FXML
+    private TextField textTLSCaBundle;
 
     @FXML
     private CheckBox checkboxAuthenticationEnabled;
@@ -300,11 +307,16 @@ public class SettingController implements Initializable {
         textAddress.setText(setting.getAddress());
         textPort.setText(Integer.toString(setting.getPort()));
 
+        // Cloud Proxy
+        checkboxCloudProxyEnabled.setSelected(setting.getCloudProxyEnabled());
+        textCloudProxyUrl.setText(setting.getCloudProxyUrl());
+
         // TLS
         checkboxTlsEnabled.setSelected(setting.getTLSEnabled());
         checkboxTLSSelfSigned.setSelected(setting.getTLSSelfSigned());
         textTLSCert.setText(setting.getTLSCert());
         textTLSKey.setText(setting.getTLSKey());
+        textTLSCaBundle.setText(setting.getTLSCaBundle());
 
         // Authentication
         checkboxAuthenticationEnabled.setSelected(setting.getAuthenticationEnabled());
@@ -340,11 +352,16 @@ public class SettingController implements Initializable {
         setting.setBind(textBind.getText());
         setting.setPort(Integer.parseInt(textPort.getText()));
 
+        // Cloud Proxy
+        setting.setCloudProxyEnabled(checkboxCloudProxyEnabled.isSelected());
+        setting.setCloudProxyUrl(textCloudProxyUrl.getText());
+
         // TLS
         setting.setTLSEnabled(checkboxTlsEnabled.isSelected());
         setting.setTLSSelfSigned(checkboxTLSSelfSigned.isSelected());
         setting.setTLSCert(textTLSCert.getText());
         setting.setTLSKey(textTLSKey.getText());
+        setting.setTLSCaBundle(textTLSCaBundle.getText());
 
         // Authentication
         setting.setAuthenticationEnabled(checkboxAuthenticationEnabled.isSelected());

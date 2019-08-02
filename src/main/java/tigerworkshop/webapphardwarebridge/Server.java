@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
+import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
 import tigerworkshop.webapphardwarebridge.utils.TLSUtil;
 import tigerworkshop.webapphardwarebridge.websocketservices.CloudProxyClientWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
@@ -75,11 +76,11 @@ public class Server {
             if (setting.getTLSEnabled()) {
                 if (setting.getTLSSelfSigned()) {
                     logger.info("TLS Enabled with self-signed certificate");
-                    TLSUtil.generateSelfSignedCertificate(setting.getAddress(), setting.getTLSCert(), setting.getTLSKey());
+                    CertificateGenerator.generateSelfSignedCertificate(setting.getAddress(), setting.getTLSCert(), setting.getTLSKey());
                     logger.info("For first time setup, open in browser and trust the certificate: " + setting.getUri().replace("wss", "https"));
                 }
 
-                webSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory(setting.getTLSCert(), setting.getTLSKey()));
+                webSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory(setting.getTLSCert(), setting.getTLSKey(), setting.getTLSCaBundle()));
             }
 
             // Start WebSocket Server
