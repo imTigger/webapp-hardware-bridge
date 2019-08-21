@@ -35,7 +35,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
             public void run() {
                 logger.trace("Serial Read Thread started for " + portName);
 
-                while (true) {
+                while (!Thread.interrupted()) {
                     try {
                         if (serialPort.isOpen()) {
                             if (serialPort.bytesAvailable() == 0) {
@@ -72,7 +72,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
             public void run() {
                 logger.trace("Serial Write Thread started for " + portName);
 
-                while (true) {
+                while (!Thread.interrupted()) {
                     if (serialPort.isOpen()) {
                         try {
                             if (writeBuffer.length > 0) {
@@ -98,8 +98,8 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         logger.info("Stopping SerialWebSocketService");
         serialPort.closePort();
 
-        readThread.stop();
-        writeThread.stop();
+        readThread.interrupt();
+        writeThread.interrupt();
     }
 
     @Override
