@@ -15,6 +15,7 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
     private Logger logger = LoggerFactory.getLogger(getClass());
     private WebSocketServerInterface server = null;
     private SettingService settingService = SettingService.getInstance();
+    private Thread thread;
 
     public CloudProxyClientWebSocketService() {
         logger.info("Starting ProxyClientWebSocketService");
@@ -22,7 +23,7 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
 
     @Override
     public void start() {
-        Thread thread = new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
@@ -72,6 +73,12 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
         });
 
         thread.start();
+    }
+
+    @Override
+    public void stop() {
+        logger.info("Stopping CloudProxyClientWebSocketService");
+        thread.stop();
     }
 
     @Override

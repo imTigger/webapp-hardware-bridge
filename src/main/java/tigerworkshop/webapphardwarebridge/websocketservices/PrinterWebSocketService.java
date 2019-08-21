@@ -41,6 +41,12 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
+    public void stop() {
+        logger.info("Stopping PrinterWebSocketService");
+        server.unsubscribe(this, getChannel());
+    }
+
+    @Override
     public void onDataReceived(String message) {
         try {
             PrintDocument printDocument = gson.fromJson(message, PrintDocument.class);

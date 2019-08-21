@@ -20,6 +20,10 @@ import java.util.Map;
 public class Server {
 
     private static Logger logger = LoggerFactory.getLogger("Server");
+    private static Server server = new Server();
+    private BridgeWebSocketServer bridgeWebSocketServer;
+    private boolean shouldRestart = false;
+    private boolean shouldStop = false;
 
     public static void main(String[] args) {
         boolean alreadyRunning;
@@ -34,65 +38,90 @@ public class Server {
             return;
         }
 
-        logger.info("Application Started");
-        logger.info("Program Version: " + Config.VERSION);
+        server.start();
+    }
 
-        logger.debug("OS Name: " + System.getProperty("os.name"));
-        logger.debug("OS Version: " + System.getProperty("os.version"));
-        logger.debug("OS Architecture: " + System.getProperty("os.arch"));
+    public void start() {
+        while (!shouldStop) {
+            shouldRestart = false;
 
-        logger.debug("Java Version: " + System.getProperty("java.version"));
-        logger.debug("Java Vendor: " + System.getProperty("java.vendor"));
+            logger.info("Application Started");
+            logger.info("Program Version: " + Config.VERSION);
 
-        logger.debug("Available processors (cores): " + Runtime.getRuntime().availableProcessors());
-        logger.debug("JVM Maximum memory (bytes): " + Runtime.getRuntime().maxMemory());
-        logger.debug("System memory (bytes): " + ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize());
+            logger.debug("OS Name: " + System.getProperty("os.name"));
+            logger.debug("OS Version: " + System.getProperty("os.version"));
+            logger.debug("OS Architecture: " + System.getProperty("os.arch"));
 
-        SettingService settingService = SettingService.getInstance();
-        Setting setting = settingService.getSetting();
+            logger.debug("Java Version: " + System.getProperty("java.version"));
+            logger.debug("Java Vendor: " + System.getProperty("java.vendor"));
 
-        try {
-            // Create WebSocket Server
-            BridgeWebSocketServer webSocketServer = new BridgeWebSocketServer(setting.getBind(), setting.getPort());
+            logger.debug("Available processors (cores): " + Runtime.getRuntime().availableProcessors());
+            logger.debug("JVM Maximum memory (bytes): " + Runtime.getRuntime().maxMemory());
+            logger.debug("System memory (bytes): " + ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize());
 
-            // Add Serial Services
-            HashMap<String, String> serials = setting.getSerials();
-            for (Map.Entry<String, String> elem : serials.entrySet()) {
-                SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
-                serialWebSocketService.setServer(webSocketServer);
-                serialWebSocketService.start();
-            }
+            SettingService settingService = SettingService.getInstance();
+            Setting setting = settingService.getSetting();
 
-            // Add Printer Service
-            PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
-            printerWebSocketService.setServer(webSocketServer);
-            printerWebSocketService.start();
+            try {
+                // Create WebSocket Server
+                bridgeWebSocketServer = new BridgeWebSocketServer(setting.getBind(), setting.getPort());
+                bridgeWebSocketServer.setReuseAddr(true);
+                bridgeWebSocketServer.setConnectionLostTimeout(3);
 
-            // Add Cloud Proxy Client Service
-            if (setting.getCloudProxyEnabled()) {
-                CloudProxyClientWebSocketService cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService();
-                cloudProxyClientWebSocketService.setServer(webSocketServer);
-                cloudProxyClientWebSocketService.start();
-            }
-
-            // WSS/TLS Options
-            if (setting.getTLSEnabled()) {
-                if (setting.getTLSSelfSigned()) {
-                    logger.info("TLS Enabled with self-signed certificate");
-                    CertificateGenerator.generateSelfSignedCertificate(setting.getAddress(), setting.getTLSCert(), setting.getTLSKey());
-                    logger.info("For first time setup, open in browser and trust the certificate: " + setting.getUri().replace("wss", "https"));
+                // Add Serial Services
+                HashMap<String, String> serials = setting.getSerials();
+                for (Map.Entry<String, String> elem : serials.entrySet()) {
+                    SerialWebSocketService serialWebSocketService = new SerialWebSocketService(elem.getValue(), elem.getKey());
+                    serialWebSocketService.setServer(bridgeWebSocketServer);
+                    serialWebSocketService.start();
                 }
 
-                webSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory(setting.getTLSCert(), setting.getTLSKey(), setting.getTLSCaBundle()));
+                // Add Printer Service
+                PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
+                printerWebSocketService.setServer(bridgeWebSocketServer);
+                printerWebSocketService.start();
+
+                // Add Cloud Proxy Client Service
+                if (setting.getCloudProxyEnabled()) {
+                    CloudProxyClientWebSocketService cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService();
+                    cloudProxyClientWebSocketService.setServer(bridgeWebSocketServer);
+                    cloudProxyClientWebSocketService.start();
+                }
+
+                // WSS/TLS Options
+                if (setting.getTLSEnabled()) {
+                    if (setting.getTLSSelfSigned()) {
+                        logger.info("TLS Enabled with self-signed certificate");
+                        CertificateGenerator.generateSelfSignedCertificate(setting.getAddress(), setting.getTLSCert(), setting.getTLSKey());
+                        logger.info("For first time setup, open in browser and trust the certificate: " + setting.getUri().replace("wss", "https"));
+                    }
+
+                    bridgeWebSocketServer.setWebSocketFactory(TLSUtil.getSecureFactory(setting.getTLSCert(), setting.getTLSKey(), setting.getTLSCaBundle()));
+                }
+
+                // Start WebSocket Server
+                bridgeWebSocketServer.start();
+
+                logger.info("WebSocket started on " + setting.getUri());
+
+                while (!shouldRestart && !shouldStop) {
+                    Thread.sleep(100);
+                }
+
+                bridgeWebSocketServer.close();
+                bridgeWebSocketServer.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
             }
-
-            // Start WebSocket Server
-            webSocketServer.start();
-
-            logger.info("WebSocket started on " + setting.getUri());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
         }
+    }
+
+    public void stop() {
+        shouldStop = true;
+    }
+
+    public void restart() {
+        shouldRestart = true;
     }
 }

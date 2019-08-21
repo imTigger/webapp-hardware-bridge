@@ -1,7 +1,6 @@
 package tigerworkshop.webapphardwarebridge.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
@@ -231,8 +231,8 @@ public class SettingController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 saveValues();
-                Platform.exit();
-                System.exit(0);
+                Stage stage = (Stage) buttonSaveAndClose.getScene().getWindow();
+                stage.close();
             }
         });
 

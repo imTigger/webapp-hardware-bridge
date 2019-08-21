@@ -5,5 +5,7 @@ public interface WebSocketServiceInterface {
 
     void start();
 
+    void stop();
+
     void onDataReceived(String message);
 }

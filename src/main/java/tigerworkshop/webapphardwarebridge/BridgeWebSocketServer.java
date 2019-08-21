@@ -29,6 +29,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     private HashMap<String, ArrayList<WebSocket>> socketChannelSubscriptions = new HashMap<>();
     private HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
+    private ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
 
     private SettingService settingService = SettingService.getInstance();
 
@@ -91,6 +92,16 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     public void onStart() {
         logger.info("BridgeWebSocketServer started");
         setConnectionLostTimeout(1);
+    }
+
+    public void close() {
+        for (WebSocket socket : getConnections()) {
+            socket.close();
+        }
+
+        for (WebSocketServiceInterface service : services) {
+            service.stop();
+        }
     }
 
     /*
@@ -185,18 +196,27 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         return services;
     }
 
-    private void addServiceToChannel(String channel, WebSocketServiceInterface socket) {
+    private void addServiceToChannel(String channel, WebSocketServiceInterface service) {
         ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.get(channel);
         if (serviceList == null) {
             serviceList = new ArrayList<>();
         }
-        serviceList.add(socket);
+        serviceList.add(service);
         serviceChannelSubscriptions.put(channel, serviceList);
+
+        if (!services.contains(services)) {
+            services.add(service);
+        }
     }
 
-    private void removeServiceFromChannel(String channel, WebSocketServiceInterface socket) {
+    private void removeServiceFromChannel(String channel, WebSocketServiceInterface service) {
         ArrayList<WebSocketServiceInterface> serviceList = getServiceListForChannel(channel);
-        serviceList.remove(socket);
+        serviceList.remove(service);
         serviceChannelSubscriptions.put(channel, serviceList);
+
+        if (services.contains(services)) {
+            services.remove(service);
+        }
     }
+
 }
