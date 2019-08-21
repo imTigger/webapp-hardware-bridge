@@ -26,16 +26,11 @@ public class Server {
     private boolean shouldStop = false;
 
     public static void main(String[] args) {
-        boolean alreadyRunning;
         try {
             JUnique.acquireLock(Config.APP_ID);
-            alreadyRunning = false;
         } catch (AlreadyLockedException e) {
-            alreadyRunning = true;
-            e.printStackTrace();
-        }
-        if (alreadyRunning) {
-            return;
+            logger.error(Config.APP_ID + " already running");
+            System.exit(1);
         }
 
         server.start();

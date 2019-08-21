@@ -1,5 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
+import it.sauronsoftware.junique.AlreadyLockedException;
+import it.sauronsoftware.junique.JUnique;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -22,6 +24,13 @@ public class GUI extends Application {
     private static Server server = new Server();
 
     public static void main(String args[]) {
+        try {
+            JUnique.acquireLock(Config.APP_ID);
+        } catch (AlreadyLockedException e) {
+            logger.error(Config.APP_ID + " already running");
+            System.exit(1);
+        }
+
         // Create tray icon
         try {
             TrayIcon trayIcon = null;
@@ -106,6 +115,8 @@ public class GUI extends Application {
             trayIcon.setPopupMenu(popup);
 
             tray.add(trayIcon);
+
+            trayIcon.displayMessage(Config.APP_NAME, "is running in background!", TrayIcon.MessageType.INFO);
         } catch (Exception e) {
             System.out.println("TrayIcon could not be added.");
             e.printStackTrace();
