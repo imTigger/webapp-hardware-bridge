@@ -53,7 +53,8 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
                                 logger.info("ProxyClientWebSocketService connection error: " + ex.getMessage());
                             }
                         };
-
+                        
+                        client.setConnectionLostTimeout(3);
                         client.connectBlocking();
 
                         logger.trace("ProxyClientWebSocketService initialized");
