@@ -53,6 +53,10 @@
                                 <Label text="URL" prefWidth="100"/>
                                 <TextField prefWidth="220" id="" fx:id="textCloudProxyUrl"/>
                             </HBox>
+                            <HBox>
+                                <Label text="Timeout" prefWidth="100"/>
+                                <TextField prefWidth="220" id="" fx:id="textCloudProxyTimeout"/>
+                            </HBox>
                         </children>
                     </VBox>
                 </HBox>

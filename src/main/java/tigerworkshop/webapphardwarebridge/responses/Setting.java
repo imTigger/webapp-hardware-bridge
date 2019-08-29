@@ -24,6 +24,7 @@ public class Setting {
     HashMap<String, Object> cloudProxy = new HashMap<String, Object>() {{
         put("enabled", false);
         put("url", "ws://127.0.0.1:22212");
+        put("timeout", 30);
     }};
 
     HashMap<String, String> printers = new HashMap<>();
@@ -93,6 +94,14 @@ public class Setting {
         this.cloudProxy.put("enabled", value);
     }
 
+    public void setCloudProxyUrl(String value) {
+        this.cloudProxy.put("url", value);
+    }
+
+    public Double getCloudProxyTimeout() {
+        return cloudProxy.containsKey("timeout") ? (Double) cloudProxy.get("timeout") : 30;
+    }
+
     public void setAuthenticationEnabled(Boolean value) {
         authentication.put("enabled", value);
     }
@@ -113,10 +122,6 @@ public class Setting {
         tls.put("key", value);
     }
 
-    public void setCloudProxyUrl(String value) {
-        this.cloudProxy.put("url", value);
-    }
-
     public void setTLSEnabled(Boolean value) {
         tls.put("enabled", value);
     }
@@ -127,6 +132,10 @@ public class Setting {
 
     public String getCloudProxyUrl() {
         return (String) cloudProxy.get("url");
+    }
+
+    public void setCloudProxyTimeout(Double value) {
+        this.cloudProxy.put("timeout", value);
     }
 
     public HashMap<String, String> getPrinters() {

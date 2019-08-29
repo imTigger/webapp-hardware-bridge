@@ -26,14 +26,14 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (!Thread.interrupted()) {
                     try {
                         logger.trace("ProxyClientWebSocketService initializing");
 
                         client = new WebSocketClient(new URI(settingService.getSetting().getCloudProxyUrl())) {
                             @Override
                             public void onOpen(ServerHandshake handshakedata) {
-                                logger.info("ProxyClientWebSocketService connected to " + this.getURI());
+                                logger.info("ProxyClientWebSocketService connected to " + this.getURI() + ", timeout = " + settingService.getSetting().getCloudProxyTimeout());
                             }
 
                             @Override
@@ -53,8 +53,7 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
                                 logger.info("ProxyClientWebSocketService connection error: " + ex.getMessage());
                             }
                         };
-                        
-                        client.setConnectionLostTimeout(3);
+                        client.setConnectionLostTimeout(settingService.getSetting().getCloudProxyTimeout().intValue());
                         client.connectBlocking();
 
                         logger.trace("ProxyClientWebSocketService initialized");
@@ -79,7 +78,7 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
     @Override
     public void stop() {
         logger.info("Stopping CloudProxyClientWebSocketService");
-        thread.stop();
+        thread.interrupt();
     }
 
     @Override

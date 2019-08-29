@@ -47,6 +47,8 @@ public class SettingController implements Initializable {
     private CheckBox checkboxCloudProxyEnabled;
     @FXML
     private TextField textCloudProxyUrl;
+    @FXML
+    private TextField textCloudProxyTimeout;
 
     @FXML
     private CheckBox checkboxTlsEnabled;
@@ -310,6 +312,7 @@ public class SettingController implements Initializable {
         // Cloud Proxy
         checkboxCloudProxyEnabled.setSelected(setting.getCloudProxyEnabled());
         textCloudProxyUrl.setText(setting.getCloudProxyUrl());
+        textCloudProxyTimeout.setText(Double.toString(setting.getCloudProxyTimeout()));
 
         // TLS
         checkboxTlsEnabled.setSelected(setting.getTLSEnabled());
@@ -355,6 +358,7 @@ public class SettingController implements Initializable {
         // Cloud Proxy
         setting.setCloudProxyEnabled(checkboxCloudProxyEnabled.isSelected());
         setting.setCloudProxyUrl(textCloudProxyUrl.getText());
+        setting.setCloudProxyTimeout(Double.parseDouble(textCloudProxyTimeout.getText()));
 
         // TLS
         setting.setTLSEnabled(checkboxTlsEnabled.isSelected());
