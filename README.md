@@ -69,6 +69,8 @@ Therefore web apps do not need to care about the actual printer names.
 
 ## FAQs
 
+- Configurator/GUI do not run? Install [vc_redist.x64.exe](
+https://www.microsoft.com/en-US/download/details.aspx?id=48145)
 - [Build from source](../../wiki/Build-from-source)
 
 ## Advanced Usages
