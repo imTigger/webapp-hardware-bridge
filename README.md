@@ -50,7 +50,7 @@ It expose a WebSocket server on localhost which accept print jobs and serial con
 
 For print jobs, PDF/Images job are downloaded/decoded and then sent to mapped printer.
 
-Raw job are sent to mapped directly.
+Raw job are sent to mapped printer directly.
 
 
 For serial port, serial port are opened by Java and "proxified" as WebSocket stream,
@@ -79,9 +79,6 @@ https://www.microsoft.com/en-US/download/details.aspx?id=48145)
 - [Authentication](../../wiki/Authentication)
 
 ## TODOs
-- [ ] Better GUI
 - [ ] Serial settings (Baudrate, data bits, stop bit, parity bit)
-- [ ] Authentication
-- [ ] HTTPS / WSS support
 
 Any other ideas? Fork and PR are welcome!
