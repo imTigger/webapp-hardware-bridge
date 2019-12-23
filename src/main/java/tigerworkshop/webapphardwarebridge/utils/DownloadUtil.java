@@ -5,16 +5,20 @@ import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.Config;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.cert.X509Certificate;
 
 public class DownloadUtil {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DownloadUtil.class.getName());
 
-    public static long file(String urlString, String path, Boolean overwrite) throws Exception {
+    public static long file(String urlString, String path, Boolean overwrite, Boolean ignoreCertError) throws Exception {
         logger.info("Downloading file from: " + urlString);
         long timeStart = System.currentTimeMillis();
 
@@ -31,6 +35,27 @@ public class DownloadUtil {
 
             // Otherwise download it
             URL url = new URL(urlString);
+
+            if (ignoreCertError) {
+                TrustManager[] trustAllCerts = new TrustManager[]{
+                        new X509TrustManager() {
+                            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                return null;
+                            }
+
+                            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                            }
+
+                            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                            }
+
+                        }
+                };
+
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            }
 
             URLConnection urlConnection = url.openConnection();
             urlConnection.setConnectTimeout(Config.DOWNLOAD_TIMEOUT);

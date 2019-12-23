@@ -7,6 +7,7 @@ public class Setting {
     String bind = "0.0.0.0";
     int port = 12212;
     boolean fallbackToDefaultPrinter = false;
+    boolean ignoreTLSCertificateError = false;
 
     HashMap<String, Object> authentication = new HashMap<String, Object>() {{
         put("enabled", false);
@@ -48,6 +49,10 @@ public class Setting {
 
     public Boolean getAuthenticationEnabled() {
         return (Boolean) authentication.get("enabled");
+    }
+
+    public Boolean getIgnoreTLSCertificateErrorEnabled() {
+        return ignoreTLSCertificateError;
     }
 
     public String getAuthenticationToken() {
@@ -104,6 +109,10 @@ public class Setting {
 
     public void setAuthenticationEnabled(Boolean value) {
         authentication.put("enabled", value);
+    }
+
+    public void setIgnoreTLSCertificateErrorEnabled(Boolean value) {
+        ignoreTLSCertificateError = value;
     }
 
     public void setAuthenticationToken(String value) {

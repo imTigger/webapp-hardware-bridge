@@ -13,6 +13,7 @@ import java.io.OutputStream;
 public class DocumentService {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DocumentService.class.getName());
     private static DocumentService instance = new DocumentService();
+    private static SettingService settingService = SettingService.getInstance();
 
     private DocumentService() {
         File directory = new File(Config.DOCUMENT_PATH);
@@ -34,7 +35,7 @@ public class DocumentService {
     }
 
     public static void download(String urlString) throws Exception {
-        DownloadUtil.file(urlString, getPathFromUrl(urlString), true);
+        DownloadUtil.file(urlString, getPathFromUrl(urlString), true, settingService.getSetting().getIgnoreTLSCertificateErrorEnabled());
     }
 
     public static File getFileFromUrl(String urlString) {

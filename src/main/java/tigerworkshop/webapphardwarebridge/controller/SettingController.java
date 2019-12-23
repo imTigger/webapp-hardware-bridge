@@ -65,6 +65,8 @@ public class SettingController implements Initializable {
     private CheckBox checkboxAuthenticationEnabled;
     @FXML
     private TextField textAuthenticationToken;
+    @FXML
+    private CheckBox checkboxIgnoreTLSCertificateError;
 
     @FXML
     private TableView<ObservableStringPair> tableSerial;
@@ -325,6 +327,9 @@ public class SettingController implements Initializable {
         checkboxAuthenticationEnabled.setSelected(setting.getAuthenticationEnabled());
         textAuthenticationToken.setText(setting.getAuthenticationToken());
 
+        // SSL Errors
+        checkboxIgnoreTLSCertificateError.setSelected(setting.getIgnoreTLSCertificateErrorEnabled());
+
         // Printers
         printerMappingList.clear();
         HashMap<String, String> printerHashMap = setting.getPrinters();
@@ -370,6 +375,9 @@ public class SettingController implements Initializable {
         // Authentication
         setting.setAuthenticationEnabled(checkboxAuthenticationEnabled.isSelected());
         setting.setAuthenticationToken(textAuthenticationToken.getText());
+
+        // SSL Errors
+        setting.setIgnoreTLSCertificateErrorEnabled(checkboxIgnoreTLSCertificateError.isSelected());
 
         // Printers
         HashMap<String, String> printerHashMap = new HashMap<>();
