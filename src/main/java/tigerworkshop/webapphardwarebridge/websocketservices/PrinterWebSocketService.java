@@ -8,6 +8,7 @@ import org.apache.pdfbox.printing.Scaling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.Config;
+import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
@@ -25,14 +26,19 @@ import java.io.File;
 import java.io.IOException;
 
 public class PrinterWebSocketService implements WebSocketServiceInterface {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private WebSocketServerInterface server = null;
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
-    private SettingService settingService = SettingService.getInstance();
+    private final SettingService settingService = SettingService.getInstance();
+    private NotificationListenerInterface notificationListener;
 
     public PrinterWebSocketService() {
         logger.info("Starting PrinterWebSocketService");
+    }
+
+    public void setNotificationListener(NotificationListenerInterface notificationListener) {
+        this.notificationListener = notificationListener;
     }
 
     @Override
@@ -72,6 +78,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      */
     public void printDocument(PrintDocument printDocument) throws Exception {
         try {
+            if (notificationListener != null) {
+                notificationListener.notify("Printing " + printDocument.getType(), printDocument.getUrl(), TrayIcon.MessageType.INFO);
+            }
+
             if (isRaw(printDocument)) {
                 printRaw(printDocument);
             } else if (isImage(printDocument)) {
@@ -86,6 +96,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         } catch (Exception e) {
             logger.error("Document Print Error, deleting downloaded document");
             DocumentService.deleteFileFromUrl(printDocument.getUrl());
+
+            if (notificationListener != null) {
+                notificationListener.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
+            }
 
             server.onDataReceived(getChannel(), gson.toJson(new PrintResult(1, printDocument.getId(), e.getClass().getName() + " - " + e.getMessage())));
 

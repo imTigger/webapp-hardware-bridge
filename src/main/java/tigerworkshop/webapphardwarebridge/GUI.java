@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,11 +20,20 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-public class GUI extends Application {
-    private static Logger logger = LoggerFactory.getLogger("GUI");
-    private static Server server = new Server();
+public class GUI extends Application implements NotificationListenerInterface {
+    private static final Logger logger = LoggerFactory.getLogger("GUI");
 
-    public static void main(String args[]) {
+    TrayIcon trayIcon;
+    SystemTray tray;
+
+    public static void main(String[] args) {
+        GUI gui = new GUI();
+        gui.launch();
+    }
+
+    public void launch() {
+        Server server = new Server(this);
+
         try {
             JUnique.acquireLock(Config.APP_ID);
         } catch (AlreadyLockedException e) {
@@ -33,7 +43,6 @@ public class GUI extends Application {
 
         // Create tray icon
         try {
-            TrayIcon trayIcon = null;
             if (!SystemTray.isSupported()) {
                 System.out.println("SystemTray is not supported");
                 return;
@@ -41,9 +50,8 @@ public class GUI extends Application {
 
             final Image image = ImageIO.read(GUI.class.getResource("/icon.png"));
 
-            final PopupMenu popup = new PopupMenu();
+            tray = SystemTray.getSystemTray();
             trayIcon = new TrayIcon(image, Config.APP_NAME);
-            final SystemTray tray = SystemTray.getSystemTray();
 
             // Create a pop-up menu components
             MenuItem settingItem = new MenuItem("Configurator");
@@ -106,6 +114,7 @@ public class GUI extends Application {
             });
 
             //Add components to pop-up menu
+            final PopupMenu popup = new PopupMenu();
             popup.add(settingItem);
             popup.add(logItem);
             popup.addSeparator();
@@ -116,13 +125,21 @@ public class GUI extends Application {
 
             tray.add(trayIcon);
 
-            trayIcon.displayMessage(Config.APP_NAME, "is running in background!", TrayIcon.MessageType.INFO);
+            notify(Config.APP_NAME, "is running in background!", TrayIcon.MessageType.INFO);
         } catch (Exception e) {
             System.out.println("TrayIcon could not be added.");
             e.printStackTrace();
         }
 
         server.start();
+    }
+
+    public void notify(String title, String message, TrayIcon.MessageType messageType) {
+        try {
+            trayIcon.displayMessage(title, message, messageType);
+        } catch (Exception e) {
+            
+        }
     }
 
     @Override

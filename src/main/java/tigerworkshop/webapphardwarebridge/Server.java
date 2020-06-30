@@ -5,6 +5,7 @@ import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
 import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
@@ -19,11 +20,20 @@ import java.util.Map;
 
 public class Server {
 
-    private static Logger logger = LoggerFactory.getLogger("Server");
-    private static Server server = new Server();
+    private static final Logger logger = LoggerFactory.getLogger("Server");
+    private static final Server server = new Server();
+    private NotificationListenerInterface notificationListener;
     private BridgeWebSocketServer bridgeWebSocketServer;
     private boolean shouldRestart = false;
     private boolean shouldStop = false;
+
+    public Server() {
+
+    }
+
+    public Server(NotificationListenerInterface notificationListener) {
+        this.notificationListener = notificationListener;
+    }
 
     public static void main(String[] args) {
         try {
@@ -74,6 +84,7 @@ public class Server {
                 // Add Printer Service
                 PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
                 printerWebSocketService.setServer(bridgeWebSocketServer);
+                printerWebSocketService.setNotificationListener(notificationListener);
                 printerWebSocketService.start();
 
                 // Add Cloud Proxy Client Service
