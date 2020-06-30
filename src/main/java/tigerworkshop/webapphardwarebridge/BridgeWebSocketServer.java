@@ -204,7 +204,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         serviceList.add(service);
         serviceChannelSubscriptions.put(channel, serviceList);
 
-        if (!services.contains(services)) {
+        if (!services.contains(service)) {
             services.add(service);
         }
     }
@@ -214,9 +214,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         serviceList.remove(service);
         serviceChannelSubscriptions.put(channel, serviceList);
 
-        if (services.contains(services)) {
-            services.remove(service);
-        }
+        services.remove(service);
     }
 
 }
