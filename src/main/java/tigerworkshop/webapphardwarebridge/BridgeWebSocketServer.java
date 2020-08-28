@@ -25,13 +25,13 @@ import java.util.List;
 
 public class BridgeWebSocketServer extends WebSocketServer implements WebSocketServerInterface {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private HashMap<String, ArrayList<WebSocket>> socketChannelSubscriptions = new HashMap<>();
-    private HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
-    private ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
+    private final HashMap<String, ArrayList<WebSocket>> socketChannelSubscriptions = new HashMap<>();
+    private final HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
+    private final ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
 
-    private SettingService settingService = SettingService.getInstance();
+    private final SettingService settingService = SettingService.getInstance();
 
     public BridgeWebSocketServer(String address, int port) {
         super(new InetSocketAddress(address, port));
@@ -67,7 +67,6 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         if (connection.getAttachment() != null) {
             removeSocketFromChannel(((ConnectionAttachment) connection.getAttachment()).getChannel(), connection);
         }
-        logger.info(connection.getRemoteSocketAddress().toString() + " disconnected");
     }
 
     /*
