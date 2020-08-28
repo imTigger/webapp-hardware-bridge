@@ -83,6 +83,8 @@ public class SettingController implements Initializable {
     private TableColumn<ObservableStringPair, String> columnPrinter;
     @FXML
     private CheckBox checkboxFallbackToDefaultPrinter;
+    private final ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
+    private final ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
 
     @FXML
     private Button buttonLog;
@@ -94,11 +96,11 @@ public class SettingController implements Initializable {
     private Button buttonLoadDefault;
     @FXML
     private Button buttonReset;
-
-    private ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
-    private ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
-
-    private SettingService settingService = SettingService.getInstance();
+    private final SettingService settingService = SettingService.getInstance();
+    @FXML
+    private CheckBox checkboxAutoRotation;
+    @FXML
+    private TextField textDownloadTimeout;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -340,6 +342,8 @@ public class SettingController implements Initializable {
         }
         tablePrinter.setItems(printerMappingList);
         checkboxFallbackToDefaultPrinter.setSelected(setting.getFallbackToDefaultPrinter());
+        checkboxAutoRotation.setSelected(setting.getAutoRotation());
+        textDownloadTimeout.setText(Double.toString(setting.getDownloadTimeout()));
 
         // Serials
         serialMappingList.clear();
@@ -387,6 +391,8 @@ public class SettingController implements Initializable {
         }
         setting.setPrinters(printerHashMap);
         setting.setFallbackToDefaultPrinter(checkboxFallbackToDefaultPrinter.isSelected());
+        setting.setAutoRotation(checkboxAutoRotation.isSelected());
+        setting.setDownloadTimeout(Double.parseDouble(textDownloadTimeout.getText()));
 
         // Serials
         HashMap<String, String> serialHashMap = new HashMap<>();

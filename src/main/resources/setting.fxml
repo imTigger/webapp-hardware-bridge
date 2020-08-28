@@ -99,8 +99,18 @@
                                   fx:id="checkboxFallbackToDefaultPrinter"/>
                     </children>
                     <children>
+                        <CheckBox mnemonicParsing="false" text="Auto Rotate Document"
+                                  fx:id="checkboxAutoRotation"/>
+                    </children>
+                    <children>
                         <CheckBox mnemonicParsing="false" text="Ignore TLS Certificate error"
                                   fx:id="checkboxIgnoreTLSCertificateError"/>
+                    </children>
+                    <children>
+                        <HBox>
+                            <Label text="Timeout" prefWidth="100"/>
+                            <TextField prefWidth="220" fx:id="textDownloadTimeout"/>
+                        </HBox>
                     </children>
                 </VBox>
             </TitledPane>

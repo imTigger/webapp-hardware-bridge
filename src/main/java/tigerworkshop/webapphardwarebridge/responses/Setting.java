@@ -8,6 +8,8 @@ public class Setting {
     int port = 12212;
     boolean fallbackToDefaultPrinter = false;
     boolean ignoreTLSCertificateError = false;
+    boolean autoRotation = false;
+    Double downloadTimeout = 30.0;
 
     HashMap<String, Object> authentication = new HashMap<String, Object>() {{
         put("enabled", false);
@@ -157,6 +159,22 @@ public class Setting {
 
     public void setFallbackToDefaultPrinter(boolean fallbackToDefaultPrinter) {
         this.fallbackToDefaultPrinter = fallbackToDefaultPrinter;
+    }
+
+    public boolean getAutoRotation() {
+        return autoRotation;
+    }
+
+    public void setAutoRotation(boolean autoRotation) {
+        this.autoRotation = autoRotation;
+    }
+
+    public double getDownloadTimeout() {
+        return downloadTimeout;
+    }
+
+    public void setDownloadTimeout(double downloadTimeout) {
+        this.downloadTimeout = downloadTimeout;
     }
 
     public HashMap<String, String> getSerials() {

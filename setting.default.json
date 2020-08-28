@@ -3,6 +3,8 @@
   "bind": "127.0.0.1",
   "port": 12212,
   "fallbackToDefaultPrinter": false,
+  "autoRotate": false,
+  "downloadTimeout": 30.0,
   "authentication": {
     "enabled": false,
     "token": ""

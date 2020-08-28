@@ -2,7 +2,6 @@ package tigerworkshop.webapphardwarebridge.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.Config;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -18,7 +17,7 @@ import java.security.cert.X509Certificate;
 public class DownloadUtil {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DownloadUtil.class.getName());
 
-    public static long file(String urlString, String path, Boolean overwrite, Boolean ignoreCertError) throws Exception {
+    public static long file(String urlString, String path, Boolean overwrite, Boolean ignoreCertError, double downloadTimeout) throws Exception {
         logger.info("Downloading file from: " + urlString);
         long timeStart = System.currentTimeMillis();
 
@@ -58,8 +57,8 @@ public class DownloadUtil {
             }
 
             URLConnection urlConnection = url.openConnection();
-            urlConnection.setConnectTimeout(Config.DOWNLOAD_TIMEOUT);
-            urlConnection.setReadTimeout(Config.DOWNLOAD_TIMEOUT);
+            urlConnection.setConnectTimeout((int) downloadTimeout * 1000);
+            urlConnection.setReadTimeout((int) downloadTimeout * 1000);
             urlConnection.connect();
 
             int contentLength = urlConnection.getContentLength();
