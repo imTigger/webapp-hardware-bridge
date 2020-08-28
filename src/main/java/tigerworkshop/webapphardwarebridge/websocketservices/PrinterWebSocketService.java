@@ -174,12 +174,17 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         job.setPrintService(docPrintJob.getPrintService());
         PageFormat pageFormat = job.defaultPage();
 
-        logger.trace("Paper Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
-        logger.trace("Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight());
+        logger.debug("Driver Returned PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
+        logger.debug("Driver Returned PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight());
+        logger.debug("Driver Returned Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
+        logger.debug("Driver Returned Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight());
 
-        Paper paper = pageFormat.getPaper();
         double width = pageFormat.getWidth();
         double height = pageFormat.getHeight();
+
+        Paper paper = pageFormat.getPaper();
+
+        // Reset Imageable Area
         paper.setSize(width, height);
         paper.setImageableArea(0, 0, width, height);
         pageFormat.setPaper(paper);
@@ -220,12 +225,16 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         job.setPrintService(docPrintJob.getPrintService());
         PageFormat pageFormat = job.defaultPage();
 
-        logger.trace("Paper Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
-        logger.trace("Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight());
+        logger.debug("Driver Returned PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
+        logger.debug("Driver Returned PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight());
+        logger.debug("Driver Returned Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
+        logger.debug("Driver Returned Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight());
 
-        Paper paper = pageFormat.getPaper();
         double width = pageFormat.getWidth();
         double height = pageFormat.getHeight();
+
+
+        Paper paper = pageFormat.getPaper();
 
         // Reset Imageable Area
         paper.setSize(width, height);
