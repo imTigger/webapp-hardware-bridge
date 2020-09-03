@@ -79,6 +79,9 @@ https://www.microsoft.com/en-US/download/details.aspx?id=48145)
 - [Authentication](../../wiki/Authentication)
 
 ## TODOs
+- [ ] Deprecate "Configurator" in favor of Web UI
+- [ ] Revamp settings format with proper json processor
+- [ ] Per type printer setting
 - [ ] Serial settings (Baudrate, data bits, stop bit, parity bit)
 
 Any other ideas? Fork and PR are welcome!
