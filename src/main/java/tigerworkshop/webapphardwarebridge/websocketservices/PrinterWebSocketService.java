@@ -172,18 +172,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(docPrintJob.getPrintService());
-        PageFormat pageFormat = job.defaultPage();
-
-        logger.debug("PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
-        logger.debug("PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight() + ", XY: " + pageFormat.getImageableX() + " x " + pageFormat.getImageableY());
-        logger.debug("Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
-        logger.debug("Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight() + ", XY: " + pageFormat.getPaper().getImageableX() + " x " + pageFormat.getPaper().getImageableY());
-
-        // Reset Imageable Area
-        logger.debug("Resetting Imageable Area");
-        Paper paper = pageFormat.getPaper();
-        paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
-        pageFormat.setPaper(paper);
+        PageFormat pageFormat = getPageFormat(job);
 
         Image image = ImageIO.read(new File(filename));
 
@@ -219,20 +208,8 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(docPrintJob.getPrintService());
-        PageFormat pageFormat = job.defaultPage();
 
-        logger.debug("PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
-        logger.debug("PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight() + ", XY: " + pageFormat.getImageableX() + " x " + pageFormat.getImageableY());
-        logger.debug("Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
-        logger.debug("Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight() + ", XY: " + pageFormat.getPaper().getImageableX() + " x " + pageFormat.getPaper().getImageableY());
-
-        // Reset Imageable Area
-        if (settingService.getSetting().getResetImageableArea()) {
-            logger.debug("Resetting Imageable Area");
-            Paper paper = pageFormat.getPaper();
-            paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
-            pageFormat.setPaper(paper);
-        }
+        PageFormat pageFormat = getPageFormat(job);
 
         PDDocument document = null;
         try {
@@ -274,6 +251,31 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 }
             }
         }
+    }
+
+    /**
+     * Get PageFormat for PrinterJob
+     */
+    private PageFormat getPageFormat(final PrinterJob job) {
+        final PageFormat pageFormat = job.defaultPage();
+
+        logger.debug("PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
+        logger.debug("PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight() + ", XY: " + pageFormat.getImageableX() + ", " + pageFormat.getImageableY());
+        logger.debug("Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
+        logger.debug("Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight() + ", XY: " + pageFormat.getPaper().getImageableX() + ", " + pageFormat.getPaper().getImageableY());
+
+        // Reset Imageable Area
+        if (settingService.getSetting().getResetImageableArea()) {
+            logger.debug("PageFormat reset enabled");
+            Paper paper = pageFormat.getPaper();
+            paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
+            pageFormat.setPaper(paper);
+        }
+
+        logger.debug("Final Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
+        logger.debug("Final Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight() + ", XY: " + pageFormat.getPaper().getImageableX() + ", " + pageFormat.getPaper().getImageableY());
+
+        return pageFormat;
     }
 
     /**
