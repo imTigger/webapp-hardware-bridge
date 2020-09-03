@@ -174,19 +174,15 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         job.setPrintService(docPrintJob.getPrintService());
         PageFormat pageFormat = job.defaultPage();
 
-        logger.debug("Driver Returned PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
-        logger.debug("Driver Returned PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight());
-        logger.debug("Driver Returned Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
-        logger.debug("Driver Returned Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight());
-
-        double width = pageFormat.getWidth();
-        double height = pageFormat.getHeight();
-
-        Paper paper = pageFormat.getPaper();
+        logger.debug("PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
+        logger.debug("PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight() + ", XY: " + pageFormat.getImageableX() + " x " + pageFormat.getImageableY());
+        logger.debug("Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
+        logger.debug("Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight() + ", XY: " + pageFormat.getPaper().getImageableX() + " x " + pageFormat.getPaper().getImageableY());
 
         // Reset Imageable Area
-        paper.setSize(width, height);
-        paper.setImageableArea(0, 0, width, height);
+        logger.debug("Resetting Imageable Area");
+        Paper paper = pageFormat.getPaper();
+        paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
         pageFormat.setPaper(paper);
 
         Image image = ImageIO.read(new File(filename));
@@ -225,21 +221,18 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         job.setPrintService(docPrintJob.getPrintService());
         PageFormat pageFormat = job.defaultPage();
 
-        logger.debug("Driver Returned PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
-        logger.debug("Driver Returned PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight());
-        logger.debug("Driver Returned Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
-        logger.debug("Driver Returned Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight());
-
-        double width = pageFormat.getWidth();
-        double height = pageFormat.getHeight();
-
-
-        Paper paper = pageFormat.getPaper();
+        logger.debug("PageFormat Size: " + pageFormat.getWidth() + " x " + pageFormat.getHeight());
+        logger.debug("PageFormat Imageable Size:" + pageFormat.getImageableWidth() + " x " + pageFormat.getImageableHeight() + ", XY: " + pageFormat.getImageableX() + " x " + pageFormat.getImageableY());
+        logger.debug("Paper Size: " + pageFormat.getPaper().getWidth() + " x " + pageFormat.getPaper().getHeight());
+        logger.debug("Paper Imageable Size: " + pageFormat.getPaper().getImageableWidth() + " x " + pageFormat.getPaper().getImageableHeight() + ", XY: " + pageFormat.getPaper().getImageableX() + " x " + pageFormat.getPaper().getImageableY());
 
         // Reset Imageable Area
-        paper.setSize(width, height);
-        paper.setImageableArea(0, 0, width, height);
-        pageFormat.setPaper(paper);
+        if (settingService.getSetting().getResetImageableArea()) {
+            logger.debug("Resetting Imageable Area");
+            Paper paper = pageFormat.getPaper();
+            paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
+            pageFormat.setPaper(paper);
+        }
 
         PDDocument document = null;
         try {
@@ -250,18 +243,15 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 // Rotate Page Automatically
                 if (settingService.getSetting().getAutoRotation()) {
                     if (document.getPage(i).getCropBox().getWidth() > document.getPage(i).getCropBox().getHeight()) {
+                        logger.debug("Auto rotation result: LANDSCAPE");
                         pageFormat.setOrientation(PageFormat.LANDSCAPE);
                     } else {
+                        logger.debug("Auto rotation result: PORTRAIT");
                         pageFormat.setOrientation(PageFormat.PORTRAIT);
                     }
                 }
 
-                AnnotatedPrintable printable;
-                if (System.getProperty("os.name").contains("Mac OS X")) {
-                    printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT, false, 203));
-                } else {
-                    printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT));
-                }
+                AnnotatedPrintable printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT, false, settingService.getSetting().getPrinterDPI()));
 
                 for (AnnotatedPrintable.AnnotatedPrintableAnnotation printDocumentExtra : printDocument.getExtras()) {
                     printable.addAnnotation(printDocumentExtra);

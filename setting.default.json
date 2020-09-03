@@ -4,6 +4,8 @@
   "port": 12212,
   "fallbackToDefaultPrinter": false,
   "autoRotate": false,
+  "resetImageableArea": true,
+  "printerDPI": 0,
   "downloadTimeout": 30.0,
   "authentication": {
     "enabled": false,

@@ -9,6 +9,8 @@ public class Setting {
     boolean fallbackToDefaultPrinter = false;
     boolean ignoreTLSCertificateError = false;
     boolean autoRotation = false;
+    boolean resetImageableArea = true;
+    int printerDPI = 0;
     Double downloadTimeout = 30.0;
 
     HashMap<String, Object> authentication = new HashMap<String, Object>() {{
@@ -167,6 +169,22 @@ public class Setting {
 
     public void setAutoRotation(boolean autoRotation) {
         this.autoRotation = autoRotation;
+    }
+
+    public boolean getResetImageableArea() {
+        return resetImageableArea;
+    }
+
+    public void setResetImageableArea(boolean resetImageableArea) {
+        this.resetImageableArea = resetImageableArea;
+    }
+
+    public int getPrinterDPI() {
+        return printerDPI;
+    }
+
+    public void setPrinterDPI(int printerDPI) {
+        this.printerDPI = printerDPI;
     }
 
     public double getDownloadTimeout() {
