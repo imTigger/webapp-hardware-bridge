@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class PrinterWebSocketService implements WebSocketServiceInterface {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -61,6 +62,11 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             logger.error(e.getClass().getCanonicalName());
             logger.debug(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void onDataReceived(ByteBuffer message) {
+        logger.error("PrinterWebSocketService onDataReceived: binary data not supported");
     }
 
     @Override

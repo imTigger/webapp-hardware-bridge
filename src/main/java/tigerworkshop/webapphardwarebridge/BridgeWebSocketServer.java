@@ -17,6 +17,7 @@ import tigerworkshop.webapphardwarebridge.utils.ConnectionAttachment;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,11 +76,20 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     @Override
     public void onMessage(WebSocket connection, String message) {
-        logger.trace("onMessage: " + connection.getRemoteSocketAddress() + ": " + message);
+        logger.trace("onMessage@String: " + connection.getRemoteSocketAddress() + ": " + message);
 
         String channel = ((ConnectionAttachment) connection.getAttachment()).getChannel();
 
         processMessage(channel, message);
+    }
+
+    @Override
+    public void onMessage(WebSocket connection, ByteBuffer blob) {
+        logger.trace("onMessage@ByteBuffer: " + connection.getRemoteSocketAddress() + ": " + blob);
+
+        String channel = ((ConnectionAttachment) connection.getAttachment()).getChannel();
+
+        processMessage(channel, blob);
     }
 
     @Override
@@ -156,6 +166,14 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         for (WebSocketServiceInterface service : services) {
             logger.trace("Attempt to send: " + message + " to channel: " + channel);
             service.onDataReceived(message);
+        }
+    }
+
+    private void processMessage(String channel, ByteBuffer blob) {
+        ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
+        for (WebSocketServiceInterface service : services) {
+            logger.trace("Attempt to send: " + blob + " to channel: " + channel);
+            service.onDataReceived(blob);
         }
     }
 

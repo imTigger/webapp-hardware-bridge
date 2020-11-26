@@ -9,12 +9,13 @@ import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
 
 public class CloudProxyClientWebSocketService implements WebSocketServiceInterface {
     WebSocketClient client;
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private WebSocketServerInterface server = null;
-    private SettingService settingService = SettingService.getInstance();
+    private final SettingService settingService = SettingService.getInstance();
     private Thread thread;
 
     public CloudProxyClientWebSocketService() {
@@ -85,6 +86,11 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
     public void onDataReceived(String message) {
         logger.info("ProxyClientWebSocketService onDataReceived: " + message);
         client.send(message);
+    }
+
+    @Override
+    public void onDataReceived(ByteBuffer message) {
+        logger.error("ProxyClientWebSocketService onDataReceived: binary data not supported");
     }
 
     @Override

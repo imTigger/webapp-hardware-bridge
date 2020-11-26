@@ -1,12 +1,14 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
 import com.fazecast.jSerialComm.SerialPort;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class SerialWebSocketService implements WebSocketServiceInterface {
@@ -15,7 +17,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     private final SerialPort serialPort;
     private byte[] writeBuffer = {};
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private WebSocketServerInterface server = null;
     private Thread readThread;
     private Thread writeThread;
@@ -76,6 +78,8 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                     if (serialPort.isOpen()) {
                         try {
                             if (writeBuffer.length > 0) {
+                                logger.trace("Bytes: {}", Hex.encodeHexString(writeBuffer));
+
                                 serialPort.writeBytes(writeBuffer, writeBuffer.length);
                                 writeBuffer = new byte[]{};
                             }
@@ -105,6 +109,11 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     @Override
     public void onDataReceived(String message) {
         send(message.getBytes());
+    }
+
+    @Override
+    public void onDataReceived(ByteBuffer message) {
+        send(message.array());
     }
 
     @Override
