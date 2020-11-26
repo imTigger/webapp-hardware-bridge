@@ -173,7 +173,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
         for (WebSocketServiceInterface service : services) {
             logger.trace("Attempt to send: " + blob + " to channel: " + channel);
-            service.onDataReceived(blob);
+            service.onDataReceived(blob.array());
         }
     }
 

@@ -8,7 +8,6 @@ import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class SerialWebSocketService implements WebSocketServiceInterface {
@@ -112,8 +111,8 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void onDataReceived(ByteBuffer message) {
-        send(message.array());
+    public void onDataReceived(byte[] message) {
+        send(message);
     }
 
     @Override
