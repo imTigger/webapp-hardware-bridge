@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/webapp_hardware_bridge_jar</output-path>
     <root id="root">
       <element id="archive" name="webapp-hardware-bridge.jar">
-        <element id="module-output" name="webapp-hardware-bridge_main" />
+        <element id="module-output" name="webapp-hardware-bridge.main" />
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" />
         </element>
