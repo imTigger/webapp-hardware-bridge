@@ -108,8 +108,10 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             socket.close();
         }
 
-        for (WebSocketServiceInterface service : services) {
-            service.stop();
+        synchronized (this) {
+            for(int i=0; i< services.size(); i++) {
+                services.get(i).stop();
+            }
         }
     }
 
