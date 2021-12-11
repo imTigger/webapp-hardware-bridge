@@ -223,13 +223,16 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             Book book = new Book();
             for (int i = 0; i < document.getNumberOfPages(); i += 1) {
                 // Rotate Page Automatically
+
+                PageFormat eachPageFormat = (PageFormat) pageFormat.clone();
+
                 if (settingService.getSetting().getAutoRotation()) {
                     if (document.getPage(i).getCropBox().getWidth() > document.getPage(i).getCropBox().getHeight()) {
                         logger.debug("Auto rotation result: LANDSCAPE");
-                        pageFormat.setOrientation(PageFormat.LANDSCAPE);
+                        eachPageFormat.setOrientation(PageFormat.LANDSCAPE);
                     } else {
                         logger.debug("Auto rotation result: PORTRAIT");
-                        pageFormat.setOrientation(PageFormat.PORTRAIT);
+                        eachPageFormat.setOrientation(PageFormat.PORTRAIT);
                     }
                 }
 
@@ -238,7 +241,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 for (AnnotatedPrintable.AnnotatedPrintableAnnotation printDocumentExtra : printDocument.getExtras()) {
                     printable.addAnnotation(printDocumentExtra);
                 }
-                book.append(printable, pageFormat);
+                book.append(printable, eachPageFormat);
             }
 
             job.setPageable(book);
@@ -286,7 +289,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     /**
      * Get DocPrintJob for specified printer
      */
-    private DocPrintJob getDocPrintJob(String type) throws PrinterException {
+     private DocPrintJob getDocPrintJob(String type) throws PrinterException {
         String printerName = findMappedPrinter(type);
 
         if (printerName != null) {
