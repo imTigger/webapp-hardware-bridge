@@ -5,6 +5,7 @@
   "fallbackToDefaultPrinter": false,
   "autoRotate": false,
   "resetImageableArea": true,
+  "addUnknownPrintTypeToList": true,
   "printerDPI": 0,
   "downloadTimeout": 30.0,
   "authentication": {
