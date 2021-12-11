@@ -29,10 +29,7 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @SuppressWarnings("Duplicates")
 public class SettingController implements Initializable {
@@ -267,6 +264,8 @@ public class SettingController implements Initializable {
         });
 
         loadValues();
+
+        Setting.registerNewPrintTypeObserver(this);
     }
 
     private void loadCurrentValues() {
@@ -403,5 +402,23 @@ public class SettingController implements Initializable {
         setting.setSerials(serialHashMap);
 
         settingService.save();
+    }
+
+    /**
+     * Add a new printType to the list when window is open
+     *
+     * @param type the printType
+     * @param printerPlaceHolder a place holder
+     */
+    public void newPrintType(String type, String printerPlaceHolder) {
+
+        Optional<ObservableStringPair> isAlreadyInTheList =
+                printerMappingList.stream()
+                        .filter(x -> x.getLeft().equalsIgnoreCase(type))
+                        .findAny();
+
+        if(!isAlreadyInTheList.isPresent()) {
+            printerMappingList.add(new ObservableStringPair(type, printerPlaceHolder));
+        }
     }
 }

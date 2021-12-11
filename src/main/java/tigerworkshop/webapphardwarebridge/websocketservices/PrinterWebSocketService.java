@@ -300,6 +300,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             }
         }
 
+        if(settingService.getSetting().isAddUnknownPrintTypeToListEnabed()) {
+            settingService.addPrintTypeToList(type);
+        }
+
         if (settingService.getSetting().getFallbackToDefaultPrinter()) {
             logger.info("No mapped print job type: " + type + ", falling back to default printer");
             return PrintServiceLookup.lookupDefaultPrintService().createPrintJob();

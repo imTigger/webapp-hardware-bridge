@@ -68,4 +68,11 @@ public class SettingService {
             System.exit(1);
         }
     }
+
+    public void addPrintTypeToList(String printType) {
+        String PRINTER_PLACEHOLDER = "<select a printer>";
+        setting.getPrinters().put(printType, PRINTER_PLACEHOLDER);
+        Setting.notifyNewPrintType(printType, PRINTER_PLACEHOLDER);
+        save();
+    }
 }

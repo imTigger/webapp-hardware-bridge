@@ -1,5 +1,8 @@
 package tigerworkshop.webapphardwarebridge.responses;
 
+import tigerworkshop.webapphardwarebridge.controller.SettingController;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Setting {
@@ -10,8 +13,10 @@ public class Setting {
     boolean ignoreTLSCertificateError = false;
     boolean autoRotation = false;
     boolean resetImageableArea = true;
+    boolean addUnknownPrintTypeToList = true;
     int printerDPI = 0;
     Double downloadTimeout = 30.0;
+    private static ArrayList<SettingController> newPrintTypeObservers = new ArrayList<>();
 
     HashMap<String, Object> authentication = new HashMap<String, Object>() {{
         put("enabled", false);
@@ -205,5 +210,19 @@ public class Setting {
 
     public String getUri() {
         return (getTLSEnabled() ? "wss" : "ws") + "://" + getAddress() + ":" + getPort();
+    }
+
+    public boolean isAddUnknownPrintTypeToListEnabed() {
+        return addUnknownPrintTypeToList;
+    }
+
+    public static void registerNewPrintTypeObserver(SettingController listener) {
+        newPrintTypeObservers.add(listener);
+    }
+
+    public static void notifyNewPrintType(String type, String printerPlaceHolder) {
+        for(SettingController registeredObserver : newPrintTypeObservers) {
+            registeredObserver.newPrintType(type, printerPlaceHolder);
+        }
     }
 }
