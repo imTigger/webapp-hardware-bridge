@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" group="webapp-hardware-bridge" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_main.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_main.iml" group="webapp-hardware-bridge" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_test.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge_test.iml" group="webapp-hardware-bridge" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.test.iml" />
     </modules>
   </component>
 </project>
