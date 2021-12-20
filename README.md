@@ -1,5 +1,13 @@
 # WebApp Hardware Bridge
 
+## Security Warning
+
+Version <= 0.13.0 are known to be affected by log4Shell vulnerabilities
+
+Existing users are strongly recommended to update to 0.14.0 or above
+
+## Introduction
+
 WebApp Hardware Bridge (succeeder of "Chrome Hardware Bridge / Chrome Direct Print")
 
 Make it possible for WebApp to perform silent print and access to serial ports.
