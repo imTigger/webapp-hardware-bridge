@@ -16,14 +16,14 @@ public class Setting {
     boolean addUnknownPrintTypeToList = true;
     int printerDPI = 0;
     Double downloadTimeout = 30.0;
-    private static ArrayList<SettingController> newPrintTypeObservers = new ArrayList<>();
+    private static final ArrayList<SettingController> newPrintTypeObservers = new ArrayList<>();
 
-    HashMap<String, Object> authentication = new HashMap<String, Object>() {{
+    HashMap<String, Object> authentication = new HashMap<>() {{
         put("enabled", false);
         put("token", "");
     }};
 
-    HashMap<String, Object> tls = new HashMap<String, Object>() {{
+    HashMap<String, Object> tls = new HashMap<>() {{
         put("enabled", false);
         put("selfSigned", true);
         put("cert", "tls/default-cert.pem");
@@ -31,7 +31,7 @@ public class Setting {
         put("caBundle", "");
     }};
 
-    HashMap<String, Object> cloudProxy = new HashMap<String, Object>() {{
+    HashMap<String, Object> cloudProxy = new HashMap<>() {{
         put("enabled", false);
         put("url", "ws://127.0.0.1:22212");
         put("timeout", 30);
@@ -212,7 +212,7 @@ public class Setting {
         return (getTLSEnabled() ? "wss" : "ws") + "://" + getAddress() + ":" + getPort();
     }
 
-    public boolean isAddUnknownPrintTypeToListEnabed() {
+    public boolean isAddUnknownPrintTypeToListEnabled() {
         return addUnknownPrintTypeToList;
     }
 

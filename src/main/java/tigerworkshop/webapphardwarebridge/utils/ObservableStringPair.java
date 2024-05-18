@@ -4,8 +4,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class ObservableStringPair {
-    private StringProperty left = new SimpleStringProperty();
-    private StringProperty right = new SimpleStringProperty();
+    private final StringProperty left = new SimpleStringProperty();
+    private final StringProperty right = new SimpleStringProperty();
 
     public ObservableStringPair(String left, String right) {
         setLeft(left);

@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import org.apache.commons.codec.binary.Base64;
 import org.java_websocket.server.CustomSSLWebSocketServerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
-import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,11 +24,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TLSUtil {
+    private static final Logger logger = LoggerFactory.getLogger(TLSUtil.class);
+
     private static final String KEYSTORE_PASSWORD = "webapp-hardware-bridge";
     private static final String KEYSTORE_CERTIFICATE_ALIAS = "webapp-hardware-bridge-cert";
     private static final String KEYSTORE_KEY_ALIAS = "webapp-hardware-bridge-key";
-
-    private static Logger logger = LoggerFactory.getLogger("TLSUtil");
 
     public static SSLContext getContext(String certificatePath, String keyPath, String caBundlePath) throws Exception {
         try {
@@ -96,7 +96,7 @@ public class TLSUtil {
         String[] tokens = data.split("-----BEGIN CERTIFICATE-----");
         tokens = tokens[1].split("-----END CERTIFICATE-----");
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(tokens[0])));
+        return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(Base64.decodeBase64(tokens[0])));
     }
 
     private static RSAPrivateKey readKey(File key) throws Exception {
@@ -104,7 +104,7 @@ public class TLSUtil {
         String[] tokens = data.split("-----BEGIN PRIVATE KEY-----");
         tokens = tokens[1].split("-----END PRIVATE KEY-----");
 
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(DatatypeConverter.parseBase64Binary(tokens[0]));
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(Base64.decodeBase64((tokens[0])));
         KeyFactory factory = KeyFactory.getInstance("RSA");
         return (RSAPrivateKey) factory.generatePrivate(spec);
     }
@@ -122,7 +122,7 @@ public class TLSUtil {
             if (token.isEmpty()) continue;
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             String[] certParts = tokens[1].split("-----END CERTIFICATE-----");
-            result.add((X509Certificate) factory.generateCertificate(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(certParts[0]))));
+            result.add((X509Certificate) factory.generateCertificate(new ByteArrayInputStream(Base64.decodeBase64(certParts[0]))));
         }
 
         return result;

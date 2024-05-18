@@ -1,17 +1,20 @@
 package tigerworkshop.webapphardwarebridge.services;
 
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.Config;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
 import tigerworkshop.webapphardwarebridge.utils.DownloadUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class DocumentService {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DocumentService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(DocumentService.class);
+
     private static final DocumentService instance = new DocumentService();
     private static final SettingService settingService = SettingService.getInstance();
 
@@ -26,11 +29,15 @@ public class DocumentService {
         return instance;
     }
 
-    public static void extract(String base64, String urlString) throws Exception {
+    public static void decodeBase64(String base64, String urlString) throws Exception {
         byte[] bytes = Base64.decode(base64);
 
-        try (OutputStream stream = new FileOutputStream(getPathFromUrl(urlString))) {
+        try (OutputStream stream = Files.newOutputStream(Paths.get(getPathFromUrl(urlString)))) {
             stream.write(bytes);
+        } catch (
+                Exception e) {
+            logger.error("Failed to extract file from base64", e);
+            throw e;
         }
     }
 
@@ -62,7 +69,7 @@ public class DocumentService {
         }
 
         if (printDocument.getFileContent() != null) {
-            extract(printDocument.getFileContent(), printDocument.getUrl());
+            decodeBase64(printDocument.getFileContent(), printDocument.getUrl());
         } else {
             download(printDocument.getUrl());
         }

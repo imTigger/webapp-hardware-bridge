@@ -11,8 +11,9 @@ import tigerworkshop.webapphardwarebridge.services.SettingService;
 import java.net.URI;
 
 public class CloudProxyClientWebSocketService implements WebSocketServiceInterface {
-    WebSocketClient client;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(CloudProxyClientWebSocketService.class);
+
+    private WebSocketClient client;
     private WebSocketServerInterface server = null;
     private final SettingService settingService = SettingService.getInstance();
     private Thread thread;
@@ -32,8 +33,8 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
 
                         client = new WebSocketClient(new URI(settingService.getSetting().getCloudProxyUrl())) {
                             @Override
-                            public void onOpen(ServerHandshake handshakedata) {
-                                logger.info("ProxyClientWebSocketService connected to " + this.getURI() + ", timeout = " + settingService.getSetting().getCloudProxyTimeout());
+                            public void onOpen(ServerHandshake handshakeData) {
+                                logger.info("ProxyClientWebSocketService connected to {}, timeout = {}", this.getURI(), settingService.getSetting().getCloudProxyTimeout());
                             }
 
                             @Override
@@ -50,7 +51,7 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
 
                             @Override
                             public void onError(Exception ex) {
-                                logger.info("ProxyClientWebSocketService connection error: " + ex.getMessage());
+                                logger.info("ProxyClientWebSocketService connection error: {}", ex.getMessage());
                             }
                         };
                         client.setConnectionLostTimeout(settingService.getSetting().getCloudProxyTimeout().intValue());
@@ -83,7 +84,7 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
 
     @Override
     public void onDataReceived(String message) {
-        logger.info("ProxyClientWebSocketService onDataReceived: " + message);
+        logger.info("ProxyClientWebSocketService onDataReceived: {}", message);
         client.send(message);
     }
 

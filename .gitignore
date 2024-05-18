@@ -1,6 +1,6 @@
 documents/
 .gradle/
-.idea/workspace.xml
+.idea/
 gradle/
 log/
 out/

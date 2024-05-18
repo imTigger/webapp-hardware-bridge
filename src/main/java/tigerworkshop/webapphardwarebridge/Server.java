@@ -1,8 +1,6 @@
 package tigerworkshop.webapphardwarebridge;
 
 import com.sun.management.OperatingSystemMXBean;
-import it.sauronsoftware.junique.AlreadyLockedException;
-import it.sauronsoftware.junique.JUnique;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
@@ -19,8 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
+    private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
-    private static final Logger logger = LoggerFactory.getLogger("Server");
     private static final Server server = new Server();
     private NotificationListenerInterface notificationListener;
     private BridgeWebSocketServer bridgeWebSocketServer;
@@ -36,13 +34,6 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        try {
-            JUnique.acquireLock(Config.APP_ID);
-        } catch (AlreadyLockedException e) {
-            logger.error(Config.APP_ID + " already running");
-            System.exit(1);
-        }
-
         server.start();
     }
 
@@ -117,7 +108,7 @@ public class Server {
                 bridgeWebSocketServer.close();
                 bridgeWebSocketServer.stop();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 System.exit(1);
             }
         }

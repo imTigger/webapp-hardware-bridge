@@ -1,7 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
@@ -25,8 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class BridgeWebSocketServer extends WebSocketServer implements WebSocketServerInterface {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(BridgeWebSocketServer.class);
 
     private final HashMap<String, ArrayList<WebSocket>> socketChannelSubscriptions = new HashMap<>();
     private final HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
@@ -56,9 +55,9 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             connection.setAttachment(new ConnectionAttachment(channel, params, token));
             addSocketToChannel(channel, connection);
 
-            logger.info(connection.getRemoteSocketAddress().toString() + " connected to " + channel);
+            logger.info("{} connected to {}", connection.getRemoteSocketAddress().toString(), channel);
         } catch (URISyntaxException e) {
-            logger.error(connection.getRemoteSocketAddress().toString() + " error", e);
+            logger.error("{} error", connection.getRemoteSocketAddress().toString(), e);
             connection.close();
         }
     }
@@ -76,7 +75,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     @Override
     public void onMessage(WebSocket connection, String message) {
-        logger.trace("onMessage@String: " + connection.getRemoteSocketAddress() + ": " + message);
+        logger.trace("onMessage@String: {}: {}", connection.getRemoteSocketAddress(), message);
 
         String channel = ((ConnectionAttachment) connection.getAttachment()).getChannel();
 
@@ -85,7 +84,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
     @Override
     public void onMessage(WebSocket connection, ByteBuffer blob) {
-        logger.trace("onMessage@ByteBuffer: " + connection.getRemoteSocketAddress() + ": " + blob);
+        logger.trace("onMessage@ByteBuffer: {}: {}", connection.getRemoteSocketAddress(), blob);
 
         String channel = ((ConnectionAttachment) connection.getAttachment()).getChannel();
 
@@ -109,7 +108,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         }
 
         synchronized (this) {
-            for(int i=0; i< services.size(); i++) {
+            for (int i = 0; i < services.size(); i++) {
                 services.get(i).stop();
             }
         }
@@ -120,7 +119,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
      */
     @Override
     public void onDataReceived(String channel, String message) {
-        logger.trace("Received data from channel: " + channel + ", Data: " + message);
+        logger.trace("Received data from channel: {}, Data: {}", channel, message);
 
         if (channel.equals("proxy")) {
             processMessage("/printer", message);
@@ -166,7 +165,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     private void processMessage(String channel, String message) {
         ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
         for (WebSocketServiceInterface service : services) {
-            logger.trace("Attempt to send: " + message + " to channel: " + channel);
+            logger.trace("Attempt to send: {} to channel: {}", message, channel);
             service.onDataReceived(message);
         }
     }
@@ -174,7 +173,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     private void processMessage(String channel, ByteBuffer blob) {
         ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
         for (WebSocketServiceInterface service : services) {
-            logger.trace("Attempt to send: " + blob + " to channel: " + channel);
+            logger.trace("Attempt to send: {} to channel: {}", blob, channel);
             service.onDataReceived(blob.array());
         }
     }
@@ -235,5 +234,4 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
 
         services.remove(service);
     }
-
 }

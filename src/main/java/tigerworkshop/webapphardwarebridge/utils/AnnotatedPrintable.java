@@ -11,11 +11,11 @@ import java.awt.print.PrinterException;
 import java.util.ArrayList;
 
 public class AnnotatedPrintable implements Printable {
+    private static final Logger logger = LoggerFactory.getLogger(AnnotatedPrintable.class);
 
     private static final Double MM_TO_PPI = 2.8346457;
     private final Printable printable;
     private final ArrayList<AnnotatedPrintableAnnotation> annotatedPrintableAnnotationArrayList = new ArrayList<>();
-    private Logger logger = LoggerFactory.getLogger(AnnotatedPrintable.class.getName());
 
     public AnnotatedPrintable(Printable printable) {
         this.printable = printable;
@@ -29,7 +29,7 @@ public class AnnotatedPrintable implements Printable {
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
         int result = printable.print(graphics, pageFormat, pageIndex);
 
-        if (annotatedPrintableAnnotationArrayList.size() == 0) {
+        if (annotatedPrintableAnnotationArrayList.isEmpty()) {
             return result;
         }
 
@@ -37,7 +37,7 @@ public class AnnotatedPrintable implements Printable {
             Graphics2D graphics2D = (Graphics2D) graphics;
 
             // On Windows we need getDefaultTransform() to print in correct scale
-            // But on Mac it cause NullPointerException, however a blank AffineTransform works
+            // But on Mac it causes NullPointerException, however a blank AffineTransform works
             try {
                 graphics2D.setTransform(graphics2D.getDeviceConfiguration().getDefaultTransform());
             } catch (Exception e) {
@@ -59,8 +59,8 @@ public class AnnotatedPrintable implements Printable {
                     float realX = (float) (clipX + annotatedPrintableAnnotation.getX() * MM_TO_PPI);
                     float realY = (float) (clipY + annotatedPrintableAnnotation.getY() * MM_TO_PPI);
 
-                    Integer isBold = annotatedPrintableAnnotation.getBold() != null ? Font.BOLD : Font.PLAIN;
-                    Integer fontSize = annotatedPrintableAnnotation.getSize() != null ? annotatedPrintableAnnotation.getSize() : 10;
+                    int isBold = annotatedPrintableAnnotation.getBold() != null ? Font.BOLD : Font.PLAIN;
+                    int fontSize = annotatedPrintableAnnotation.getSize() != null ? annotatedPrintableAnnotation.getSize() : 10;
 
                     Font font = new Font("Sans-Serif", isBold, fontSize);
                     graphics2D.setColor(Color.BLACK);
@@ -76,8 +76,7 @@ public class AnnotatedPrintable implements Printable {
         return result;
     }
 
-    public class AnnotatedPrintableAnnotation {
-
+    public static class AnnotatedPrintableAnnotation {
         private String field;
         private String text;
         private Float x;

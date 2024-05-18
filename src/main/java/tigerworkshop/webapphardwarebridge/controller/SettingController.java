@@ -4,8 +4,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -18,7 +16,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.responses.Setting;
 import tigerworkshop.webapphardwarebridge.services.SettingService;
 import tigerworkshop.webapphardwarebridge.utils.ObservableStringPair;
@@ -33,6 +32,8 @@ import java.util.*;
 
 @SuppressWarnings("Duplicates")
 public class SettingController implements Initializable {
+    private static final Logger log = LoggerFactory.getLogger(SettingController.class);
+
     @FXML
     private TextField textBind;
     @FXML
@@ -80,8 +81,6 @@ public class SettingController implements Initializable {
     private TableColumn<ObservableStringPair, String> columnPrinter;
     @FXML
     private CheckBox checkboxFallbackToDefaultPrinter;
-    private final ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
-    private final ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
 
     @FXML
     private Button buttonLog;
@@ -93,11 +92,16 @@ public class SettingController implements Initializable {
     private Button buttonLoadDefault;
     @FXML
     private Button buttonReset;
-    private final SettingService settingService = SettingService.getInstance();
+
     @FXML
     private CheckBox checkboxAutoRotation;
     @FXML
     private TextField textDownloadTimeout;
+
+    private final ObservableList<ObservableStringPair> printerMappingList = FXCollections.observableArrayList();
+    private final ObservableList<ObservableStringPair> serialMappingList = FXCollections.observableArrayList();
+
+    private final SettingService settingService = SettingService.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -112,50 +116,34 @@ public class SettingController implements Initializable {
         columnPrinter.setCellFactory(ComboBoxTableCell.forTableColumn(printerList));
 
         MenuItem addItemPrinter = new MenuItem("Add");
-        addItemPrinter.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                printerMappingList.add(ObservableStringPair.of("KEY", "Select Printer"));
-            }
-        });
+        addItemPrinter.setOnAction(event -> printerMappingList.add(ObservableStringPair.of("KEY", "Select Printer")));
 
         tablePrinter.setRowFactory(
-                new Callback<TableView<ObservableStringPair>, TableRow<ObservableStringPair>>() {
-                    @Override
-                    public TableRow<ObservableStringPair> call(TableView<ObservableStringPair> tableView) {
-                        final TableRow<ObservableStringPair> row = new TableRow<>();
-                        final ContextMenu rowMenu = new ContextMenu();
+                tableView -> {
+                    final TableRow<ObservableStringPair> row = new TableRow<>();
+                    final ContextMenu rowMenu = new ContextMenu();
 
-                        MenuItem removeItemPrinter = new MenuItem("Delete");
-                        removeItemPrinter.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                tablePrinter.getItems().remove(row.getItem());
-                            }
-                        });
-                        rowMenu.getItems().addAll(addItemPrinter, removeItemPrinter);
+                    MenuItem removeItemPrinter = new MenuItem("Delete");
+                    removeItemPrinter.setOnAction(event -> tablePrinter.getItems().remove(row.getItem()));
+                    rowMenu.getItems().addAll(addItemPrinter, removeItemPrinter);
 
-                        final ContextMenu emptyMenu = new ContextMenu();
-                        emptyMenu.getItems().addAll(addItemPrinter);
+                    final ContextMenu emptyMenu = new ContextMenu();
+                    emptyMenu.getItems().addAll(addItemPrinter);
 
-                        // only display context menu for non-null items:
-                        row.contextMenuProperty().bind(
-                                Bindings.when(Bindings.isNotNull(row.itemProperty()))
-                                        .then(rowMenu)
-                                        .otherwise(emptyMenu));
-                        return row;
-                    }
+                    // only display context menu for non-null items:
+                    row.contextMenuProperty().bind(
+                            Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                                    .then(rowMenu)
+                                    .otherwise(emptyMenu));
+                    return row;
                 }
         );
 
-        tablePrinter.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent t) {
-                ContextMenu contextMenu = new ContextMenu();
-                contextMenu.getItems().add(addItemPrinter);
-                if (t.getButton() == MouseButton.SECONDARY) {
-                    contextMenu.show(tableSerial, t.getScreenX(), t.getScreenY());
-                }
+        tablePrinter.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.getItems().add(addItemPrinter);
+            if (t.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(tableSerial, t.getScreenX(), t.getScreenY());
             }
         });
 
@@ -170,98 +158,62 @@ public class SettingController implements Initializable {
         columnPort.setCellFactory(ComboBoxTableCell.forTableColumn(serialList));
 
         MenuItem addItemSerial = new MenuItem("Add");
-        addItemSerial.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                serialMappingList.add(ObservableStringPair.of("KEY", "Select Port"));
-            }
-        });
+        addItemSerial.setOnAction(event -> serialMappingList.add(ObservableStringPair.of("KEY", "Select Port")));
 
         tableSerial.setRowFactory(
-                new Callback<TableView<ObservableStringPair>, TableRow<ObservableStringPair>>() {
-                    @Override
-                    public TableRow<ObservableStringPair> call(TableView<ObservableStringPair> tableView) {
-                        final TableRow<ObservableStringPair> row = new TableRow<>();
-                        final ContextMenu rowMenu = new ContextMenu();
+                tableView -> {
+                    final TableRow<ObservableStringPair> row = new TableRow<>();
+                    final ContextMenu rowMenu = new ContextMenu();
 
-                        MenuItem removeItemSerial = new MenuItem("Delete");
-                        removeItemSerial.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                tableSerial.getItems().remove(row.getItem());
-                            }
-                        });
-                        rowMenu.getItems().addAll(addItemSerial, removeItemSerial);
+                    MenuItem removeItemSerial = new MenuItem("Delete");
+                    removeItemSerial.setOnAction(event -> tableSerial.getItems().remove(row.getItem()));
+                    rowMenu.getItems().addAll(addItemSerial, removeItemSerial);
 
-                        final ContextMenu emptyMenu = new ContextMenu();
-                        emptyMenu.getItems().addAll(addItemSerial);
+                    final ContextMenu emptyMenu = new ContextMenu();
+                    emptyMenu.getItems().addAll(addItemSerial);
 
-                        // only display context menu for non-null items:
-                        row.contextMenuProperty().bind(
-                                Bindings.when(Bindings.isNotNull(row.itemProperty()))
-                                        .then(rowMenu)
-                                        .otherwise(emptyMenu));
-                        return row;
-                    }
+                    // only display context menu for non-null items:
+                    row.contextMenuProperty().bind(
+                            Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                                    .then(rowMenu)
+                                    .otherwise(emptyMenu));
+                    return row;
                 }
         );
 
-        tableSerial.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent t) {
-                ContextMenu contextMenu = new ContextMenu();
-                contextMenu.getItems().add(addItemSerial);
-                if (t.getButton() == MouseButton.SECONDARY) {
-                    contextMenu.show(tableSerial, t.getScreenX(), t.getScreenY());
-                }
+        tableSerial.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.getItems().add(addItemSerial);
+            if (t.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(tableSerial, t.getScreenX(), t.getScreenY());
             }
         });
 
         // Other controls
-        buttonLog.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    Desktop.getDesktop().open(new File("log"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        buttonLog.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().open(new File("log"));
+            } catch (
+                    IOException e) {
+                log.error("Failed to open log directory", e);
             }
         });
 
         // Save Values
-        buttonSaveAndClose.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                saveValues();
-                Stage stage = (Stage) buttonSaveAndClose.getScene().getWindow();
-                stage.close();
-            }
+        buttonSaveAndClose.setOnAction(event -> {
+            saveValues();
+            Stage stage = (Stage) buttonSaveAndClose.getScene().getWindow();
+            stage.close();
         });
 
         // Save Values
-        buttonSave.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                saveValues();
-            }
-        });
+        buttonSave.setOnAction(event -> saveValues());
 
         // Default Values
-        buttonLoadDefault.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                loadDefaultValues();
-            }
-        });
+        buttonLoadDefault.setOnAction(event -> loadDefaultValues());
 
         // Reset Values
-        buttonReset.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                loadCurrentValues();
-            }
-        });
+        buttonReset.setOnAction(event -> loadCurrentValues());
 
         loadValues();
 
@@ -272,7 +224,7 @@ public class SettingController implements Initializable {
         try {
             settingService.loadCurrent();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to load current setting file", e);
         }
         loadValues();
     }
@@ -282,7 +234,7 @@ public class SettingController implements Initializable {
         try {
             settingService.loadDefault();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to load default setting file", e);
         }
         loadValues();
     }
@@ -408,16 +360,15 @@ public class SettingController implements Initializable {
      * Add a new printType to the list when window is open
      *
      * @param type the printType
-     * @param printerPlaceHolder a place holder
+     * @param printerPlaceHolder a placeholder
      */
     public void newPrintType(String type, String printerPlaceHolder) {
-
         Optional<ObservableStringPair> isAlreadyInTheList =
                 printerMappingList.stream()
                         .filter(x -> x.getLeft().equalsIgnoreCase(type))
                         .findAny();
 
-        if(!isAlreadyInTheList.isPresent()) {
+        if (isAlreadyInTheList.isEmpty()) {
             printerMappingList.add(new ObservableStringPair(type, printerPlaceHolder));
         }
     }

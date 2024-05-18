@@ -1,6 +1,5 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
-import com.google.common.net.InetAddresses;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
@@ -27,14 +26,18 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class CertificateGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(CertificateGenerator.class);
+
     private static final String CERTIFICATE_ALGORITHM = "RSA";
     private static final String CERTIFICATE_ISSUER = "CN=127.0.0.1";
     private static final String CERTIFICATE_DOMAIN = "CN=127.0.0.1";
     private static final int CERTIFICATE_BITS = 2048;
 
-    private static Logger logger = LoggerFactory.getLogger("CertificateGenerator");
+    private static final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
+    private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
     public static void generateSelfSignedCertificate(String address, String certificatePath, String keyPath) throws OperatorCreationException, CertificateException, CertIOException, NoSuchAlgorithmException {
         Security.addProvider(new BouncyCastleProvider());
@@ -58,7 +61,7 @@ public class CertificateGenerator {
                 X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(issuer, serialNumber, validFrom, validTo, subject, subPubKeyInfo);
 
                 final GeneralNames subjectAltNames;
-                if (InetAddresses.isInetAddress(address)) {
+                if (IPV4_PATTERN.matcher(address).matches()) {
                     subjectAltNames = new GeneralNames(new GeneralName(GeneralName.iPAddress, address));
                 } else {
                     subjectAltNames = new GeneralNames(new GeneralName(GeneralName.dNSName, address));
@@ -95,21 +98,21 @@ public class CertificateGenerator {
 
     private static void saveCert(X509Certificate cert, String certificatePath) {
         try {
-            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(new File(certificatePath)));
+            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(certificatePath));
             writer.writeObject(cert);
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
     private static void saveKey(PrivateKey key, String keyPath) {
         try {
-            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(new File(keyPath)));
+            JcaPEMWriter writer = new JcaPEMWriter(new FileWriter(keyPath));
             writer.writeObject(new JcaPKCS8Generator(key, null));
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 

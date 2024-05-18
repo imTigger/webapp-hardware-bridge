@@ -1,6 +1,6 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
-import org.apache.http.NameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
 
 import java.util.List;
 
