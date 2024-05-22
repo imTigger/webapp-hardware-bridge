@@ -1,7 +1,6 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -10,12 +9,12 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.ArrayList;
 
+@Log4j2
 public class AnnotatedPrintable implements Printable {
-    private static final Logger logger = LoggerFactory.getLogger(AnnotatedPrintable.class);
-
-    private static final Double MM_TO_PPI = 2.8346457;
     private final Printable printable;
     private final ArrayList<AnnotatedPrintableAnnotation> annotatedPrintableAnnotationArrayList = new ArrayList<>();
+
+    private static final Double MM_TO_PPI = 2.8346457;
 
     public AnnotatedPrintable(Printable printable) {
         this.printable = printable;
@@ -52,7 +51,7 @@ public class AnnotatedPrintable implements Printable {
             try {
                 for (AnnotatedPrintableAnnotation annotatedPrintableAnnotation : annotatedPrintableAnnotationArrayList) {
                     if (annotatedPrintableAnnotation.getText() == null) {
-                        logger.warn("annotatedPrintableAnnotation.getText() is null");
+                        log.warn("annotatedPrintableAnnotation.getText() is null");
                         continue;
                     }
 
@@ -68,7 +67,7 @@ public class AnnotatedPrintable implements Printable {
                     graphics2D.drawString(annotatedPrintableAnnotation.getText(), realX, realY);
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
 
         }

@@ -1,9 +1,8 @@
 package tigerworkshop.webapphardwarebridge.services;
 
+import lombok.extern.log4j.Log4j2;
 import org.bouncycastle.util.encoders.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.Config;
+import tigerworkshop.webapphardwarebridge.Constants;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
 import tigerworkshop.webapphardwarebridge.utils.DownloadUtil;
 
@@ -12,14 +11,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Log4j2
 public class DocumentService {
-    private static final Logger logger = LoggerFactory.getLogger(DocumentService.class);
-
     private static final DocumentService instance = new DocumentService();
-    private static final SettingService settingService = SettingService.getInstance();
+    private static final ConfigService CONFIG_SERVICE = ConfigService.getInstance();
 
     private DocumentService() {
-        File directory = new File(Config.DOCUMENT_PATH);
+        File directory = new File(Constants.DOCUMENT_PATH);
         if (!directory.exists()) {
             directory.mkdir();
         }
@@ -36,13 +34,13 @@ public class DocumentService {
             stream.write(bytes);
         } catch (
                 Exception e) {
-            logger.error("Failed to extract file from base64", e);
+            log.error("Failed to extract file from base64", e);
             throw e;
         }
     }
 
     public static void download(String urlString) throws Exception {
-        DownloadUtil.file(urlString, getPathFromUrl(urlString), true, settingService.getSetting().getIgnoreTLSCertificateErrorEnabled(), settingService.getSetting().getDownloadTimeout());
+        DownloadUtil.file(urlString, getPathFromUrl(urlString), true, CONFIG_SERVICE.getConfig().getDownloader().isIgnoreTLSCertificateError(), CONFIG_SERVICE.getConfig().getDownloader().getDownloadTimeout());
     }
 
     public static File getFileFromUrl(String urlString) {
@@ -56,7 +54,7 @@ public class DocumentService {
     public static String getPathFromUrl(String urlString) {
         urlString = urlString.replace(" ", "%20");
         String filename = urlString.substring(urlString.lastIndexOf("/") + 1);
-        return Config.DOCUMENT_PATH + filename;
+        return Constants.DOCUMENT_PATH + filename;
     }
 
     public void prepareDocument(PrintDocument printDocument) throws Exception {

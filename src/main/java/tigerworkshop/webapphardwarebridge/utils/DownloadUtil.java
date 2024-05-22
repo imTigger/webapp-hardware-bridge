@@ -1,8 +1,7 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -15,11 +14,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.X509Certificate;
 
+@Log4j2
 public class DownloadUtil {
-    private static final Logger logger = LoggerFactory.getLogger(DownloadUtil.class);
-
     public static long file(String urlString, String path, Boolean overwrite, Boolean ignoreCertError, double downloadTimeout) throws Exception {
-        logger.info("Downloading file from: {}", urlString);
+        log.info("Downloading file from: {}", urlString);
 
         long timeStart = System.currentTimeMillis();
 
@@ -29,7 +27,7 @@ public class DownloadUtil {
         // File Exist, return
         if (!overwrite && outputFile.exists()) {
             long timeFinish = System.currentTimeMillis();
-            logger.info("File {} found on local disk in {}ms", path, timeFinish - timeStart);
+            log.info("File {} found on local disk in {}ms", path, timeFinish - timeStart);
             return timeStart;
         }
 
@@ -70,8 +68,8 @@ public class DownloadUtil {
             responseCode = ((HttpURLConnection) urlConnection).getResponseCode();
         }
 
-        logger.trace("Content Length: {}", contentLength);
-        logger.trace("Response Code: {}", responseCode);
+        log.trace("Content Length: {}", contentLength);
+        log.trace("Response Code: {}", responseCode);
 
         // Status code mismatch
         if (responseCode != 200) {
@@ -81,7 +79,7 @@ public class DownloadUtil {
         FileUtils.copyInputStreamToFile(urlConnection.getInputStream(), outputFile);
 
         long timeFinish = System.currentTimeMillis();
-        logger.info("File {} downloaded in {}ms", path, timeFinish - timeStart);
+        log.info("File {} downloaded in {}ms", path, timeFinish - timeStart);
 
         return timeFinish - timeStart;
     }

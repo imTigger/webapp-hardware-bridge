@@ -1,0 +1,65 @@
+{
+  "webSocketServer": {
+    "address": "127.0.0.1",
+    "bind": "127.0.0.1",
+    "port": 12212,
+    "authentication": {
+      "enabled": false,
+      "token": ""
+    },
+    "tls": {
+      "enabled": false,
+      "selfSigned": true,
+      "cert": "tls/default-cert.pem",
+      "key": "tls/default-key.pem"
+    }
+  },
+  "webApiServer": {
+    "address": "127.0.0.1",
+    "bind": "127.0.0.1",
+    "port": 12222,
+    "authentication": {
+      "enabled": false,
+      "password": ""
+    },
+    "tls": {
+      "enabled": false,
+      "selfSigned": true,
+      "cert": "tls/default-cert.pem",
+      "key": "tls/default-key.pem"
+    }
+  },
+  "cloudProxy": {
+    "enabled": false,
+    "url": "wss://127.0.0.1:22212"
+  },
+  "downloader": {
+    "enabled": true,
+    "downloadTimeout": 30.0,
+    "downloadPath": "downloads",
+    "maxDownloadSize": 0
+  },
+  "printer": {
+    "enabled": true,
+    "autoRotate": false,
+    "resetImageableArea": true,
+    "addUnknownPrintTypeToList": true,
+    "fallbackToDefaultPrinter": false,
+    "printerDPI": 0,
+    "downloadTimeout": 30.0,
+    "mappings": [
+      {
+        "type": "LABEL",
+        "name": "KM-200"
+      },
+      {
+        "type": "INVOICE",
+        "name": "KM-200"
+      }
+    ]
+  },
+  "serial": {
+    "enabled": false,
+    "mappings": []
+  }
+}

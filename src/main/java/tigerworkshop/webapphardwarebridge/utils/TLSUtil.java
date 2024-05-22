@@ -1,9 +1,8 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
 import org.java_websocket.server.CustomSSLWebSocketServerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -23,16 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Log4j2
 public class TLSUtil {
-    private static final Logger logger = LoggerFactory.getLogger(TLSUtil.class);
-
     private static final String KEYSTORE_PASSWORD = "webapp-hardware-bridge";
     private static final String KEYSTORE_CERTIFICATE_ALIAS = "webapp-hardware-bridge-cert";
     private static final String KEYSTORE_KEY_ALIAS = "webapp-hardware-bridge-key";
 
     public static SSLContext getContext(String certificatePath, String keyPath, String caBundlePath) throws Exception {
         try {
-            logger.debug("Creating SSLContext");
+            log.debug("Creating SSLContext");
 
             File certificate = new File(certificatePath);
             File privateKey = new File(keyPath);
@@ -69,7 +67,7 @@ public class TLSUtil {
 
             return sslContext;
         } catch (Exception e) {
-            logger.error("Failed creating SSLContext:" + e.getMessage());
+            log.error("Failed creating SSLContext:" + e.getMessage());
             throw e;
         }
     }

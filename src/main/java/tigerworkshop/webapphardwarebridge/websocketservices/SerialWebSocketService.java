@@ -1,18 +1,16 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
 import com.fazecast.jSerialComm.SerialPort;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
 import java.nio.charset.StandardCharsets;
 
+@Log4j2
 public class SerialWebSocketService implements WebSocketServiceInterface {
-    private static final Logger logger = LoggerFactory.getLogger(SerialWebSocketService.class);
-
     private final String portName;
     private final String mappingKey;
     private final SerialPort serialPort;
@@ -23,7 +21,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     private Thread writeThread;
 
     public SerialWebSocketService(String portName, String mappingKey) {
-        logger.info("Starting SerialWebSocketService on {}", portName);
+        log.info("Starting SerialWebSocketService on {}", portName);
 
         this.portName = portName;
         this.mappingKey = mappingKey;
@@ -33,7 +31,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     @Override
     public void start() {
         readThread = new Thread(() -> {
-            logger.trace("Serial Read Thread started for {}", portName);
+            log.trace("Serial Read Thread started for {}", portName);
 
             while (!Thread.interrupted()) {
                 try {
@@ -45,7 +43,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                         } else if (serialPort.bytesAvailable() == -1) {
                             // Check if portName closed unexpected (e.g. Unplugged)
                             serialPort.closePort();
-                            logger.warn("Serial unplugged!");
+                            log.warn("Serial unplugged!");
                             continue;
                         }
 
@@ -56,25 +54,25 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                             server.onDataReceived(getChannel(), new String(receivedData, StandardCharsets.UTF_8));
                         }
                     } else {
-                        logger.trace("Trying to connect the serial @ {}", serialPort.getSystemPortName());
+                        log.trace("Trying to connect the serial @ {}", serialPort.getSystemPortName());
                         serialPort.openPort();
                     }
                 } catch (
                         Exception e) {
-                    logger.warn("Error: {}", e.getMessage(), e);
+                    log.warn("Error: {}", e.getMessage(), e);
                     ThreadUtil.silentSleep(1000);
                 }
             }
         });
 
         writeThread = new Thread(() -> {
-            logger.trace("Serial Write Thread started for {}", portName);
+            log.trace("Serial Write Thread started for {}", portName);
 
             while (!Thread.interrupted()) {
                 if (serialPort.isOpen()) {
                     try {
                         if (writeBuffer.length > 0) {
-                            logger.trace("Bytes: {}", Hex.encodeHexString(writeBuffer));
+                            log.trace("Bytes: {}", Hex.encodeHexString(writeBuffer));
 
                             serialPort.writeBytes(writeBuffer, writeBuffer.length);
                             writeBuffer = new byte[]{};
@@ -82,7 +80,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                         ThreadUtil.silentSleep(10);
                     } catch (
                             Exception e) {
-                        logger.warn("Error: {}", e.getMessage());
+                        log.warn("Error: {}", e.getMessage());
                         ThreadUtil.silentSleep(1000);
                     }
                 }
@@ -95,7 +93,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
     @Override
     public void stop() {
-        logger.info("Stopping SerialWebSocketService");
+        log.info("Stopping SerialWebSocketService");
         serialPort.closePort();
 
         readThread.interrupt();

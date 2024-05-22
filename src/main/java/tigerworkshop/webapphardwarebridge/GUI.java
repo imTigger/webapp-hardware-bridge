@@ -1,25 +1,28 @@
 package tigerworkshop.webapphardwarebridge;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
+import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
+import java.net.URI;
 import java.util.Objects;
 
+@Log4j2
 public class GUI extends Application implements NotificationListenerInterface {
-    private static final Logger logger = LoggerFactory.getLogger(GUI.class);
+    private static final ConfigService configService = ConfigService.getInstance();
 
     TrayIcon trayIcon;
     SystemTray tray;
+
+    @Override
+    public void start(Stage primaryStage) {
+
+    }
 
     public static void main(String[] args) {
         GUI gui = new GUI();
@@ -27,51 +30,51 @@ public class GUI extends Application implements NotificationListenerInterface {
     }
 
     public void launch() {
-        Server server = new Server(this);
+        WebSocketServer webSocketServer = new WebSocketServer(this);
+        WebAPIServer webAPIServer = new WebAPIServer();
 
         // Create tray icon
         try {
             if (!SystemTray.isSupported()) {
-                logger.warn("SystemTray is not supported");
+                log.warn("SystemTray is not supported");
                 return;
             }
 
             final Image image = ImageIO.read(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("icon.png")));
 
             tray = SystemTray.getSystemTray();
-            trayIcon = new TrayIcon(image, Config.APP_NAME);
+            trayIcon = new TrayIcon(image, Constants.APP_NAME);
 
-            // Create a pop-up menu components
-            MenuItem settingItem = new MenuItem("Configurator");
-            settingItem.addActionListener(e -> Platform.runLater(() -> {
+            var desktop = Desktop.getDesktop();
+            var config = configService.getConfig();
+
+            MenuItem settingItem = new MenuItem("Web UI");
+            settingItem.addActionListener(e -> {
                 try {
-                    Platform.setImplicitExit(false);
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/setting.fxml"));
+                    if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
+                        throw new Exception("Desktop browse is not supported");
+                    }
 
-                    Stage stage = new Stage();
-                    stage.setTitle("WebApp Hardware Bridge Configurator");
-                    stage.setScene(new Scene(loader.load()));
-                    stage.setResizable(false);
-                    stage.show();
-                    stage.setOnHiding(event -> server.restart());
+                    desktop.browse(new URI(config.getWebApiServer().getUri()));
                 } catch (
                         Exception ex) {
-                    logger.error("Failed to open setting window", ex);
+                    log.error("Failed to open Web UI", ex);
                 }
-            }));
+            });
 
             MenuItem logItem = new MenuItem("Log");
             logItem.addActionListener(e -> {
                 try {
-                    Desktop.getDesktop().open(new File("log"));
+                    if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
+                        throw new Exception("Desktop open is not supported");
+                    }
+
+                    desktop.open(new File("log"));
                 } catch (
-                        IOException ex) {
-                    logger.error("Failed to open log folder", ex);
+                        Exception ex) {
+                    log.error("Failed to open log folder", ex);
                 }
             });
-
-            MenuItem restartItem = new MenuItem("Restart");
-            restartItem.addActionListener(e -> server.restart());
 
             MenuItem exitItem = new MenuItem("Exit");
             exitItem.addActionListener(e -> System.exit(0));
@@ -81,31 +84,31 @@ public class GUI extends Application implements NotificationListenerInterface {
             popup.add(settingItem);
             popup.add(logItem);
             popup.addSeparator();
-            popup.add(restartItem);
             popup.add(exitItem);
 
             trayIcon.setPopupMenu(popup);
 
             tray.add(trayIcon);
 
-            notify(Config.APP_NAME, " is running in background!", TrayIcon.MessageType.INFO);
+            notify(Constants.APP_NAME, " is running in background!", TrayIcon.MessageType.INFO);
         } catch (Exception e) {
-            logger.error("TrayIcon could not be added", e);
+            log.error("TrayIcon could not be added", e);
         }
 
-        server.start();
+        try {
+            webSocketServer.start();
+            webAPIServer.start();
+        } catch (
+                Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void notify(String title, String message, TrayIcon.MessageType messageType) {
         try {
             trayIcon.displayMessage(title, message, messageType);
         } catch (Exception e) {
-            logger.error("Failed to display notification", e);
+            log.error("Failed to display notification", e);
         }
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-
     }
 }

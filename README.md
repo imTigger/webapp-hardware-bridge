@@ -53,7 +53,7 @@ Common use cases:
 
 WebApp Hardware Bridge is a Java based application, which have more direct access to hardwares.
 
-It expose a WebSocket server on localhost which accept print jobs and serial connection.
+It expose a WebSocket webSocketServer on localhost which accept print jobs and serial connection.
 
 
 For print jobs, PDF/Images job are downloaded/decoded and then sent to mapped printer.
@@ -72,7 +72,7 @@ Therefore web apps do not need to care about the actual printer names.
 
 ## Known Issue
 
-- Browser refuse to connect to non-Secure WebSocket server
+- Browser refuse to connect to non-Secure WebSocket webSocketServer
   Firefox Workaround: Change "network.websocket.allowInsecureFromHTTPS" to true in about:config
 
 ## FAQs

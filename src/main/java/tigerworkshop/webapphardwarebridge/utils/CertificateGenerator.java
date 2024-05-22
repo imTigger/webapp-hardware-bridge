@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import lombok.extern.log4j.Log4j2;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
@@ -15,8 +16,6 @@ import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,9 +27,8 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+@Log4j2
 public class CertificateGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(CertificateGenerator.class);
-
     private static final String CERTIFICATE_ALGORITHM = "RSA";
     private static final String CERTIFICATE_ISSUER = "CN=127.0.0.1";
     private static final String CERTIFICATE_DOMAIN = "CN=127.0.0.1";
@@ -44,7 +42,7 @@ public class CertificateGenerator {
 
         if (!isCertificateAndKeyExist(certificatePath, keyPath)) {
             try {
-                logger.info("Certificate or private key does not exist, attempt to generate.");
+                log.info("Certificate or private key does not exist, attempt to generate.");
 
                 KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(CERTIFICATE_ALGORITHM);
                 keyPairGenerator.initialize(CERTIFICATE_BITS, new SecureRandom());
@@ -71,7 +69,7 @@ public class CertificateGenerator {
                 X509CertificateHolder certificateHolder = certificateBuilder.build(signer);
                 X509Certificate cert = new JcaX509CertificateConverter().getCertificate(certificateHolder);
 
-                logger.info("Certificate and private key generated.");
+                log.info("Certificate and private key generated.");
 
                 File directory = new File("tls");
                 if (!directory.isDirectory()) {
@@ -81,11 +79,11 @@ public class CertificateGenerator {
                 saveCert(cert, certificatePath);
                 saveKey(keyPair.getPrivate(), keyPath);
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 throw e;
             }
         } else {
-            logger.info("Certificate and private key already exists.");
+            log.info("Certificate and private key already exists.");
         }
     }
 
@@ -102,7 +100,7 @@ public class CertificateGenerator {
             writer.writeObject(cert);
             writer.close();
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -112,7 +110,7 @@ public class CertificateGenerator {
             writer.writeObject(new JcaPKCS8Generator(key, null));
             writer.close();
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 

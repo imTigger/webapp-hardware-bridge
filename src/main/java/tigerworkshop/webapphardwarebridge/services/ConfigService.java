@@ -1,0 +1,70 @@
+package tigerworkshop.webapphardwarebridge.services;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
+
+import java.io.File;
+import java.io.IOException;
+
+@Log4j2
+public class ConfigService {
+    private static final String CONFIG_FILENAME = "config.json";
+    private static final String CONFIG_DEFAULT_FILENAME = "config.default.json";
+    private static final String PRINTER_PLACEHOLDER = "";
+
+    @Getter
+    private static final ConfigService instance = new ConfigService();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Getter
+    private Config config = null;
+
+    private ConfigService() {
+        load();
+    }
+
+    public void load() {
+        try {
+            loadCurrent();
+        } catch (Exception e) {
+            log.warn("Failed to load config file", e);
+            try {
+                log.warn("Loading default config file", e);
+                loadDefault();
+                save();
+            } catch (Exception ex) {
+                log.error("Failed loading default config file", e);
+                System.exit(1);
+            }
+        }
+    }
+
+    public void loadCurrent() throws IOException {
+        loadFile(CONFIG_FILENAME);
+    }
+
+    public void loadDefault() throws IOException {
+        loadFile(CONFIG_DEFAULT_FILENAME);
+    }
+
+    private void loadFile(String filename) throws IOException {
+        config = objectMapper.readValue(new File(filename), Config.class);
+    }
+
+    public void save() {
+        try {
+            objectMapper.writeValue(new File(CONFIG_FILENAME), config);
+        } catch (Exception e) {
+            log.error("Failed to save config file", e);
+            System.exit(1);
+        }
+    }
+
+    public void addPrintTypeToList(String printType) {
+        config.getPrinter().getMappings().add(new Config.Mapping(printType, PRINTER_PLACEHOLDER));
+        save();
+    }
+}
