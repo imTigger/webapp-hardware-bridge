@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class Config {
         private Authentication authentication;
         private Tls tls;
 
+        @JsonIgnore
         public String getUri() {
             return "ws://" + address + ":" + port;
         }
@@ -45,6 +47,7 @@ public class Config {
         private Authentication authentication;
         private Tls tls;
 
+        @JsonIgnore
         public String getUri() {
             return "http://" + address + ":" + port;
         }
@@ -63,7 +66,6 @@ public class Config {
     public static class Authentication {
         private boolean enabled;
         private String token;
-        private String password;
     }
 
     @Data
@@ -80,7 +82,7 @@ public class Config {
     @NoArgsConstructor
     public static class Downloader {
         private boolean ignoreTLSCertificateError;
-        private double downloadTimeout;
+        private double timeout;
         private String path;
     }
 
@@ -93,7 +95,6 @@ public class Config {
         private boolean addUnknownPrintTypeToList;
         private boolean fallbackToDefaultPrinter;
         private int printerDPI;
-        private double downloadTimeout;
         private ArrayList<Mapping> mappings;
     }
 

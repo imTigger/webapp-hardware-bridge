@@ -10,6 +10,4 @@ public class PrinterService {
 
     private PrinterService() {
     }
-
-
 }

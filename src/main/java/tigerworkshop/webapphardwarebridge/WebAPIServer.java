@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import lombok.extern.log4j.Log4j2;
-import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
@@ -15,12 +14,16 @@ import java.util.ArrayList;
 @Log4j2
 public class WebAPIServer {
     private static final WebAPIServer server = new WebAPIServer();
-    private static final Javalin app = Javalin.create();
+    private static final Javalin app = Javalin.create(config -> {
+        config.staticFiles.add(staticFiles -> {
+            staticFiles.hostedPath = "/";
+            staticFiles.directory = "web";
+        });
+    });
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     ConfigService configService = ConfigService.getInstance();
-    Config config = configService.getConfig();
 
     public WebAPIServer() {
 
@@ -34,14 +37,14 @@ public class WebAPIServer {
         log.info("Web API Server started");
 
         app
-                .get("/", ctx -> ctx.result("WebApp Hardware Bridge API Server"))
-                .get("/config", ctx -> {
-                    ctx.contentType(ContentType.APPLICATION_JSON).result(config.toJson());
+                .get("/config.json", ctx -> {
+                    ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
-                .put("/config", ctx -> {
-                    ctx.contentType(ContentType.APPLICATION_JSON).result(config.toJson());
+                .put("/config.json", ctx -> {
+                    configService.loadFromJson(ctx.body());
+                    ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
-                .get("/printers", ctx -> {
+                .get("/system/printers", ctx -> {
                     PrintService[] services = PrinterJob.lookupPrintServices();
                     var dtos = new ArrayList<PrintServiceDTO>();
 
@@ -51,10 +54,10 @@ public class WebAPIServer {
 
                     ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
                 })
-                .get("/serials", ctx -> {
+                .get("/system/serials", ctx -> {
                     ctx.result("Serials");
                 })
-                .start(config.getWebApiServer().getPort());
+                .start(configService.getConfig().getWebApiServer().getPort());
     }
 
     public void stop() {

@@ -40,7 +40,7 @@ public class DocumentService {
     }
 
     public static void download(String urlString) throws Exception {
-        DownloadUtil.file(urlString, getPathFromUrl(urlString), true, CONFIG_SERVICE.getConfig().getDownloader().isIgnoreTLSCertificateError(), CONFIG_SERVICE.getConfig().getDownloader().getDownloadTimeout());
+        DownloadUtil.file(urlString, getPathFromUrl(urlString), true, CONFIG_SERVICE.getConfig().getDownloader().isIgnoreTLSCertificateError(), CONFIG_SERVICE.getConfig().getDownloader().getTimeout());
     }
 
     public static File getFileFromUrl(String urlString) {

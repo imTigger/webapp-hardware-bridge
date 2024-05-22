@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -23,34 +24,28 @@ public class ConfigService {
     private Config config = null;
 
     private ConfigService() {
-        load();
-    }
-
-    public void load() {
         try {
-            loadCurrent();
+            loadFromFile(CONFIG_FILENAME);
         } catch (Exception e) {
-            log.warn("Failed to load config file", e);
+            log.warn("Failed loading config file", e);
             try {
                 log.warn("Loading default config file", e);
-                loadDefault();
+                loadFromFile(CONFIG_DEFAULT_FILENAME);
                 save();
             } catch (Exception ex) {
-                log.error("Failed loading default config file", e);
+                log.error("Failed loading default config file", ex);
                 System.exit(1);
             }
         }
     }
 
-    public void loadCurrent() throws IOException {
-        loadFile(CONFIG_FILENAME);
+    public void loadFromJson(String json) throws JsonProcessingException {
+        log.info("Loading config from JSON: {}", json);
+        config = objectMapper.readValue(json, Config.class);
     }
 
-    public void loadDefault() throws IOException {
-        loadFile(CONFIG_DEFAULT_FILENAME);
-    }
-
-    private void loadFile(String filename) throws IOException {
+    private void loadFromFile(String filename) throws IOException {
+        log.info("Loading config from file: {}", filename);
         config = objectMapper.readValue(new File(filename), Config.class);
     }
 

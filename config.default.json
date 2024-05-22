@@ -20,7 +20,7 @@
     "port": 12222,
     "authentication": {
       "enabled": false,
-      "password": ""
+      "token": ""
     },
     "tls": {
       "enabled": false,
@@ -34,10 +34,9 @@
     "url": "wss://127.0.0.1:22212"
   },
   "downloader": {
-    "enabled": true,
-    "downloadTimeout": 30.0,
-    "downloadPath": "downloads",
-    "maxDownloadSize": 0
+    "timeout": 30.0,
+    "path": "downloads",
+    "ignoreTLSCertificateError": false
   },
   "printer": {
     "enabled": true,
@@ -46,7 +45,6 @@
     "addUnknownPrintTypeToList": true,
     "fallbackToDefaultPrinter": false,
     "printerDPI": 0,
-    "downloadTimeout": 30.0,
     "mappings": [
       {
         "type": "LABEL",
