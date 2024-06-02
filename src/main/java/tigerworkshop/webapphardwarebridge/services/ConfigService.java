@@ -11,12 +11,12 @@ import java.io.IOException;
 
 @Log4j2
 public class ConfigService {
+    @Getter
+    private static final ConfigService instance = new ConfigService();
+
     private static final String CONFIG_FILENAME = "config.json";
     private static final String CONFIG_DEFAULT_FILENAME = "config.default.json";
     private static final String PRINTER_PLACEHOLDER = "";
-
-    @Getter
-    private static final ConfigService instance = new ConfigService();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -51,7 +51,7 @@ public class ConfigService {
 
     public void save() {
         try {
-            objectMapper.writeValue(new File(CONFIG_FILENAME), config);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(CONFIG_FILENAME), config);
         } catch (Exception e) {
             log.error("Failed to save config file", e);
             System.exit(1);
@@ -59,7 +59,7 @@ public class ConfigService {
     }
 
     public void addPrintTypeToList(String printType) {
-        config.getPrinter().getMappings().add(new Config.Mapping(printType, PRINTER_PLACEHOLDER));
+        config.getPrinter().getMappings().add(new Config.PrinterMapping(printType, PRINTER_PLACEHOLDER, false, true, 0));
         save();
     }
 }

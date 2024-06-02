@@ -90,25 +90,34 @@ public class Config {
     @NoArgsConstructor
     public static class Printer {
         private boolean enabled;
-        private boolean autoRotate;
-        private boolean resetImageableArea;
-        private boolean addUnknownPrintTypeToList;
-        private boolean fallbackToDefaultPrinter;
-        private int printerDPI;
-        private ArrayList<Mapping> mappings;
+        private boolean autoAddUnknownType;
+        private boolean fallbackToDefault;
+        private ArrayList<PrinterMapping> mappings;
     }
 
     @Data
     @NoArgsConstructor
     public static class Serial {
         private boolean enabled;
-        private ArrayList<Mapping> mappings;
+        private ArrayList<SerialMapping> mappings;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Mapping {
+    public static class PrinterMapping {
+        private String type;
+        private String name;
+
+        private boolean autoRotate = false;
+        private boolean resetImageableArea = true;
+        private int forceDPI = 0;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SerialMapping {
         private String type;
         private String name;
     }

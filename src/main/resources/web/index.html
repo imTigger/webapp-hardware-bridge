@@ -2,116 +2,87 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
     <title>WebApp Hardware Bridge Web UI</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none" href="#">
-            <span class="fs-4">WebApp Hardware Bridge Web UI</span>
-        </a>
-    </header>
-</div>
-
-<div class="b-example-divider"></div>
-
 <div @vue:mounted="mounted" v-scope>
     <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none" href="#">
+                <span class="fs-4">WebApp Hardware Bridge Web UI</span>
+            </a>
+            <button @click="saveConfig" class="btn btn-success">Save</button>
+        </header>
+    </div>
+    <div class="container" v-if="config != null">
         <div class="row">
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">WebSocket</h5>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-bind">Bind</label>
+                        <h5 class="card-title mb-3">WebSocket</h5>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="websocket-bind">Bind</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="websocket-bind" type="text"
-                                       v-model="config.webSocketServer.bind">
+                                <input class="form-control form-control-sm" id="websocket-bind" type="text" v-model="config.webSocketServer.bind">
                             </div>
                         </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-address">Address</label>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="websocket-address">Address</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="websocket-address" type="text"
-                                       v-model="config.webSocketServer.address">
+                                <input class="form-control form-control-sm" id="websocket-address" type="text" v-model="config.webSocketServer.address">
                             </div>
                         </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-port">Port</label>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="websocket-port">Port</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="websocket-port" max="65535" min="1024" type="number"
-                                       v-model="config.webSocketServer.port">
+                                <input class="form-control form-control-sm" id="websocket-port" max="65535" min="1024" type="number" v-model="config.webSocketServer.port">
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-tls-enabled">Enable Authentication</label>
-                            <div class="col-sm-8">
-                                <input class="form-check-input" id="websocket-authentication-enabled" type="checkbox"
-                                       v-model="config.webSocketServer.authentication.enabled">
+                            <label class="col-sm-10" for="websocket-authentication-enabled">Enable authentication</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="websocket-authentication-enabled" type="checkbox" v-model="config.webSocketServer.authentication.enabled">
                             </div>
                         </div>
-
                         <div class="card mb-2" v-if="config.webSocketServer.authentication.enabled">
-                            <div class="card-body">
-                                <h6 class="card-title">Authentication</h6>
-
+                            <div class="card-body"><h6 class="card-title mb-3">Authentication</h6>
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="websocket-authentication-token">Token</label>
                                     <div class="col-sm-8">
-                                        <input class=form-control id="websocket-authentication-token" type="text"
-                                               v-model="config.webSocketServer.authentication.token">
+                                        <input class="form-control form-control-sm" id="websocket-authentication-token" type="text" v-model="config.webSocketServer.authentication.token">
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-tls-enabled">Enable TLS</label>
-                            <div class="col-sm-8">
-                                <input class="form-check-input" id="websocket-tls-enabled" type="checkbox"
-                                       v-model="config.webSocketServer.tls.enabled">
+                            <label class="col-sm-10" for="websocket-tls-enabled">Enable TLS</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="websocket-tls-enabled" type="checkbox" v-model="config.webSocketServer.tls.enabled">
                             </div>
                         </div>
-
                         <div class="card mb-2" v-if="config.webSocketServer.tls.enabled">
-                            <div class="card-body">
-                                <h6 class="card-title">TLS</h6>
-
+                            <div class="card-body"><h6 class="card-title mb-3">TLS</h6>
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="websocket-tls-self-signed">Self Signed</label>
                                     <div class="col-sm-8">
-                                        <input class="form-check-input" id="websocket-tls-self-signed" type="checkbox"
-                                               v-model="config.webSocketServer.tls.selfSigned">
+                                        <input class="form-check-input" id="websocket-tls-self-signed" type="checkbox" v-model="config.webSocketServer.tls.selfSigned">
                                     </div>
                                 </div>
-
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="websocket-tls-cert">Cert</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control" id="websocket-tls-cert" type="text"
-                                               v-model="config.webSocketServer.tls.cert">
+                                        <input class="form-control form-control-sm" id="websocket-tls-cert" type="text" v-model="config.webSocketServer.tls.cert">
                                     </div>
                                 </div>
-
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="websocket-tls-key">Key</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control" id="websocket-tls-key" type="text"
-                                               v-model="config.webSocketServer.tls.key">
+                                        <input class="form-control form-control-sm" id="websocket-tls-key" type="text" v-model="config.webSocketServer.tls.key">
                                     </div>
                                 </div>
-
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="websocket-tls-ca-bundle">CA Bundle</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control" id="websocket-tls-ca-bundle" type="text"
-                                               v-model="config.webSocketServer.tls.caBundle">
+                                        <input class="form-control form-control-sm" id="websocket-tls-ca-bundle" type="text" v-model="config.webSocketServer.tls.caBundle">
                                     </div>
                                 </div>
                             </div>
@@ -119,99 +90,71 @@
                     </div>
                 </div>
             </div>
-
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Web UI / API</h5>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-bind">Bind</label>
+                        <h5 class="card-title mb-3">Web UI / API</h5>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="web-api-bind">Bind</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="web-api-bind" type="text"
-                                       v-model="config.webApiServer.bind">
+                                <input class="form-control form-control-sm" id="web-api-bind" type="text" v-model="config.webApiServer.bind">
                             </div>
                         </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-address">Address</label>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="web-api-address">Address</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="web-api-address" type="text"
-                                       v-model="config.webApiServer.address">
+                                <input class="form-control form-control-sm" id="web-api-address" type="text" v-model="config.webApiServer.address">
                             </div>
                         </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-port">Port</label>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="web-api-port">Port</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="web-api-port" max="65535" min="1024" type="number"
-                                       v-model="config.webApiServer.port">
+                                <input class="form-control form-control-sm" id="web-api-port" max="65535" min="1024" type="number" v-model="config.webApiServer.port">
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-tls-enabled">Enable Authentication</label>
-                            <div class="col-sm-8">
-                                <input class="form-check-input" id="web-api-authentication-enabled" type="checkbox"
-                                       v-model="config.webApiServer.authentication.enabled">
+                            <label class="col-sm-10" for="web-api-authentication-enabled">Enable authentication</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="web-api-authentication-enabled" type="checkbox" v-model="config.webApiServer.authentication.enabled">
                             </div>
                         </div>
-
                         <div class="card mb-2" v-if="config.webApiServer.authentication.enabled">
-                            <div class="card-body">
-                                <h6 class="card-title">Authentication</h6>
-
+                            <div class="card-body"><h6 class="card-title mb-3">Authentication</h6>
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="web-api-authentication-token">Token</label>
                                     <div class="col-sm-8">
-                                        <input class=form-control id="web-api-authentication-token" type="text"
-                                               v-model="config.webApiServer.authentication.token">
+                                        <input class="form-control form-control-sm" id="web-api-authentication-token" type="text" v-model="config.webApiServer.authentication.token">
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-tls-enabled">Enable TLS</label>
-                            <div class="col-sm-8">
-                                <input class="form-check-input" id="web-api-tls-enabled" type="checkbox"
-                                       v-model="config.webApiServer.tls.enabled">
+                            <label class="col-sm-10" for="web-api-tls-enabled">Enable TLS</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="web-api-tls-enabled" type="checkbox" v-model="config.webApiServer.tls.enabled">
                             </div>
                         </div>
-
                         <div class="card mb-2" v-if="config.webApiServer.tls.enabled">
-                            <div class="card-body">
-                                <h6 class="card-title">TLS</h6>
-
+                            <div class="card-body"><h6 class="card-title mb-3">TLS</h6>
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="web-api-tls-self-signed">Self Signed</label>
                                     <div class="col-sm-8">
-                                        <input class="form-check-input" id="web-api-tls-self-signed" type="checkbox"
-                                               v-model="config.webApiServer.tls.selfSigned">
+                                        <input class="form-check-input" id="web-api-tls-self-signed" type="checkbox" v-model="config.webApiServer.tls.selfSigned">
                                     </div>
                                 </div>
-
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="web-api-tls-cert">Cert</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control" id="web-api-tls-cert" type="text"
-                                               v-model="config.webApiServer.tls.cert">
+                                        <input class="form-control form-control-sm" id="web-api-tls-cert" type="text" v-model="config.webApiServer.tls.cert">
                                     </div>
                                 </div>
-
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="web-api-tls-key">Key</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control" id="web-api-tls-key" type="text"
-                                               v-model="config.webApiServer.tls.key">
+                                        <input class="form-control form-control-sm" id="web-api-tls-key" type="text" v-model="config.webApiServer.tls.key">
                                     </div>
                                 </div>
-
                                 <div class="form-group row mb-2">
                                     <label class="col-sm-4" for="web-api-tls-ca-bundle">CA Bundle</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control" id="web-api-tls-ca-bundle" type="text"
-                                               v-model="config.webApiServer.tls.caBundle">
+                                        <input class="form-control form-control-sm" id="web-api-tls-ca-bundle" type="text" v-model="config.webApiServer.tls.caBundle">
                                     </div>
                                 </div>
                             </div>
@@ -219,126 +162,197 @@
                     </div>
                 </div>
             </div>
-
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Cloud Proxy</h5>
-
+                        <h5 class="card-title mb-3">Cloud Proxy</h5>
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="cloud-proxy-enabled">Enable</label>
-                            <div class="col-sm-8">
-                                <input class="form-check-input" id="cloud-proxy-enabled" type="checkbox"
-                                       v-model="config.cloudProxy.enabled">
+                            <label class="col-sm-10" for="cloud-proxy-enabled">Enabled</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="cloud-proxy-enabled" type="checkbox" v-model="config.cloudProxy.enabled">
                             </div>
                         </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="cloud-proxy-url">URL</label>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="cloud-proxy-url">URL</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="cloud-proxy-url" type="text"
-                                       v-model="config.cloudProxy.url">
+                                <input class="form-control form-control-sm" id="cloud-proxy-url" type="text" v-model="config.cloudProxy.url">
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
                             <label class="col-sm-4" for="cloud-proxy-timeout">Timeout</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="cloud-proxy-timeout" type="number"
-                                       v-model="config.cloudProxy.timeout">
+                                <input class="form-control form-control-sm" id="cloud-proxy-timeout" type="number" v-model="config.cloudProxy.timeout">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Downloader</h5>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="downloader-path">Path</label>
+                        <h5 class="card-title mb-3">Downloader</h5>
+                        <div class="form-group row mb-2"><label class="col-sm-4" for="downloader-path">Path</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="downloader-path" type="text"
-                                       v-model="config.downloader.path">
+                                <input class="form-control form-control-sm" id="downloader-path" type="text" v-model="config.downloader.path">
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
                             <label class="col-sm-4" for="downloader-timeout">Timeout</label>
                             <div class="col-sm-8">
-                                <input class="form-control" id="downloader-timeout" type="number"
-                                       v-model="config.downloader.timeout">
+                                <input class="form-control form-control-sm" id="downloader-timeout" type="number" v-model="config.downloader.timeout">
                             </div>
                         </div>
-
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="downloader-ignore-tls-certificate-error">Ignore TLS Certificate
-                                Error</label>
-                            <div class="col-sm-8">
-                                <input class="form-check-input" id="downloader-ignore-tls-certificate-error"
-                                       type="checkbox"
-                                       v-model="config.downloader.ignoreTLSCertificateError">
+                            <label class="col-sm-10" for="downloader-ignore-tls-certificate-error">Ignore TLS certificate error</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="downloader-ignore-tls-certificate-error" type="checkbox" v-model="config.downloader.ignoreTLSCertificateError">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Printers</h5>
+                        <h5 class="card-title mb-3">Printers
+                            <button @click="addPrinter" class="btn btn-sm btn-success float-end">+</button>
+                        </h5>
+                        <div class="clearfix pb-3"></div>
+                        <div class="form-group row mb-2"><label class="col-sm-10" for="printer-enabled">Enabled</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="printer-enabled" type="checkbox" v-model="config.printer.enabled">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-auto-add-unknown-type">Auto add unknown type</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="printer-auto-add-unknown-type" type="checkbox" v-model="config.printer.autoAddUnknownType">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-fallback-to-default">Fallback to default printer if none matched</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="printer-fallback-to-default" type="checkbox" v-model="config.printer.fallbackToDefault">
+                            </div>
+                        </div>
+                        <div class="card mb-2" v-for="(printer, index) in config.printer.mappings">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    Printer {{ index + 1 }} <span v-if="printer.type">({{ printer.type }})</span>
+                                    <button @click="removePrinter(index)" class="btn btn-sm btn-danger float-end">-</button>
+                                </h5>
+
+                                <div class="form-group row mb-2"><label class="col-sm-4">Type</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="text" v-model="printer.type">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-2"><label class="col-sm-4">Printer Name</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control form-control-sm" type="text" v-model="printer.name">
+                                            <option :value="printerSelection.name" v-for="printerSelection in printers">{{ printerSelection.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-2"><label class="col-sm-10">Auto rotate</label>
+                                    <div class="col-sm-2 text-end">
+                                        <input class="form-check-input" type="checkbox" v-model="printer.autoRotate">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-2"><label class="col-sm-10">Reset imageable area</label>
+                                    <div class="col-sm-2 text-end">
+                                        <input class="form-check-input" type="checkbox" v-model="printer.resetImageableArea">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-2"><label class="col-sm-4">Force DPI</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="number" v-model="printer.forceDPI">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Serials</h5>
+                        <h5 class="card-title mb-3">Serials
+                            <button @click="addSerial" class="btn btn-sm btn-success float-end">+</button>
+                        </h5>
+                        <div class="clearfix pb-3"></div>
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-enabled">Enabled</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="serial-enabled" type="checkbox" v-model="config.serial.enabled">
+                            </div>
+                        </div>
+                        <div class="card mb-2" v-for="(serial, index) in config.serial.mappings">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    Serial {{ index + 1 }} <span v-if="serial.type">({{ serial.type }})</span>
+                                    <button @click="removeSerial(index)" class="btn btn-sm btn-danger float-end">-</button>
+                                </h5>
+                                <div class="form-group row mb-2"><label class="col-sm-4">Type</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="text" v-model="serial.type">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-2"><label class="col-sm-4">Serial Port</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control form-control-sm" type="text" v-model="serial.name">
+                                            <option :value="serial.name" v-for="serial in serials">{{ serial.name }}</option>
+                                        </select></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <button @click="loadConfig" class="btn btn-primary">Load</button>
-        <button @click="saveConfig" class="btn btn-success">Save</button>
     </div>
 </div>
-
 <script src="js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script type="module">import {createApp} from './js/petite-vue.js'
 
-<script type="module">
-    import {createApp} from 'https://unpkg.com/petite-vue?module'
+createApp({
+    config: null,
+    printers: [],
+    serials: [],
 
-    createApp({
-        // exposed to all expressions
-        count: 0,
-        config: null,
-
-        // getters
-        get plusOne() {
-            return this.count + 1
-        },
-        // methods
-        increment() {
-            this.count++
-        },
-        loadConfig() {
-            axios.get('/config.json')
-                .then(response => this.config = response.data)
-        },
-        saveConfig() {
-            axios.put('/config.json', this.config)
-                .then(response => this.config = response.data)
-        },
-        mounted() {
-            this.loadConfig()
-        }
-    }).mount()
-</script>
+    loadConfig() {
+        axios.get('/config.json')
+            .then(response => this.config = response.data)
+    },
+    saveConfig() {
+        axios.put('/config.json', this.config)
+            .then(response => this.config = response.data)
+    },
+    addPrinter() {
+        this.config.printer.mappings.push({type: '', name: ''})
+    },
+    removePrinter(index) {
+        this.config.printer.mappings.splice(index, 1)
+    },
+    addSerial() {
+        this.config.serial.mappings.push({type: '', name: ''})
+    },
+    removeSerial(index) {
+        this.config.serial.mappings.splice(index, 1)
+    },
+    loadPrinters() {
+        axios.get('/system/printers.json')
+            .then(response => this.printers = response.data)
+    },
+    loadSerials() {
+        axios.get('/system/serials.json')
+            .then(response => this.serials = response.data)
+    },
+    mounted() {
+        this.loadConfig()
+        this.loadPrinters()
+        this.loadSerials()
+    }
+}).mount()</script>
 </body>
 </html>

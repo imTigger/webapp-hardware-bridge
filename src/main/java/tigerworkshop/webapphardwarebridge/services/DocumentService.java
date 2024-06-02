@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.services;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.bouncycastle.util.encoders.Base64;
 import tigerworkshop.webapphardwarebridge.Constants;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 
 @Log4j2
 public class DocumentService {
+    @Getter
     private static final DocumentService instance = new DocumentService();
     private static final ConfigService CONFIG_SERVICE = ConfigService.getInstance();
 
@@ -21,10 +23,6 @@ public class DocumentService {
         if (!directory.exists()) {
             directory.mkdir();
         }
-    }
-
-    public static DocumentService getInstance() {
-        return instance;
     }
 
     public static void decodeBase64(String base64, String urlString) throws Exception {

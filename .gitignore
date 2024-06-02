@@ -6,5 +6,5 @@ log/
 out/
 jre/
 build/
-setting.json
+config.json
 *.exe

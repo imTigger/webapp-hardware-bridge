@@ -14,12 +14,8 @@ import java.util.ArrayList;
 @Log4j2
 public class WebAPIServer {
     private static final WebAPIServer server = new WebAPIServer();
-    private static final Javalin app = Javalin.create(config -> {
-        config.staticFiles.add(staticFiles -> {
-            staticFiles.hostedPath = "/";
-            staticFiles.directory = "web";
-        });
-    });
+
+    private Javalin javalinServer;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -36,15 +32,19 @@ public class WebAPIServer {
     public void start() {
         log.info("Web API Server started");
 
-        app
+        javalinServer = Javalin.create(config -> config.staticFiles.add(staticFiles -> {
+                    staticFiles.hostedPath = "/";
+                    staticFiles.directory = "web";
+                }))
                 .get("/config.json", ctx -> {
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
                 .put("/config.json", ctx -> {
                     configService.loadFromJson(ctx.body());
+                    configService.save();
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
-                .get("/system/printers", ctx -> {
+                .get("/system/printers.json", ctx -> {
                     PrintService[] services = PrinterJob.lookupPrintServices();
                     var dtos = new ArrayList<PrintServiceDTO>();
 
@@ -54,13 +54,13 @@ public class WebAPIServer {
 
                     ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
                 })
-                .get("/system/serials", ctx -> {
+                .get("/system/serials.json", ctx -> {
                     ctx.result("Serials");
                 })
-                .start(configService.getConfig().getWebApiServer().getPort());
+                .start(configService.getConfig().getWebApiServer().getBind(), configService.getConfig().getWebApiServer().getPort());
     }
 
     public void stop() {
-        app.stop();
+        javalinServer.stop();
     }
 }

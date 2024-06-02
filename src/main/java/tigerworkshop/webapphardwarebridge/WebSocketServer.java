@@ -1,7 +1,6 @@
 package tigerworkshop.webapphardwarebridge;
 
 import lombok.extern.log4j.Log4j2;
-import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
@@ -13,8 +12,8 @@ import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketServi
 @Log4j2
 public class WebSocketServer {
     private static final WebSocketServer server = new WebSocketServer();
+
     private static final ConfigService configService = ConfigService.getInstance();
-    private static final Config config = configService.getConfig();
 
     private BridgeWebSocketServer bridgeWebSocketServer;
 
@@ -38,6 +37,7 @@ public class WebSocketServer {
     }
 
     public void start() throws Exception {
+        var config = configService.getConfig();
         var webSocketConfig = config.getWebSocketServer();
 
         // Create WebSocket Server

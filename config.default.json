@@ -40,11 +40,8 @@
   },
   "printer": {
     "enabled": true,
-    "autoRotate": false,
-    "resetImageableArea": true,
-    "addUnknownPrintTypeToList": true,
-    "fallbackToDefaultPrinter": false,
-    "printerDPI": 0,
+    "autoAddUnknownType": true,
+    "fallbackToDefault": false,
     "mappings": [
       {
         "type": "LABEL",
