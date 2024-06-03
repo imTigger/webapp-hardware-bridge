@@ -8,8 +8,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PrintResult {
-    public int status;
-    public String id;
-    public String url;
+    public Boolean success;
     public String message;
+    public String id;
+    public String printerName;
 }

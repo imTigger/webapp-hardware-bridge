@@ -82,22 +82,24 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Prints a PrintDocument
      */
     public void printDocument(PrintDocument printDocument) throws Exception {
+        var printerSearchResult = searchPrinterForType(printDocument.getType());
+
         try {
             if (notificationListener != null) {
                 notificationListener.notify("Printing " + printDocument.getType(), printDocument.getUrl(), TrayIcon.MessageType.INFO);
             }
 
             if (isRaw(printDocument)) {
-                printRaw(printDocument);
+                printRaw(printDocument, printerSearchResult);
             } else if (isImage(printDocument)) {
-                printImage(printDocument);
+                printImage(printDocument, printerSearchResult);
             } else if (isPDF(printDocument)) {
-                printPDF(printDocument);
+                printPDF(printDocument, printerSearchResult);
             } else {
                 throw new Exception("Unknown file type: " + printDocument.getUrl());
             }
 
-            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(0, printDocument.getId(), printDocument.getUrl(), "Success")));
+            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(true, "Success", printDocument.getId(), printerSearchResult.getName())));
         } catch (Exception e) {
             log.error("Document Print Error, deleting downloaded document");
             DocumentService.deleteFileFromUrl(printDocument.getUrl());
@@ -106,7 +108,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 notificationListener.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
             }
 
-            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(1, printDocument.getId(), printDocument.getUrl(), e.getClass().getName() + " - " + e.getMessage())));
+            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult.getName())));
 
             throw e;
         }
@@ -142,7 +144,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     /**
      * Prints raw bytes to specified printer.
      */
-    private void printRaw(PrintDocument printDocument) throws PrinterException, PrintException {
+    private void printRaw(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrinterException, PrintException {
         log.debug("printRaw::{}", printDocument);
         long timeStart = System.currentTimeMillis();
 
@@ -159,7 +161,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     /**
      * Prints image to specified printer.
      */
-    private void printImage(PrintDocument printDocument) throws PrinterException, IOException {
+    private void printImage(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrinterException, IOException {
         log.debug("printImage::{}", printDocument);
 
         File file = DocumentService.getFileFromUrl(printDocument.getUrl());
@@ -168,31 +170,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         long timeStart = System.currentTimeMillis();
 
-        var printerSearchResult = searchPrinterForType(printDocument.getType());
-
-        DocPrintJob docPrintJob = printerSearchResult.getDocPrintJob();
-
         PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPrintService(docPrintJob.getPrintService());
+        job.setPrintService(printerSearchResult.getDocPrintJob().getPrintService());
 
-        final PageFormat pageFormat = job.defaultPage();
-
-        log.debug("PageFormat Size: {} x {}", pageFormat.getWidth(), pageFormat.getHeight());
-        log.debug("PageFormat Imageable Size:{} x {}, XY: {}, {}", pageFormat.getImageableWidth(), pageFormat.getImageableHeight(), pageFormat.getImageableX(), pageFormat.getImageableY());
-        log.debug("Paper Size: {} x {}", pageFormat.getPaper().getWidth(), pageFormat.getPaper().getHeight());
-        log.debug("Paper Imageable Size: {} x {}, XY: {}, {}", pageFormat.getPaper().getImageableWidth(), pageFormat.getPaper().getImageableHeight(), pageFormat.getPaper().getImageableX(), pageFormat.getPaper().getImageableY());
-
-        // Reset Imageable Area
-        if (printerSearchResult.getMapping().isResetImageableArea()) {
-            log.debug("PageFormat reset enabled");
-            Paper paper = pageFormat.getPaper();
-            paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
-            pageFormat.setPaper(paper);
-        }
-
-        log.debug("Final Paper Size: {} x {}", pageFormat.getPaper().getWidth(), pageFormat.getPaper().getHeight());
-        log.debug("Final Paper Imageable Size: {} x {}, XY: {}, {}", pageFormat.getPaper().getImageableWidth(), pageFormat.getPaper().getImageableHeight(), pageFormat.getPaper().getImageableX(), pageFormat.getPaper().getImageableY());
-
+        var pageFormat = getPageFormat(job, printerSearchResult);
 
         Image image = ImageIO.read(new File(path));
 
@@ -218,7 +199,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     /**
      * Prints PDF to specified printer.
      */
-    private void printPDF(PrintDocument printDocument) throws PrinterException, IOException {
+    private void printPDF(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrinterException, IOException {
         log.debug("printPDF::{}", printDocument);
 
         File file = DocumentService.getFileFromUrl(printDocument.getUrl());
@@ -227,30 +208,12 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         long timeStart = System.currentTimeMillis();
 
-        var printerSearchResult = searchPrinterForType(printDocument.getType());
-
         DocPrintJob docPrintJob = printerSearchResult.getDocPrintJob();
 
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(docPrintJob.getPrintService());
 
-        final PageFormat pageFormat = job.defaultPage();
-
-        log.debug("PageFormat Size: {} x {}", pageFormat.getWidth(), pageFormat.getHeight());
-        log.debug("PageFormat Imageable Size:{} x {}, XY: {}, {}", pageFormat.getImageableWidth(), pageFormat.getImageableHeight(), pageFormat.getImageableX(), pageFormat.getImageableY());
-        log.debug("Paper Size: {} x {}", pageFormat.getPaper().getWidth(), pageFormat.getPaper().getHeight());
-        log.debug("Paper Imageable Size: {} x {}, XY: {}, {}", pageFormat.getPaper().getImageableWidth(), pageFormat.getPaper().getImageableHeight(), pageFormat.getPaper().getImageableX(), pageFormat.getPaper().getImageableY());
-
-        // Reset Imageable Area
-        if (printerSearchResult.getMapping().isResetImageableArea()) {
-            log.debug("PageFormat reset enabled");
-            Paper paper = pageFormat.getPaper();
-            paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
-            pageFormat.setPaper(paper);
-        }
-
-        log.debug("Final Paper Size: {} x {}", pageFormat.getPaper().getWidth(), pageFormat.getPaper().getHeight());
-        log.debug("Final Paper Imageable Size: {} x {}, XY: {}, {}", pageFormat.getPaper().getImageableWidth(), pageFormat.getPaper().getImageableHeight(), pageFormat.getPaper().getImageableX(), pageFormat.getPaper().getImageableY());
+        var pageFormat = getPageFormat(job, printerSearchResult);
 
         try (PDDocument document = PDDocument.load(new File(path))) {
             Book book = new Book();
@@ -285,6 +248,28 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
             log.info("Document {} printed in {} ms", path, timeFinish - timeStart);
         }
+    }
+
+    private PageFormat getPageFormat(PrinterJob job, PrinterSearchResult printerSearchResult) {
+        final PageFormat pageFormat = job.defaultPage();
+
+        log.debug("PageFormat Size: {} x {}", pageFormat.getWidth(), pageFormat.getHeight());
+        log.debug("PageFormat Imageable Size:{} x {}, XY: {}, {}", pageFormat.getImageableWidth(), pageFormat.getImageableHeight(), pageFormat.getImageableX(), pageFormat.getImageableY());
+        log.debug("Paper Size: {} x {}", pageFormat.getPaper().getWidth(), pageFormat.getPaper().getHeight());
+        log.debug("Paper Imageable Size: {} x {}, XY: {}, {}", pageFormat.getPaper().getImageableWidth(), pageFormat.getPaper().getImageableHeight(), pageFormat.getPaper().getImageableX(), pageFormat.getPaper().getImageableY());
+
+        // Reset Imageable Area
+        if (printerSearchResult.getMapping().isResetImageableArea()) {
+            log.debug("PageFormat reset enabled");
+            Paper paper = pageFormat.getPaper();
+            paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
+            pageFormat.setPaper(paper);
+        }
+
+        log.debug("Final Paper Size: {} x {}", pageFormat.getPaper().getWidth(), pageFormat.getPaper().getHeight());
+        log.debug("Final Paper Imageable Size: {} x {}, XY: {}, {}", pageFormat.getPaper().getImageableWidth(), pageFormat.getPaper().getImageableHeight(), pageFormat.getPaper().getImageableX(), pageFormat.getPaper().getImageableY());
+
+        return pageFormat;
     }
 
     /**
