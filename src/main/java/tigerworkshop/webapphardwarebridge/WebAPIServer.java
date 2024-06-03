@@ -35,6 +35,7 @@ public class WebAPIServer {
         log.info("Web API Server started");
 
         javalinServer = Javalin.create(config -> {
+                    config.showJavalinBanner = false;
                     config.staticFiles.add(staticFiles -> staticFiles.directory = "web");
                     config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
                 })
