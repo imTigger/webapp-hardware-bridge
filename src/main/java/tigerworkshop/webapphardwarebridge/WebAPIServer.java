@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fazecast.jSerialComm.SerialPort;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
 import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
@@ -33,10 +34,10 @@ public class WebAPIServer {
     public void start() {
         log.info("Web API Server started");
 
-        javalinServer = Javalin.create(config -> config.staticFiles.add(staticFiles -> {
-                    staticFiles.hostedPath = "/";
-                    staticFiles.directory = "web";
-                }))
+        javalinServer = Javalin.create(config -> {
+                    config.staticFiles.add(staticFiles -> staticFiles.directory = "web");
+                    config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
+                })
                 .get("/config.json", ctx -> {
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
@@ -55,7 +56,7 @@ public class WebAPIServer {
                 })
                 .get("/system/serials.json", ctx -> {
                     var dtos = new ArrayList<>();
-                    for (SerialPort port : SerialPort.getCommPorts()) {
+                    for (var port : SerialPort.getCommPorts()) {
                         dtos.add(new SerialPortDTO(port.getSystemPortName(), port.getPortDescription(), port.getManufacturer()));
                     }
 
