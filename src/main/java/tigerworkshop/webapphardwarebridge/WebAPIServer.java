@@ -1,13 +1,14 @@
 package tigerworkshop.webapphardwarebridge;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fazecast.jSerialComm.SerialPort;
 import io.javalin.Javalin;
 import io.javalin.http.ContentType;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
+import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
-import javax.print.PrintService;
 import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 
@@ -45,17 +46,20 @@ public class WebAPIServer {
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
                 .get("/system/printers.json", ctx -> {
-                    PrintService[] services = PrinterJob.lookupPrintServices();
                     var dtos = new ArrayList<PrintServiceDTO>();
-
-                    for (var service : services) {
+                    for (var service : PrinterJob.lookupPrintServices()) {
                         dtos.add(new PrintServiceDTO(service.getName(), ""));
                     }
 
                     ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
                 })
                 .get("/system/serials.json", ctx -> {
-                    ctx.result("Serials");
+                    var dtos = new ArrayList<>();
+                    for (SerialPort port : SerialPort.getCommPorts()) {
+                        dtos.add(new SerialPortDTO(port.getSystemPortName(), port.getPortDescription(), port.getManufacturer()));
+                    }
+
+                    ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
                 })
                 .start(configService.getConfig().getWebApiServer().getBind(), configService.getConfig().getWebApiServer().getPort());
     }
