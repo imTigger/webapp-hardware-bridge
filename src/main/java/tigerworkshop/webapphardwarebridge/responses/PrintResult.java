@@ -1,13 +1,15 @@
 package tigerworkshop.webapphardwarebridge.responses;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class PrintResult {
-    int status;
-    String id;
-    String url;
-    String message;
+    public int status;
+    public String id;
+    public String url;
+    public String message;
 }
