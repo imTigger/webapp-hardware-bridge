@@ -1,6 +1,7 @@
 package tigerworkshop.webapphardwarebridge.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +19,8 @@ public class ConfigService {
     private static final String CONFIG_DEFAULT_FILENAME = "config.default.json";
     private static final String PRINTER_PLACEHOLDER = "";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Getter
     private Config config = null;
