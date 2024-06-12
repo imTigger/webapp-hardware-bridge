@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" xmlns:>
+<!--suppress JSUnusedGlobalSymbols, HtmlFormInputWithoutLabel, JSUnresolvedReference -->
+<html lang="en" xmlns: xmlns:@vue>
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width,initial-scale=1" name="viewport">
@@ -412,11 +413,11 @@ createApp({
     serials: [],
 
     loadConfig() {
-        axios.get('/config.json')
+        return axios.get('/config.json')
             .then(response => this.config = response.data)
     },
     saveConfig() {
-        axios.put('/config.json', this.config)
+        return axios.put('/config.json', this.config)
             .then(response => this.config = response.data)
     },
     addPrinter() {

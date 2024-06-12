@@ -46,7 +46,7 @@ public class ConfigService {
         config = objectMapper.readValue(json, Config.class);
     }
 
-    private void loadFromFile(String filename) throws IOException {
+    public void loadFromFile(String filename) throws IOException {
         log.info("Loading config from file: {}", filename);
         config = objectMapper.readValue(new File(filename), Config.class);
     }

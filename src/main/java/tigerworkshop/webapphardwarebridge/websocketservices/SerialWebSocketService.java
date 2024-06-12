@@ -1,13 +1,16 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
 import com.fazecast.jSerialComm.SerialPort;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 
 @Log4j2
@@ -19,6 +22,9 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     private WebSocketServerInterface server = null;
     private Thread readThread;
     private Thread writeThread;
+
+    @Setter
+    private GUIListenerInterface notificationListener;
 
     public SerialWebSocketService(Config.SerialMapping newMapping) {
         log.info("Starting SerialWebSocketService on {}", newMapping.getName());
@@ -48,7 +54,9 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                         } else if (serialPort.bytesAvailable() == -1) {
                             // Check if portName closed unexpected (e.g. Unplugged)
                             serialPort.closePort();
-                            log.warn("Serial unplugged!");
+
+                            notificationListener.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
+
                             continue;
                         }
 
@@ -62,8 +70,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                         log.trace("Trying to connect the serial @ {}", serialPort.getSystemPortName());
                         serialPort.openPort();
                     }
-                } catch (
-                        Exception e) {
+                } catch (Exception e) {
                     log.warn("Error: {}", e.getMessage(), e);
                     ThreadUtil.silentSleep(1000);
                 }
@@ -83,8 +90,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                             writeBuffer = new byte[]{};
                         }
                         ThreadUtil.silentSleep(10);
-                    } catch (
-                            Exception e) {
+                    } catch (Exception e) {
                         log.warn("Error: {}", e.getMessage());
                         ThreadUtil.silentSleep(1000);
                     }

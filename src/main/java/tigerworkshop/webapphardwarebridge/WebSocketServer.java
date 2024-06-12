@@ -1,7 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
 import lombok.extern.log4j.Log4j2;
-import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
 import tigerworkshop.webapphardwarebridge.utils.TLSUtil;
@@ -11,27 +11,21 @@ import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketServi
 
 @Log4j2
 public class WebSocketServer {
-    private static final WebSocketServer server = new WebSocketServer();
-
+    private static final WebSocketServer server = new WebSocketServer(null);
     private static final ConfigService configService = ConfigService.getInstance();
 
     private BridgeWebSocketServer bridgeWebSocketServer;
 
-    private NotificationListenerInterface notificationListener;
+    private final GUIListenerInterface guiListener;
 
-    public WebSocketServer() {
-
-    }
-
-    public WebSocketServer(NotificationListenerInterface notificationListener) {
-        this.notificationListener = notificationListener;
+    public WebSocketServer(GUIListenerInterface guiListener) {
+        this.guiListener = guiListener;
     }
 
     public static void main(String[] args) {
         try {
             server.start();
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -48,8 +42,10 @@ public class WebSocketServer {
         // Add Serial Services;
         if (config.getSerial().isEnabled()) {
             for (var mapping : config.getSerial().getMappings()) {
+                log.info("Starting SerialWebSocketService: {}", mapping.toString());
                 SerialWebSocketService serialWebSocketService = new SerialWebSocketService(mapping);
                 serialWebSocketService.setServer(bridgeWebSocketServer);
+                serialWebSocketService.setNotificationListener(guiListener);
                 serialWebSocketService.start();
             }
         }
@@ -58,7 +54,7 @@ public class WebSocketServer {
         if (config.getPrinter().isEnabled() && !config.getPrinter().getMappings().isEmpty()) {
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
             printerWebSocketService.setServer(bridgeWebSocketServer);
-            printerWebSocketService.setNotificationListener(notificationListener);
+            printerWebSocketService.setNotificationListener(guiListener);
             printerWebSocketService.start();
         }
 
@@ -66,6 +62,7 @@ public class WebSocketServer {
         if (config.getCloudProxy().isEnabled()) {
             CloudProxyClientWebSocketService cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService();
             cloudProxyClientWebSocketService.setServer(bridgeWebSocketServer);
+            cloudProxyClientWebSocketService.setNotificationListener(guiListener);
             cloudProxyClientWebSocketService.start();
         }
 
@@ -84,5 +81,9 @@ public class WebSocketServer {
         bridgeWebSocketServer.start();
 
         log.info("WebSocket started on {}", webSocketConfig.getUri());
+    }
+
+    public void stop() throws Exception {
+        bridgeWebSocketServer.stop();
     }
 }

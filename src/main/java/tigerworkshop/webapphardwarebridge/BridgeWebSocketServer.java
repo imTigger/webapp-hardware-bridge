@@ -100,7 +100,9 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         setConnectionLostTimeout(1);
     }
 
-    public void close() {
+    public void stop() throws InterruptedException {
+        log.info("BridgeWebSocketServer stopping");
+
         for (WebSocket socket : getConnections()) {
             socket.close();
         }
@@ -110,6 +112,8 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
                 services.get(i).stop();
             }
         }
+
+        super.stop();
     }
 
     /*

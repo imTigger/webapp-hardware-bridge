@@ -1,12 +1,16 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
+import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
+import java.awt.*;
 import java.net.URI;
 
 @Log4j2
@@ -15,6 +19,9 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
     private WebSocketServerInterface server = null;
     private final ConfigService configService = ConfigService.getInstance();
     private Thread thread;
+
+    @Setter
+    private GUIListenerInterface notificationListener;
 
     public CloudProxyClientWebSocketService() {
         log.info("Starting ProxyClientWebSocketService");
@@ -59,10 +66,11 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
 
                         while (true) {
                             if (client.isClosed()) {
+                                notificationListener.notify("Cloud Proxy", "Connection lost, reconnection...", TrayIcon.MessageType.WARNING);
                                 log.info("ProxyClientWebSocketService Reconnecting");
                                 break;
                             }
-                            Thread.sleep(5000);
+                            ThreadUtil.silentSleep(5000);
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);

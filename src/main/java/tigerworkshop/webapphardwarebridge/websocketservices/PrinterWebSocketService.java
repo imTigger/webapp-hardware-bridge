@@ -10,7 +10,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPrintable;
 import org.apache.pdfbox.printing.Scaling;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
@@ -36,7 +36,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Setter
-    private NotificationListenerInterface notificationListener;
+    private GUIListenerInterface notificationListener;
 
     public PrinterWebSocketService() {
         log.info("Starting PrinterWebSocketService");
