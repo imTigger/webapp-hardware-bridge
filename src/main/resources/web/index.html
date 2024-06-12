@@ -341,17 +341,17 @@ createApp({
         this.config.serial.mappings.splice(index, 1)
     },
     loadPrinters() {
-        axios.get('/system/printers.json')
+        return axios.get('/system/printers.json')
             .then(response => this.printers = response.data)
     },
     loadSerials() {
-        axios.get('/system/serials.json')
+        return axios.get('/system/serials.json')
             .then(response => this.serials = response.data)
     },
     mounted() {
-        this.loadConfig()
-        this.loadPrinters()
-        this.loadSerials()
+        Promise.all([this.loadPrinters(), this.loadSerials()]).then(() => {
+            this.loadConfig()
+        })
     }
 }).mount()</script>
 </body>
