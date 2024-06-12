@@ -50,7 +50,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     @Override
     public void stop() {
         log.info("Stopping PrinterWebSocketService");
+
         server.unsubscribe(this, getChannel());
+
+        log.info("Stopped PrinterWebSocketService");
     }
 
     @Override

@@ -114,6 +114,8 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         }
 
         super.stop();
+
+        log.info("BridgeWebSocketServer stopped");
     }
 
     /*

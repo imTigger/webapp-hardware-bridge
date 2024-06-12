@@ -42,7 +42,7 @@ public class WebSocketServer {
         // Add Serial Services;
         if (config.getSerial().isEnabled()) {
             for (var mapping : config.getSerial().getMappings()) {
-                log.info("Starting SerialWebSocketService: {}", mapping.toString());
+                log.info("Starting SerialWebSocketService: {}, {}", bridgeWebSocketServer, mapping.toString());
                 SerialWebSocketService serialWebSocketService = new SerialWebSocketService(mapping);
                 serialWebSocketService.setServer(bridgeWebSocketServer);
                 serialWebSocketService.setNotificationListener(guiListener);

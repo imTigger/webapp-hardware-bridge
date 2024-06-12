@@ -85,7 +85,10 @@ public class CloudProxyClientWebSocketService implements WebSocketServiceInterfa
     @Override
     public void stop() {
         log.info("Stopping CloudProxyClientWebSocketService");
+
         thread.interrupt();
+
+        log.info("Stopped CloudProxyClientWebSocketService");
     }
 
     @Override
