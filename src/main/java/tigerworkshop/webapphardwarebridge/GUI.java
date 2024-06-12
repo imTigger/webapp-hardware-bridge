@@ -86,6 +86,7 @@ public class GUI extends Application implements NotificationListenerInterface {
             popup.addSeparator();
             popup.add(exitItem);
 
+            trayIcon.setToolTip("WebApp Hardware Bridge");
             trayIcon.setPopupMenu(popup);
 
             tray.add(trayIcon);

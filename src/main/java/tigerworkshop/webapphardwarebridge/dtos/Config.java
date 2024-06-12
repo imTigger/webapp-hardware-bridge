@@ -120,5 +120,10 @@ public class Config {
     public static class SerialMapping {
         private String type;
         private String name;
+
+        private Integer baudRate;
+        private Integer numDataBits;
+        private Integer numStopBits;
+        private Integer parity;
     }
 }

@@ -10,24 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="35a49060-6838-424f-9657-e13fb9c5d1a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/webapp_hardware_bridge_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules/webapp-hardware-bridge.main.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/install.nsi" beforeDir="false" afterPath="$PROJECT_DIR$/install.nsi" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/GUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/WebSocketServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/WebSocketServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/dtos/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/dtos/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/websocketservices/SerialWebSocketService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/websocketservices/SerialWebSocketService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/web/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,31 +70,32 @@
   &quot;associatedIndex&quot;: 7
 }</component>
   <component name="ProjectId" id="2hmTwmiygoodVfqEdgMS528UJup" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.webapp-hardware-bridge [:GUI.main()].executor": "Run",
-    "Gradle.webapp-hardware-bridge [build].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "1.0-dev",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Tiger/IdeaProjects/webapp-hardware-bridge/src/main/resources/log4j2.xml",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Artifacts",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.21923077",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.webapp-hardware-bridge [:GUI.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.webapp-hardware-bridge [build].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;1.0-dev&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Tiger/IdeaProjects/webapp-hardware-bridge/src/main/resources/log4j2.xml&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.21923077&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Gradle.webapp-hardware-bridge [build]">
+}</component>
+  <component name="RunManager" selected="Application.GUI">
     <configuration name="GUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="tigerworkshop.webapphardwarebridge.GUI" />
       <module name="webapp-hardware-bridge.main" />
@@ -142,6 +131,10 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Application.GUI" />
+      <item itemvalue="Gradle.webapp-hardware-bridge [build]" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.webapp-hardware-bridge [build]" />
@@ -172,5 +165,9 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Updated websocket printer feedback" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated websocket printer feedback" />
   </component>
 </project>

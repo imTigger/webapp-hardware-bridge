@@ -48,7 +48,7 @@ public class WebSocketServer {
         // Add Serial Services;
         if (config.getSerial().isEnabled()) {
             for (var mapping : config.getSerial().getMappings()) {
-                SerialWebSocketService serialWebSocketService = new SerialWebSocketService(mapping.getName(), mapping.getType());
+                SerialWebSocketService serialWebSocketService = new SerialWebSocketService(mapping);
                 serialWebSocketService.setServer(bridgeWebSocketServer);
                 serialWebSocketService.start();
             }

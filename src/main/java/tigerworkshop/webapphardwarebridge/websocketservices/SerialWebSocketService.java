@@ -3,6 +3,7 @@ package tigerworkshop.webapphardwarebridge.websocketservices;
 import com.fazecast.jSerialComm.SerialPort;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
@@ -11,8 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 @Log4j2
 public class SerialWebSocketService implements WebSocketServiceInterface {
-    private final String portName;
-    private final String mappingKey;
+    private final Config.SerialMapping mapping;
     private final SerialPort serialPort;
     private byte[] writeBuffer = {};
 
@@ -20,18 +20,23 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     private Thread readThread;
     private Thread writeThread;
 
-    public SerialWebSocketService(String portName, String mappingKey) {
-        log.info("Starting SerialWebSocketService on {}", portName);
+    public SerialWebSocketService(Config.SerialMapping newMapping) {
+        log.info("Starting SerialWebSocketService on {}", newMapping.getName());
 
-        this.portName = portName;
-        this.mappingKey = mappingKey;
-        this.serialPort = SerialPort.getCommPort(portName);
+        mapping = newMapping;
+
+        serialPort = SerialPort.getCommPort(newMapping.getName());
+
+        if (mapping.getBaudRate() != null) serialPort.setBaudRate(mapping.getBaudRate());
+        if (mapping.getNumDataBits() != null) serialPort.setNumDataBits(mapping.getNumDataBits());
+        if (mapping.getNumStopBits() != null) serialPort.setNumStopBits(mapping.getNumStopBits());
+        if (mapping.getParity() != null) serialPort.setParity(mapping.getParity());
     }
 
     @Override
     public void start() {
         readThread = new Thread(() -> {
-            log.trace("Serial Read Thread started for {}", portName);
+            log.trace("Serial Read Thread started for {}", mapping.getName());
 
             while (!Thread.interrupted()) {
                 try {
@@ -66,7 +71,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
         });
 
         writeThread = new Thread(() -> {
-            log.trace("Serial Write Thread started for {}", portName);
+            log.trace("Serial Write Thread started for {}", mapping.getName());
 
             while (!Thread.interrupted()) {
                 if (serialPort.isOpen()) {
@@ -121,6 +126,6 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     }
 
     private String getChannel() {
-        return "/serial/" + mappingKey;
+        return "/serial/" + mapping.getType();
     }
 }
