@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Main-Class: tigerworkshop.webapphardwarebridge.GUI
+Class-Path: httpcore5-5.2.4.jar bootstrapfx-core-0.4.0.jar websocket-ser
+ vlet-11.0.20.jar log4j-slf4j2-impl-2.23.1.jar commons-logging-1.2.jar j
+ etty-xml-11.0.20.jar jetty-util-11.0.20.jar javafx-fxml-21-win.jar java
+ fx-base-21-win.jar jetty-io-11.0.20.jar Java-WebSocket-1.5.6.jar jetty-
+ http-11.0.20.jar javafx-graphics-21.jar pdfbox-2.0.31.jar javalin-6.1.4
+ .jar websocket-core-common-11.0.20.jar kotlin-stdlib-jdk8-1.9.23.jar ja
+ ckson-core-2.17.1.jar bcutil-jdk18on-1.78.1.jar websocket-jetty-server-
+ 11.0.20.jar jackson-annotations-2.17.1.jar bcpkix-jdk18on-1.78.1.jar we
+ bsocket-core-server-11.0.20.jar log4j-core-2.23.1.jar commons-io-2.16.1
+ .jar javafx-base-21.jar jetty-servlet-11.0.20.jar jSerialComm-2.11.0.ja
+ r bcprov-jdk18on-1.78.1.jar kotlin-stdlib-1.9.23.jar fontbox-2.0.31.jar
+  jetty-security-11.0.20.jar jackson-databind-2.17.1.jar jetty-webapp-11
+ .0.20.jar javafx-controls-21.jar jetty-jakarta-servlet-api-5.0.2.jar ja
+ vafx-graphics-21-win.jar log4j-api-2.23.1.jar websocket-jetty-api-11.0.
+ 20.jar kotlin-stdlib-jdk7-1.9.23.jar javafx-controls-21-win.jar annotat
+ ions-13.0.jar websocket-jetty-common-11.0.20.jar commons-codec-1.17.0.j
+ ar slf4j-api-2.0.13.jar jetty-server-11.0.20.jar
+

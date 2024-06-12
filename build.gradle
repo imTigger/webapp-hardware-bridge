@@ -44,3 +44,7 @@ dependencies {
 
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 }
+
+application {
+    mainClass = 'tigerworkshop.webapphardwarebridge.GUI'
+}

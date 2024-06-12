@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="webapp-hardware-bridge" externalSystemModuleVersion="1.0-SNAPSHOT" linkedProjectId="webapp-hardware-bridge" linkedProjectPath="$MODULE_DIR$/../.." rootProjectPath="$MODULE_DIR$/../.." />
+</module>

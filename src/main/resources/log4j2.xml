@@ -20,9 +20,9 @@
     </appenders>
 
     <loggers>
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="Console" level="INFO"/>
-            <appender-ref ref="RollingFile" level="DEBUG"/>
+            <appender-ref ref="RollingFile" level="INFO"/>
         </root>
     </loggers>
 </configuration>

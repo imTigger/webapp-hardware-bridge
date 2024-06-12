@@ -1,0 +1,64 @@
+<component name="ArtifactManager">
+  <artifact name="webapp-hardware-bridge:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/webapp_hardware_bridge_jar</output-path>
+    <root id="root">
+      <element id="archive" name="webapp-hardware-bridge.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="directory" name="web">
+          <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources/web" />
+        </element>
+        <element id="module-output" name="webapp-hardware-bridge.main" />
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/icon.png" />
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/log4j2.xml" />
+      </element>
+      <element id="library" level="project" name="Gradle: org.apache.httpcomponents.core5:httpcore5:5.2.4" />
+      <element id="library" level="project" name="Gradle: org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1" />
+      <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-xml:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-util:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-fxml:win:21" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-base:win:21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-io:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.java-websocket:Java-WebSocket:1.5.6" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-http:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-graphics:21" />
+      <element id="library" level="project" name="Gradle: org.apache.pdfbox:pdfbox:2.0.31" />
+      <element id="library" level="project" name="Gradle: io.javalin:javalin:6.1.4" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-core-common:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23" />
+      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.17.1" />
+      <element id="library" level="project" name="Gradle: org.bouncycastle:bcutil-jdk18on:1.78.1" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-server:11.0.20" />
+      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.17.1" />
+      <element id="library" level="project" name="Gradle: org.bouncycastle:bcpkix-jdk18on:1.78.1" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-core-server:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-core:2.23.1" />
+      <element id="library" level="project" name="Gradle: commons-io:commons-io:2.16.1" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-base:21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:11.0.20" />
+      <element id="library" level="project" name="Gradle: com.fazecast:jSerialComm:2.11.0" />
+      <element id="library" level="project" name="Gradle: org.bouncycastle:bcprov-jdk18on:1.78.1" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.9.23" />
+      <element id="library" level="project" name="Gradle: org.apache.pdfbox:fontbox:2.0.31" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-security:11.0.20" />
+      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.17.1" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-webapp:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-controls:21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api:5.0.2" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-graphics:win:21" />
+      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-api:2.23.1" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-api:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.23" />
+      <element id="library" level="project" name="Gradle: org.openjfx:javafx-controls:win:21" />
+      <element id="library" level="project" name="Gradle: org.jetbrains:annotations:13.0" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-common:11.0.20" />
+      <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.17.0" />
+      <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:2.0.13" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-server:11.0.20" />
+    </root>
+  </artifact>
+</component>
