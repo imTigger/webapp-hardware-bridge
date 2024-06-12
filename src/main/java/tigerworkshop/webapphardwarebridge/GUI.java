@@ -72,8 +72,21 @@ public class GUI implements NotificationListenerInterface {
             }
         });
 
-        MenuItem logItem = new MenuItem("Log");
-        logItem.addActionListener(e -> {
+        MenuItem appDirectoryItem = new MenuItem("App Directory");
+        appDirectoryItem.addActionListener(e -> {
+            try {
+                if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
+                    throw new Exception("Desktop open is not supported");
+                }
+
+                desktop.open(new File("."));
+            } catch (Exception ex) {
+                log.error("Failed to open log folder", ex);
+            }
+        });
+
+        MenuItem logDirectoryItem = new MenuItem("Log Directory");
+        logDirectoryItem.addActionListener(e -> {
             try {
                 if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
                     throw new Exception("Desktop open is not supported");
@@ -91,7 +104,9 @@ public class GUI implements NotificationListenerInterface {
         // Add components to pop-up menu
         final PopupMenu popup = new PopupMenu();
         popup.add(settingItem);
-        popup.add(logItem);
+        popup.addSeparator();
+        popup.add(appDirectoryItem);
+        popup.add(logDirectoryItem);
         popup.addSeparator();
         popup.add(exitItem);
         return popup;
