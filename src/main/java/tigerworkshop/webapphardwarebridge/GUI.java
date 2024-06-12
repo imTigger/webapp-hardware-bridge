@@ -1,7 +1,5 @@
 package tigerworkshop.webapphardwarebridge;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
@@ -13,16 +11,11 @@ import java.net.URI;
 import java.util.Objects;
 
 @Log4j2
-public class GUI extends Application implements NotificationListenerInterface {
+public class GUI implements NotificationListenerInterface {
     private static final ConfigService configService = ConfigService.getInstance();
 
     TrayIcon trayIcon;
     SystemTray tray;
-
-    @Override
-    public void start(Stage primaryStage) {
-
-    }
 
     public static void main(String[] args) {
         GUI gui = new GUI();

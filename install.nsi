@@ -54,8 +54,8 @@ Section "!Main Application" ;No components page, name is not important
   Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI Web).lnk"
   
   ; Create shortcuts
-  CreateShortcut "$DESKTOP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "--module-path . --add-modules=javafx.controls -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
-  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "--module-path . --add-modules=javafx.controls -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
+  CreateShortcut "$DESKTOP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
+  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
 
   ; Write the installation path into the registry
   WriteRegStr HKCU "SOFTWARE\WebApp Hardware Bridge" "Install_Dir" "$INSTDIR"
@@ -79,8 +79,8 @@ Section /o "Additional Shortcuts" shortcuts
   CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge (CLI Web).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.WebAPIServer"
 SectionEnd
 
-Section "Auto-start" autostart
-  CreateShortcut "$SMSTARTUP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "--module-path . --add-modules=javafx.controls -cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
+Section "Auto-start" autostart0000000
+  CreateShortcut "$SMSTARTUP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
 SectionEnd
 
 Section "Uninstall"

@@ -9,13 +9,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35a49060-6838-424f-9657-e13fb9c5d1a4" name="Changes" comment="">
+    <list default="true" id="35a49060-6838-424f-9657-e13fb9c5d1a4" name="Changes" comment="Completely remove JavaFX">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/GUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/WebSocketServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/WebSocketServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/dtos/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/dtos/Config.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/websocketservices/SerialWebSocketService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tigerworkshop/webapphardwarebridge/websocketservices/SerialWebSocketService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/web/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,26 +70,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.webapp-hardware-bridge [:GUI.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.webapp-hardware-bridge [build].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;1.0-dev&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Tiger/IdeaProjects/webapp-hardware-bridge/src/main/resources/log4j2.xml&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.21923077&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.webapp-hardware-bridge [:GUI.main()].executor": "Run",
+    "Gradle.webapp-hardware-bridge [build].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "1.0-dev",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/tiger/IdeaProjects/webapp-hardware-bridge/src/main/resources/META-INF",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Problems",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.5965517",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/META-INF" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.GUI">
     <configuration name="GUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="tigerworkshop.webapphardwarebridge.GUI" />
@@ -161,6 +161,31 @@
       <workItem from="1718198494786" duration="4264000" />
       <workItem from="1718203510619" duration="866000" />
     </task>
+    <task id="LOCAL-00001" summary="Added serial port settings">
+      <option name="closed" value="true" />
+      <created>1718218862078</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1718218862078</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Completely remove JavaFX">
+      <option name="closed" value="true" />
+      <created>1718219137937</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1718219137937</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Completely remove JavaFX">
+      <option name="closed" value="true" />
+      <created>1718219343663</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1718219343663</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,6 +193,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Updated websocket printer feedback" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated websocket printer feedback" />
+    <MESSAGE value="Added serial port settings" />
+    <MESSAGE value="Completely remove JavaFX" />
+    <option name="LAST_COMMIT_MESSAGE" value="Completely remove JavaFX" />
   </component>
 </project>
