@@ -48,10 +48,10 @@ public class WebAPIServer {
 
         Config.WebApiServer webConfig = configService.getConfig().getWebApiServer();
 
-        javalinServer = Javalin.create(config -> {
-                    config.showJavalinBanner = false;
-                    config.staticFiles.add(staticFiles -> staticFiles.directory = "web");
-                    config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
+        javalinServer = Javalin.create(cfg -> {
+                    cfg.showJavalinBanner = false;
+                    cfg.staticFiles.add(staticFiles -> staticFiles.directory = "web");
+                    cfg.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
 
                     if (webConfig.getTls().isEnabled()) {
                         if (webConfig.getTls().isSelfSigned()) {
@@ -67,7 +67,7 @@ public class WebAPIServer {
                             conf.securePort = webConfig.getPort();
                             conf.pemFromPath(webConfig.getTls().getCert(), webConfig.getTls().getKey());
                         });
-                        config.registerPlugin(plugin);
+                        cfg.registerPlugin(plugin);
                     }
                 })
                 .before(ctx -> {

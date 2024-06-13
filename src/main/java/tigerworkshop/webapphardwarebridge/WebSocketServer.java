@@ -1,6 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
 import io.javalin.Javalin;
+import io.javalin.community.ssl.SslPlugin;
 import io.javalin.websocket.WsContext;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
@@ -8,6 +9,7 @@ import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
+import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
@@ -43,12 +45,30 @@ public class WebSocketServer implements WebSocketServerInterface {
     }
 
     public void start() throws Exception {
-        Config config = configService.getConfig();
-        Config.WebSocketServer webSocketConfig = config.getWebSocketServer();
+        Config.WebSocketServer webSocketConfig = configService.getConfig().getWebSocketServer();
 
         javalinServer = Javalin.create(cfg -> {
             cfg.showJavalinBanner = false;
+
+            if (webSocketConfig.getTls().isEnabled()) {
+                if (webSocketConfig.getTls().isSelfSigned()) {
+                    log.info("TLS Enabled with self-signed certificate");
+
+                    CertificateGenerator.generateSelfSignedCertificate(webSocketConfig.getAddress(), webSocketConfig.getTls().getCert(), webSocketConfig.getTls().getKey());
+
+                    log.info("For first time setup, open in browser and trust the certificate: {}", webSocketConfig.getUri().replace("http", "https"));
+                }
+
+                SslPlugin plugin = new SslPlugin(conf -> {
+                    conf.insecure = false;
+                    conf.securePort = webSocketConfig.getPort();
+                    conf.pemFromPath(webSocketConfig.getTls().getCert(), webSocketConfig.getTls().getKey());
+                });
+                cfg.registerPlugin(plugin);
+            }
         });
+
+        Config config = configService.getConfig();
 
         // Add Printer Service
         if (config.getPrinter().isEnabled() && !config.getPrinter().getMappings().isEmpty()) {
