@@ -6,7 +6,6 @@ import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -14,7 +13,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import java.io.File;
@@ -22,7 +20,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -37,7 +34,7 @@ public class CertificateGenerator {
     private static final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
     private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
-    public static void generateSelfSignedCertificate(String address, String certificatePath, String keyPath) throws OperatorCreationException, CertificateException, CertIOException, NoSuchAlgorithmException {
+    public static void generateSelfSignedCertificate(String address, String certificatePath, String keyPath) {
         Security.addProvider(new BouncyCastleProvider());
 
         if (!isCertificateAndKeyExist(certificatePath, keyPath)) {
@@ -80,7 +77,6 @@ public class CertificateGenerator {
                 saveKey(keyPair.getPrivate(), keyPath);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                throw e;
             }
         } else {
             log.info("Certificate and private key already exists.");

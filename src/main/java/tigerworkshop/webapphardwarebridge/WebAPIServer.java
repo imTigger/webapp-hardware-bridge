@@ -3,18 +3,23 @@ package tigerworkshop.webapphardwarebridge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fazecast.jSerialComm.SerialPort;
 import io.javalin.Javalin;
+import io.javalin.community.ssl.SslPlugin;
 import io.javalin.http.ContentType;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 import lombok.extern.log4j.Log4j2;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
 import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
 import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
+import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
 
 import javax.print.PrintService;
 import java.awt.*;
 import java.awt.print.PrinterJob;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
 
 @Log4j2
 public class WebAPIServer {
@@ -41,10 +46,47 @@ public class WebAPIServer {
     public void start() {
         log.info("Web API Server started");
 
+        Config.WebApiServer webConfig = configService.getConfig().getWebApiServer();
+
         javalinServer = Javalin.create(config -> {
                     config.showJavalinBanner = false;
                     config.staticFiles.add(staticFiles -> staticFiles.directory = "web");
                     config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
+
+                    if (webConfig.getTls().isEnabled()) {
+                        if (webConfig.getTls().isSelfSigned()) {
+                            log.info("TLS Enabled with self-signed certificate");
+
+                            CertificateGenerator.generateSelfSignedCertificate(webConfig.getAddress(), webConfig.getTls().getCert(), webConfig.getTls().getKey());
+
+                            log.info("For first time setup, open in browser and trust the certificate: {}", webConfig.getUri().replace("http", "https"));
+                        }
+
+                        SslPlugin plugin = new SslPlugin(conf -> {
+                            conf.insecure = false;
+                            conf.securePort = webConfig.getPort();
+                            conf.pemFromPath(webConfig.getTls().getCert(), webConfig.getTls().getKey());
+                        });
+                        config.registerPlugin(plugin);
+                    }
+                })
+                .before(ctx -> {
+                    if (webConfig.getAuthentication().isEnabled()) {
+                        try {
+                            // Bearer Token
+                            if (Optional.ofNullable(ctx.header("Authorization")).orElse("").endsWith(webConfig.getAuthentication().getToken())) {
+                                return;
+                            }
+
+                            // Basic Auth
+                            if (ctx.basicAuthCredentials() != null && Objects.equals(ctx.basicAuthCredentials().getPassword(), webConfig.getAuthentication().getToken())) {
+                                return;
+                            }
+                        } catch (Exception e) {}
+
+                        ctx.header("WWW-Authenticate", "Basic realm=\"Token required\"");
+                        ctx.res().sendError(401, "Token mismatch");
+                    }
                 })
                 .get("/config.json", ctx -> {
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());

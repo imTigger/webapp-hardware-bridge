@@ -27,6 +27,7 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
     implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.6'
     implementation group: 'io.javalin', name: 'javalin', version: '6.1.4'
+    implementation group: 'io.javalin.community.ssl', name: 'ssl-plugin', version: '6.1.4'
     implementation group: 'org.kordamp.bootstrapfx', name: 'bootstrapfx-core', version: '0.4.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.32'

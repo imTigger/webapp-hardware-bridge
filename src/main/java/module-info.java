@@ -13,6 +13,7 @@ module tigerworkshop.webapphardwarebridge {
     requires org.apache.logging.log4j;
     requires io.javalin;
     requires com.fasterxml.jackson.databind;
+    requires io.javalin.community.ssl;
     requires static lombok;
 
     opens tigerworkshop.webapphardwarebridge.dtos to com.fasterxml.jackson.databind;

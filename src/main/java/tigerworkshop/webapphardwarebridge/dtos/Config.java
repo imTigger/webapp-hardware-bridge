@@ -30,7 +30,7 @@ public class Config {
         private String bind;
         private int port;
         private Authentication authentication;
-        private Tls tls;
+        private TLS tls;
 
         @JsonIgnore
         public String getUri() {
@@ -45,7 +45,7 @@ public class Config {
         private String bind;
         private int port;
         private Authentication authentication;
-        private Tls tls;
+        private TLS tls;
 
         @JsonIgnore
         public String getUri() {
@@ -70,7 +70,7 @@ public class Config {
 
     @Data
     @NoArgsConstructor
-    public static class Tls {
+    public static class TLS {
         private boolean enabled;
         private boolean selfSigned;
         private String cert;
