@@ -20,4 +20,5 @@ module tigerworkshop.webapphardwarebridge {
     opens tigerworkshop.webapphardwarebridge.utils to com.fasterxml.jackson.databind;
 
     exports tigerworkshop.webapphardwarebridge;
+    exports tigerworkshop.webapphardwarebridge.interfaces;
 }

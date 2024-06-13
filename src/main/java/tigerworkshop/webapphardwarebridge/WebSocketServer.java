@@ -1,6 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
 import lombok.extern.log4j.Log4j2;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
@@ -33,8 +34,8 @@ public class WebSocketServer {
     }
 
     public void start() throws Exception {
-        var config = configService.getConfig();
-        var webSocketConfig = config.getWebSocketServer();
+        Config config = configService.getConfig();
+        Config.WebSocketServer webSocketConfig = config.getWebSocketServer();
 
         // Create WebSocket Server
         bridgeWebSocketServer = new BridgeWebSocketServer(webSocketConfig.getBind(), webSocketConfig.getPort());
@@ -46,12 +47,12 @@ public class WebSocketServer {
             config.getSerial().getMappings().forEach(mapping -> {
                 try {
                     log.info("Starting SerialWebSocketService: {}, {}", bridgeWebSocketServer, mapping.toString());
-                    var serialWebSocketService = new SerialWebSocketService(guiInterface, mapping);
+                    SerialWebSocketService serialWebSocketService = new SerialWebSocketService(guiInterface, mapping);
                     serialWebSocketService.start();
 
                     bridgeWebSocketServer.registerService(serialWebSocketService);
                 } catch (Exception e) {
-                    var message = "Failed to start SerialWebSocketService for " + mapping.getType() + ": " + e.getMessage();
+                    String message = "Failed to start SerialWebSocketService for " + mapping.getType() + ": " + e.getMessage();
                     log.error(message);
 
                     if (guiInterface != null) {
@@ -63,7 +64,7 @@ public class WebSocketServer {
 
         // Add Printer Service
         if (config.getPrinter().isEnabled() && !config.getPrinter().getMappings().isEmpty()) {
-            var printerWebSocketService = new PrinterWebSocketService(guiInterface);
+            PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService(guiInterface);
             printerWebSocketService.start();
 
             bridgeWebSocketServer.registerService(printerWebSocketService);
@@ -71,7 +72,7 @@ public class WebSocketServer {
 
         // Add Cloud Proxy Client Service
         if (config.getCloudProxy().isEnabled()) {
-            var cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService(guiInterface);
+            CloudProxyClientWebSocketService cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService(guiInterface);
             cloudProxyClientWebSocketService.start();
 
             bridgeWebSocketServer.registerService(cloudProxyClientWebSocketService);

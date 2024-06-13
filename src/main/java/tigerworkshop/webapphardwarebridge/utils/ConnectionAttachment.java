@@ -1,41 +1,14 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.hc.core5.http.NameValuePair;
 
 import java.util.List;
 
+@Data
+@AllArgsConstructor
 public class ConnectionAttachment {
     private String channel;
     private List<NameValuePair> params;
-    private String token;
-
-    public ConnectionAttachment(String channel, List<NameValuePair> params, String token) {
-        this.channel = channel;
-        this.params = params;
-        this.token = token;
-    }
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
-    public List<NameValuePair> getParams() {
-        return params;
-    }
-
-    public void setParams(List<NameValuePair> params) {
-        this.params = params;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

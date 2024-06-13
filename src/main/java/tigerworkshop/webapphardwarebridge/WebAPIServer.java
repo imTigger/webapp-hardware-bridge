@@ -11,6 +11,7 @@ import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
 import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
+import javax.print.PrintService;
 import java.awt.*;
 import java.awt.print.PrinterJob;
 import java.util.ArrayList;
@@ -57,16 +58,16 @@ public class WebAPIServer {
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
                 .get("/system/printers.json", ctx -> {
-                    var dtos = new ArrayList<PrintServiceDTO>();
-                    for (var service : PrinterJob.lookupPrintServices()) {
+                    ArrayList<PrintServiceDTO> dtos = new ArrayList<>();
+                    for (PrintService service : PrinterJob.lookupPrintServices()) {
                         dtos.add(new PrintServiceDTO(service.getName(), ""));
                     }
 
                     ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
                 })
                 .get("/system/serials.json", ctx -> {
-                    var dtos = new ArrayList<>();
-                    for (var port : SerialPort.getCommPorts()) {
+                    ArrayList<SerialPortDTO> dtos = new ArrayList<>();
+                    for (SerialPort port : SerialPort.getCommPorts()) {
                         dtos.add(new SerialPortDTO(port.getSystemPortName(), port.getPortDescription(), port.getManufacturer()));
                     }
 

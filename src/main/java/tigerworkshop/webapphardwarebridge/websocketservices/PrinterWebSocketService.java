@@ -86,7 +86,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Prints a PrintDocument
      */
     public void printDocument(PrintDocument printDocument) throws Exception {
-        var printerSearchResult = searchPrinterForType(printDocument.getType());
+        PrinterSearchResult printerSearchResult = searchPrinterForType(printDocument.getType());
 
         try {
             if (guiInterface != null) {
@@ -177,7 +177,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(printerSearchResult.getDocPrintJob().getPrintService());
 
-        var pageFormat = getPageFormat(job, printerSearchResult);
+        PageFormat pageFormat = getPageFormat(job, printerSearchResult);
 
         Image image = ImageIO.read(new File(path));
 
@@ -217,7 +217,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(docPrintJob.getPrintService());
 
-        var pageFormat = getPageFormat(job, printerSearchResult);
+        PageFormat pageFormat = getPageFormat(job, printerSearchResult);
 
         try (PDDocument document = PDDocument.load(new File(path))) {
             Book book = new Book();
@@ -302,11 +302,11 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
          if (configService.getConfig().getPrinter().isFallbackToDefault()) {
              log.info("No mapped print job type: {}, falling back to default printer", type);
 
-            var printService = PrintServiceLookup.lookupDefaultPrintService();
+             PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 
-            if (printService == null) {
-                throw new PrinterException("No default printer found");
-            }
+             if (printService == null) {
+                 throw new PrinterException("No default printer found");
+             }
 
              return new PrinterSearchResult(printService.getName(), new Config.PrinterMapping(), printService.createPrintJob(), true);
         }

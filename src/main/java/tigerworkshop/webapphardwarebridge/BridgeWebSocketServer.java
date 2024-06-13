@@ -8,6 +8,7 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
@@ -43,19 +44,21 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
             URI uri = new URI(descriptor);
             String channel = uri.getPath();
             List<NameValuePair> params = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8);
-            String token = getToken(params);
+            String token = params.stream().filter(pair -> pair.getName().equals("access_token")).findFirst().map(NameValuePair::getValue).orElse(null);
 
-            if (configService.getConfig().getWebSocketServer().getAuthentication().isEnabled() && (token == null || !token.equals(configService.getConfig().getWebSocketServer().getAuthentication().getToken()))) {
+            // Refuse connection if authentication is enabled and token is not match
+            Config.Authentication authConfig = configService.getConfig().getWebSocketServer().getAuthentication();
+            if (authConfig.isEnabled() && (token == null || !token.equals(authConfig.getToken()))) {
                 connection.close(CloseFrame.REFUSE, "Token Mismatch");
                 return;
             }
 
-            connection.setAttachment(new ConnectionAttachment(channel, params, token));
+            connection.setAttachment(new ConnectionAttachment(channel, params));
             addSocketToChannel(channel, connection);
 
-            log.info("{} connected to {}", connection.getRemoteSocketAddress().toString(), channel);
+            log.info("{} connected to {}", connection.getRemoteSocketAddress(), channel);
         } catch (URISyntaxException e) {
-            log.error("{} error", connection.getRemoteSocketAddress().toString(), e);
+            log.error("{} error", connection.getRemoteSocketAddress(), e);
             connection.close();
         }
     }
@@ -159,17 +162,8 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
         removeServiceFromChannel(service.getChannel(), service);
     }
 
-    private String getToken(List<NameValuePair> params) {
-        for (NameValuePair pair : params) {
-            if (pair.getName().equals("access_token")) {
-                return pair.getValue();
-            }
-        }
-        return null;
-    }
-
     private void processMessage(String channel, String message) {
-        ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
+        ArrayList<WebSocketServiceInterface> services = getServicesForChannel(channel);
         for (WebSocketServiceInterface service : services) {
             log.trace("Attempt to send: {} to channel: {}", message, channel);
             service.onDataReceived(message);
@@ -177,30 +171,36 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     }
 
     private void processMessage(String channel, ByteBuffer blob) {
-        ArrayList<WebSocketServiceInterface> services = getServiceListForChannel(channel);
+        ArrayList<WebSocketServiceInterface> services = getServicesForChannel(channel);
         for (WebSocketServiceInterface service : services) {
             log.trace("Attempt to send: {} to channel: {}", blob, channel);
             service.onDataReceived(blob.array());
         }
     }
 
-    private ArrayList<WebSocket> getSocketListForChannel(String channel) {
+    /*
+     * Socket to Channel operations
+     */
+    private ArrayList<WebSocket> getSocketsForChannel(String channel) {
         return socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
     }
 
     private void addSocketToChannel(String channel, WebSocket socket) {
-        ArrayList<WebSocket> connectionList = getSocketListForChannel(channel);
+        ArrayList<WebSocket> connectionList = getSocketsForChannel(channel);
         connectionList.add(socket);
         socketChannelSubscriptions.put(channel, connectionList);
     }
 
     private void removeSocketFromChannel(String channel, WebSocket socket) {
-        ArrayList<WebSocket> connectionList = getSocketListForChannel(channel);
+        ArrayList<WebSocket> connectionList = getSocketsForChannel(channel);
         connectionList.remove(socket);
         socketChannelSubscriptions.put(channel, connectionList);
     }
 
-    private ArrayList<WebSocketServiceInterface> getServiceListForChannel(String channel) {
+    /*
+     * Service to Channel operations
+     */
+    private ArrayList<WebSocketServiceInterface> getServicesForChannel(String channel) {
         ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
 
         services.addAll(serviceChannelSubscriptions.getOrDefault(channel, new ArrayList<>()));
@@ -221,7 +221,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     }
 
     private void removeServiceFromChannel(String channel, WebSocketServiceInterface service) {
-        ArrayList<WebSocketServiceInterface> serviceList = getServiceListForChannel(channel);
+        ArrayList<WebSocketServiceInterface> serviceList = getServicesForChannel(channel);
         serviceList.remove(service);
         serviceChannelSubscriptions.put(channel, serviceList);
 
