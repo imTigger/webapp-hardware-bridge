@@ -21,7 +21,7 @@
   },
   "printer": {
     "enabled": true,
-    "autoAddUnknownType": true,
+    "autoAddUnknownType": false,
     "fallbackToDefault": false,
     "mappings": [
       {
@@ -35,7 +35,7 @@
     ]
   },
   "serial": {
-    "enabled": false,
+    "enabled": true,
     "mappings": []
   }
 }
