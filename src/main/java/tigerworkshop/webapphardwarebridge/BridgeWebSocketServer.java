@@ -148,13 +148,15 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     }
 
     @Override
-    public void subscribe(WebSocketServiceInterface service, String channel) {
-        addServiceToChannel(channel, service);
+    public void registerService(WebSocketServiceInterface service) {
+        service.onRegister(this);
+        addServiceToChannel(service.getChannel(), service);
     }
 
     @Override
-    public void unsubscribe(WebSocketServiceInterface service, String channel) {
-        removeServiceFromChannel(channel, service);
+    public void unregisterService(WebSocketServiceInterface service) {
+        service.onUnregister();
+        removeServiceFromChannel(service.getChannel(), service);
     }
 
     private String getToken(List<NameValuePair> params) {
@@ -183,11 +185,7 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     }
 
     private ArrayList<WebSocket> getSocketListForChannel(String channel) {
-        ArrayList<WebSocket> socketList = socketChannelSubscriptions.get(channel);
-        if (socketList == null) {
-            return new ArrayList<>();
-        }
-        return socketList;
+        return socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
     }
 
     private void addSocketToChannel(String channel, WebSocket socket) {
@@ -205,24 +203,15 @@ public class BridgeWebSocketServer extends WebSocketServer implements WebSocketS
     private ArrayList<WebSocketServiceInterface> getServiceListForChannel(String channel) {
         ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
 
-        ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.get(channel);
-        if (serviceList != null) {
-            services.addAll(serviceList);
-        }
-
-        ArrayList<WebSocketServiceInterface> serviceListWildcard = serviceChannelSubscriptions.get("*");
-        if (serviceListWildcard != null) {
-            services.addAll(serviceListWildcard);
-        }
+        services.addAll(serviceChannelSubscriptions.getOrDefault(channel, new ArrayList<>()));
+        services.addAll(serviceChannelSubscriptions.getOrDefault("*", new ArrayList<>()));
 
         return services;
     }
 
     private void addServiceToChannel(String channel, WebSocketServiceInterface service) {
-        ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.get(channel);
-        if (serviceList == null) {
-            serviceList = new ArrayList<>();
-        }
+        ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
+
         serviceList.add(service);
         serviceChannelSubscriptions.put(channel, serviceList);
 

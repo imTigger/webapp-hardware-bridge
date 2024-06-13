@@ -1,8 +1,6 @@
 package tigerworkshop.webapphardwarebridge.interfaces;
 
 public interface WebSocketServiceInterface {
-    void setServer(WebSocketServerInterface server);
-
     void start();
 
     void stop();
@@ -10,4 +8,10 @@ public interface WebSocketServiceInterface {
     void onDataReceived(String message);
 
     void onDataReceived(byte[] message);
+
+    void onRegister(WebSocketServerInterface server);
+
+    void onUnregister();
+
+    String getChannel();
 }

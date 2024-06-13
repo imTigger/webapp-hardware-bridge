@@ -3,14 +3,13 @@ package tigerworkshop.webapphardwarebridge.websocketservices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPrintable;
 import org.apache.pdfbox.printing.Scaling;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
@@ -30,30 +29,26 @@ import java.util.Optional;
 
 @Log4j2
 public class PrinterWebSocketService implements WebSocketServiceInterface {
-    private WebSocketServerInterface server = null;
+    private WebSocketServerInterface server;
+    private final GUIInterface guiInterface;
 
     private static final ConfigService configService = ConfigService.getInstance();
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Setter
-    private GUIListenerInterface notificationListener;
-
-    public PrinterWebSocketService() {
+    
+    public PrinterWebSocketService(GUIInterface newGUIInterface) {
         log.info("Starting PrinterWebSocketService");
+
+        this.guiInterface = newGUIInterface;
     }
 
     @Override
     public void start() {
-        server.subscribe(this, getChannel());
+
     }
 
     @Override
     public void stop() {
-        log.info("Stopping PrinterWebSocketService");
 
-        server.unsubscribe(this, getChannel());
-
-        log.info("Stopped PrinterWebSocketService");
     }
 
     @Override
@@ -73,11 +68,17 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void setServer(WebSocketServerInterface server) {
+    public void onRegister(WebSocketServerInterface server) {
         this.server = server;
     }
 
-    private String getChannel() {
+    @Override
+    public void onUnregister() {
+        this.server = null;
+    }
+
+    @Override
+    public String getChannel() {
         return "/printer";
     }
 
@@ -88,8 +89,8 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         var printerSearchResult = searchPrinterForType(printDocument.getType());
 
         try {
-            if (notificationListener != null) {
-                notificationListener.notify("Printing " + printDocument.getType(), printDocument.getUrl(), TrayIcon.MessageType.INFO);
+            if (guiInterface != null) {
+                guiInterface.notify("Printing " + printDocument.getType(), printDocument.getUrl(), TrayIcon.MessageType.INFO);
             }
 
             if (isRaw(printDocument)) {
@@ -107,8 +108,8 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             log.error("Document Print Error, deleting downloaded document");
             DocumentService.deleteFileFromUrl(printDocument.getUrl());
 
-            if (notificationListener != null) {
-                notificationListener.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
+            if (guiInterface != null) {
+                guiInterface.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
             }
 
             server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult.getName())));

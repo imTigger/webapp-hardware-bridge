@@ -4,7 +4,7 @@ package tigerworkshop.webapphardwarebridge.interfaces;
 public interface WebSocketServerInterface {
     void onDataReceived(String channel, String message);
 
-    void subscribe(WebSocketServiceInterface service, String channel);
+    void registerService(WebSocketServiceInterface service);
 
-    void unsubscribe(WebSocketServiceInterface service, String channel);
+    void unregisterService(WebSocketServiceInterface service);
 }

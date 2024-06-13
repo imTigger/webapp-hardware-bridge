@@ -8,7 +8,7 @@ import io.javalin.plugin.bundled.CorsPluginConfig;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
 import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
 import java.awt.*;
@@ -23,10 +23,10 @@ public class WebAPIServer {
     private Javalin javalinServer;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final GUIListenerInterface guiListener;
+    private final GUIInterface guiInterface;
 
-    public WebAPIServer(GUIListenerInterface guiListener) {
-        this.guiListener = guiListener;
+    public WebAPIServer(GUIInterface guiInterface) {
+        this.guiInterface = guiInterface;
     }
 
     public static void main(String[] args) {
@@ -52,7 +52,7 @@ public class WebAPIServer {
                     configService.loadFromJson(ctx.body());
                     configService.save();
 
-                    guiListener.notify("Setting", "Setting saved successfully", TrayIcon.MessageType.INFO);
+                    guiInterface.notify("Setting", "Setting saved successfully", TrayIcon.MessageType.INFO);
 
                     ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
                 })
@@ -73,7 +73,7 @@ public class WebAPIServer {
                     ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
                 })
                 .post("/system/restart.json", ctx -> {
-                    guiListener.restart();
+                    guiInterface.restart();
                 })
                 .start(configService.getConfig().getWebApiServer().getBind(), configService.getConfig().getWebApiServer().getPort());
     }

@@ -1,11 +1,10 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
 import com.fazecast.jSerialComm.SerialPort;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIListenerInterface;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
@@ -15,26 +14,27 @@ import java.nio.charset.StandardCharsets;
 
 @Log4j2
 public class SerialWebSocketService implements WebSocketServiceInterface {
+    private WebSocketServerInterface server;
+    private final GUIInterface guiInterface;
+
     private final Config.SerialMapping mapping;
     private final SerialPort serialPort;
     private byte[] writeBuffer = {};
 
-    private WebSocketServerInterface server = null;
     private Thread readThread;
     private Thread writeThread;
     private Thread monitorThread;
 
     private Boolean isRunning = true;
 
-    @Setter
-    private GUIListenerInterface notificationListener;
-
-    public SerialWebSocketService(Config.SerialMapping newMapping) {
+    public SerialWebSocketService(GUIInterface newGUIInterface, Config.SerialMapping newMapping) {
         log.info("Starting SerialWebSocketService on {}", newMapping.getName());
 
-        mapping = newMapping;
+        this.mapping = newMapping;
 
-        serialPort = SerialPort.getCommPort(newMapping.getName());
+        this.guiInterface = newGUIInterface;
+
+        this.serialPort = SerialPort.getCommPort(newMapping.getName());
 
         if (mapping.getBaudRate() != null) serialPort.setBaudRate(mapping.getBaudRate());
         if (mapping.getNumDataBits() != null) serialPort.setNumDataBits(mapping.getNumDataBits());
@@ -58,7 +58,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                     } else if (serialPort.bytesAvailable() == -1) {
                         // Check if portName closed unexpected (e.g. Unplugged)
                         serialPort.closePort();
-                        notificationListener.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
+                        guiInterface.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
                         log.warn("Serial {} unplugged", mapping.getName());
 
                         continue;
@@ -133,25 +133,26 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
     @Override
     public void onDataReceived(String message) {
-        send(message.getBytes());
+        onDataReceived(message.getBytes());
     }
 
     @Override
     public void onDataReceived(byte[] message) {
-        send(message);
-    }
-
-    @Override
-    public void setServer(WebSocketServerInterface server) {
-        this.server = server;
-        server.subscribe(this, getChannel());
-    }
-
-    private void send(byte[] message) {
         writeBuffer = message;
     }
 
-    private String getChannel() {
+    @Override
+    public void onRegister(WebSocketServerInterface newServer) {
+        this.server = newServer;
+    }
+
+    @Override
+    public void onUnregister() {
+        this.server = null;
+    }
+
+    @Override
+    public String getChannel() {
         return "/serial/" + mapping.getType();
     }
 }
