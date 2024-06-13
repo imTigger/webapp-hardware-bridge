@@ -23,6 +23,7 @@ import javax.print.PrintService;
 import java.awt.*;
 import java.awt.print.PrinterJob;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class Server implements WebSocketServerInterface {
@@ -80,17 +81,17 @@ public class Server implements WebSocketServerInterface {
 
         // Add WebSocket Auth
         javalinServer.wsBefore(ctx -> {
-            if (serverConfig.getAuthentication().isEnabled()) {
-                ctx.onConnect(wsConnectContext -> {
-                    log.info("Before onConnect: {}", wsConnectContext.queryParamMap());
+            ctx.onConnect(wsConnectContext -> {
+                wsConnectContext.enableAutomaticPings(5, TimeUnit.SECONDS);
 
+                if (serverConfig.getAuthentication().isEnabled()) {
                     if (Optional.ofNullable(wsConnectContext.queryParam("token")).orElse("").equals(serverConfig.getAuthentication().getToken())) {
                         return;
                     }
 
                     wsConnectContext.closeSession(1003, "Invalid token");
-                });
-            }
+                }
+            });
         });
 
         // Add WebSocket Printer Service
