@@ -200,7 +200,9 @@ public class Server implements WebSocketServerInterface {
             configService.loadFromJson(ctx.body());
             configService.save();
 
-            guiInterface.notify("Setting", "Setting saved successfully", TrayIcon.MessageType.INFO);
+            if (guiInterface != null) {
+                guiInterface.notify("Setting", "Setting saved successfully", TrayIcon.MessageType.INFO);
+            }
 
             ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
         });
