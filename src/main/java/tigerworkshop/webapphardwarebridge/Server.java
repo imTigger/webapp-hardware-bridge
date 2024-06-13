@@ -1,10 +1,16 @@
 package tigerworkshop.webapphardwarebridge;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fazecast.jSerialComm.SerialPort;
 import io.javalin.Javalin;
 import io.javalin.community.ssl.SslPlugin;
+import io.javalin.http.ContentType;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 import io.javalin.websocket.WsContext;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
+import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
+import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
 import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
@@ -13,18 +19,18 @@ import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
+import javax.print.PrintService;
 import java.awt.*;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.awt.print.PrinterJob;
+import java.util.*;
 
 @Log4j2
-public class WebSocketServer implements WebSocketServerInterface {
-    private static final WebSocketServer server = new WebSocketServer(null);
+public class Server implements WebSocketServerInterface {
+    private static final Server server = new Server(null);
     private static final ConfigService configService = ConfigService.getInstance();
 
     private Javalin javalinServer;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final HashMap<String, ArrayList<WsContext>> socketChannelSubscriptions = new HashMap<>();
     private final HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
@@ -32,7 +38,7 @@ public class WebSocketServer implements WebSocketServerInterface {
 
     private final GUIInterface guiInterface;
 
-    public WebSocketServer(GUIInterface guiInterface) {
+    public Server(GUIInterface guiInterface) {
         this.guiInterface = guiInterface;
     }
 
@@ -45,33 +51,52 @@ public class WebSocketServer implements WebSocketServerInterface {
     }
 
     public void start() throws Exception {
-        Config.WebSocketServer webSocketConfig = configService.getConfig().getWebSocketServer();
+        Config config = configService.getConfig();
 
+        Config.Server serverConfig = config.getServer();
+
+        // Create Javalin Server
         javalinServer = Javalin.create(cfg -> {
             cfg.showJavalinBanner = false;
+            cfg.staticFiles.add(staticFiles -> staticFiles.directory = "web");
+            cfg.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
 
-            if (webSocketConfig.getTls().isEnabled()) {
-                if (webSocketConfig.getTls().isSelfSigned()) {
+            if (serverConfig.getTls().isEnabled()) {
+                if (serverConfig.getTls().isSelfSigned()) {
                     log.info("TLS Enabled with self-signed certificate");
 
-                    CertificateGenerator.generateSelfSignedCertificate(webSocketConfig.getAddress(), webSocketConfig.getTls().getCert(), webSocketConfig.getTls().getKey());
+                    CertificateGenerator.generateSelfSignedCertificate(serverConfig.getAddress(), serverConfig.getTls().getCert(), serverConfig.getTls().getKey());
 
-                    log.info("For first time setup, open in browser and trust the certificate: {}", webSocketConfig.getUri().replace("http", "https"));
+                    log.info("For first time setup, open in browser and trust the certificate: {}", serverConfig.getUri().replace("http", "https"));
                 }
 
                 SslPlugin plugin = new SslPlugin(conf -> {
                     conf.insecure = false;
-                    conf.securePort = webSocketConfig.getPort();
-                    conf.pemFromPath(webSocketConfig.getTls().getCert(), webSocketConfig.getTls().getKey());
+                    conf.securePort = serverConfig.getPort();
+                    conf.pemFromPath(serverConfig.getTls().getCert(), serverConfig.getTls().getKey());
                 });
                 cfg.registerPlugin(plugin);
             }
         });
 
-        Config config = configService.getConfig();
+        // Add WebSocket Auth
+        javalinServer.wsBefore(ctx -> {
+            if (serverConfig.getAuthentication().isEnabled()) {
+                ctx.onConnect(wsConnectContext -> {
+                    log.info("Before onConnect: {}", wsConnectContext.queryParamMap());
 
-        // Add Printer Service
-        if (config.getPrinter().isEnabled() && !config.getPrinter().getMappings().isEmpty()) {
+                    if (Optional.ofNullable(wsConnectContext.queryParam("token")).orElse("").equals(serverConfig.getAuthentication().getToken())) {
+                        return;
+                    }
+
+                    wsConnectContext.closeSession(1003, "Invalid token");
+                });
+            }
+        });
+
+        // Add WebSocket Printer Service
+        Config.Printer printerConfig = config.getPrinter();
+        if (printerConfig.isEnabled() && !printerConfig.getMappings().isEmpty()) {
             PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService(guiInterface);
             printerWebSocketService.start();
 
@@ -98,9 +123,10 @@ public class WebSocketServer implements WebSocketServerInterface {
             registerService(printerWebSocketService);
         }
 
-        // Add Serial Service
-        if (config.getSerial().isEnabled()) {
-            config.getSerial().getMappings().forEach(mapping -> {
+        // Add WebSocket Serial Service
+        Config.Serial serialConfig = config.getSerial();
+        if (serialConfig.isEnabled()) {
+            serialConfig.getMappings().forEach(mapping -> {
                 try {
                     log.info("Starting SerialWebSocketService: {}", mapping.toString());
                     SerialWebSocketService serialWebSocketService = new SerialWebSocketService(guiInterface, mapping);
@@ -126,6 +152,12 @@ public class WebSocketServer implements WebSocketServerInterface {
 
                             processMessage(serialWebSocketService.getChannel(), ctx.message());
                         });
+
+                        ws.onBinaryMessage(ctx -> {
+                            log.info("{} sent binary message to {}: {}", ctx.host(), serialWebSocketService.getChannel(), ctx.data());
+
+                            processMessage(serialWebSocketService.getChannel(), ctx.data());
+                        });
                     });
                 } catch (Exception e) {
                     String message = "Failed to start SerialWebSocketService for " + mapping.getType() + ": " + e.getMessage();
@@ -138,9 +170,67 @@ public class WebSocketServer implements WebSocketServerInterface {
             });
         }
 
-        javalinServer.start(webSocketConfig.getBind(), webSocketConfig.getPort());
+        // Add HTTP Auth
+        javalinServer.before(ctx -> {
+            if (serverConfig.getAuthentication().isEnabled()) {
+                try {
+                    // Bearer Token
+                    if (Optional.ofNullable(ctx.header("Authorization")).orElse("").endsWith(serverConfig.getAuthentication().getToken())) {
+                        return;
+                    }
 
-        log.info("WebSocket started on {}", webSocketConfig.getUri());
+                    // Basic Auth
+                    if (ctx.basicAuthCredentials() != null && Objects.equals(ctx.basicAuthCredentials().getPassword(), serverConfig.getAuthentication().getToken())) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    // NOOP
+                }
+
+                ctx.header("WWW-Authenticate", "Basic realm=\"Token required\"");
+                ctx.res().sendError(401, "Token mismatch");
+            }
+        });
+
+        // Add HTTP Service
+        javalinServer.get("/config.json", ctx -> {
+            ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
+        });
+
+        javalinServer.put("/config.json", ctx -> {
+            configService.loadFromJson(ctx.body());
+            configService.save();
+
+            guiInterface.notify("Setting", "Setting saved successfully", TrayIcon.MessageType.INFO);
+
+            ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
+        });
+
+        javalinServer.get("/system/printers.json", ctx -> {
+            ArrayList<PrintServiceDTO> dtos = new ArrayList<>();
+            for (PrintService service : PrinterJob.lookupPrintServices()) {
+                dtos.add(new PrintServiceDTO(service.getName(), ""));
+            }
+
+            ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
+        });
+
+        javalinServer.get("/system/serials.json", ctx -> {
+            ArrayList<SerialPortDTO> dtos = new ArrayList<>();
+            for (SerialPort port : SerialPort.getCommPorts()) {
+                dtos.add(new SerialPortDTO(port.getSystemPortName(), port.getPortDescription(), port.getManufacturer()));
+            }
+
+            ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
+        });
+
+        javalinServer.post("/system/restart.json", ctx -> {
+            guiInterface.restart();
+        });
+
+        javalinServer.start(serverConfig.getBind(), serverConfig.getPort());
+
+        log.info("Server started on {}", serverConfig.getUri());
     }
 
     public void stop() throws Exception {
@@ -197,15 +287,17 @@ public class WebSocketServer implements WebSocketServerInterface {
         ArrayList<WebSocketServiceInterface> services = getServicesForChannel(channel);
         for (WebSocketServiceInterface service : services) {
             log.trace("Attempt to send: {} to channel: {}", message, channel);
+
             service.onDataReceived(message);
         }
     }
 
-    private void processMessage(String channel, ByteBuffer blob) {
+    private void processMessage(String channel, byte[] bytes) {
         ArrayList<WebSocketServiceInterface> services = getServicesForChannel(channel);
         for (WebSocketServiceInterface service : services) {
-            log.trace("Attempt to send: {} to channel: {}", blob, channel);
-            service.onDataReceived(blob.array());
+            log.trace("Attempt to send: {} to channel: {}", bytes, channel);
+
+            service.onDataReceived(bytes);
         }
     }
 

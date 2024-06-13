@@ -32,10 +32,8 @@ Section "!Main Application" ;No components page, name is not important
   Delete "$INSTDIR\*.jar"
   Delete "$INSTDIR\setting.default.json"
   Delete "$DESKTOP\WebApp Hardware Bridge (GUI).lnk"
-  Delete "$DESKTOP\WebApp Hardware Bridge (CLI).lnk"
   Delete "$DESKTOP\WebApp Hardware Bridge (Configurator).lnk"
   Delete "$SMPROGRAMS\WebApp Hardware Bridge (GUI).lnk"
-  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI).lnk"
   Delete "$SMPROGRAMS\WebApp Hardware Bridge (Configurator).lnk"
   
   ; Put file there
@@ -47,15 +45,15 @@ Section "!Main Application" ;No components page, name is not important
   
   ; Delete shortcuts  
   Delete "$DESKTOP\WebApp Hardware Bridge.lnk"
-  Delete "$DESKTOP\WebApp Hardware Bridge (CLI Websocket).lnk"
-  Delete "$DESKTOP\WebApp Hardware Bridge (CLI Web).lnk"
+  Delete "$DESKTOP\WebApp Hardware Bridge (CLI).lnk"
   Delete "$SMPROGRAMS\WebApp Hardware Bridge.lnk"
-  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI Websocket).lnk"
-  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI Web).lnk"
+  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI).lnk"
   
   ; Create shortcuts
   CreateShortcut "$DESKTOP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
+  CreateShortcut "$DESKTOP\WebApp Hardware Bridge (CLI).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Server"
   CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
+  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge (CLI).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.Server"
 
   ; Write the installation path into the registry
   WriteRegStr HKCU "SOFTWARE\WebApp Hardware Bridge" "Install_Dir" "$INSTDIR"
@@ -71,15 +69,7 @@ Section "!Main Application" ;No components page, name is not important
   SetAutoClose true
 SectionEnd ; end the section
 
-Section /o "Additional Shortcuts" shortcuts
-  CreateShortcut "$DESKTOP\WebApp Hardware Bridge (CLI WebSocket).lnk" "$INSTDIR\jre\bin\java.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.WebSocketServer"
-  CreateShortcut "$DESKTOP\WebApp Hardware Bridge (CLI Web).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.WebAPIServer"
-  
-  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge (CLI WebSocket).lnk" "$INSTDIR\jre\bin\java.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.WebSocketServer"
-  CreateShortcut "$SMPROGRAMS\WebApp Hardware Bridge (CLI Web).lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.WebAPIServer"
-SectionEnd
-
-Section "Auto-start" autostart0000000
+Section "Auto-start" autostart
   CreateShortcut "$SMSTARTUP\WebApp Hardware Bridge.lnk" "$INSTDIR\jre\bin\javaw.exe" "-cp webapp-hardware-bridge.jar tigerworkshop.webapphardwarebridge.GUI"
 SectionEnd
 
@@ -90,11 +80,9 @@ Section "Uninstall"
   
   ; Delete shortcuts
   Delete "$DESKTOP\WebApp Hardware Bridge.lnk"
-  Delete "$DESKTOP\WebApp Hardware Bridge (CLI Websocket).lnk"
-  Delete "$DESKTOP\WebApp Hardware Bridge (CLI Web).lnk"
+  Delete "$DESKTOP\WebApp Hardware Bridge (CLI).lnk"
   Delete "$SMPROGRAMS\WebApp Hardware Bridge.lnk"
-  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI Websocket).lnk"
-  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI Web).lnk"
+  Delete "$SMPROGRAMS\WebApp Hardware Bridge (CLI).lnk"
   
   ; Remove files and uninstaller
   RMDir /r $INSTDIR

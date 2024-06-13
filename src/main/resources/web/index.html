@@ -22,81 +22,81 @@
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title mb-3">WebSocket</h5>
+                        <h5 class="card-title mb-3">Web/WebSocket Server</h5>
 
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-bind">Bind</label>
+                            <label class="col-sm-4" for="server-bind">Bind</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm" id="websocket-bind" type="text" v-model="config.webSocketServer.bind"/>
+                                <input class="form-control form-control-sm" id="server-bind" type="text" v-model="config.server.bind"/>
                             </div>
                         </div>
 
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-address">Address</label>
+                            <label class="col-sm-4" for="server-address">Address</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm" id="websocket-address" type="text" v-model="config.webSocketServer.address"/>
+                                <input class="form-control form-control-sm" id="server-address" type="text" v-model="config.server.address"/>
                             </div>
                         </div>
 
                         <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="websocket-port">Port</label>
+                            <label class="col-sm-4" for="server-port">Port</label>
                             <div class="col-sm-8">
-                                <input class="form-control form-control-sm" id="websocket-port" max="65535" min="1024" type="number" v-model="config.webSocketServer.port"/>
+                                <input class="form-control form-control-sm" id="server-port" max="65535" min="1024" type="number" v-model="config.server.port"/>
                             </div>
                         </div>
 
                         <div class="form-group row mb-2">
-                            <label class="col-sm-10" for="websocket-authentication-enabled">Enable authentication</label>
+                            <label class="col-sm-10" for="server-authentication-enabled">Enable authentication</label>
                             <div class="col-sm-2 text-end">
-                                <input class="form-check-input" id="websocket-authentication-enabled" type="checkbox" v-model="config.webSocketServer.authentication.enabled"/>
+                                <input class="form-check-input" id="server-authentication-enabled" type="checkbox" v-model="config.server.authentication.enabled"/>
                             </div>
                         </div>
 
-                        <div class="card mb-2" v-if="config.webSocketServer.authentication.enabled">
+                        <div class="card mb-2" v-if="config.server.authentication.enabled">
                             <div class="card-body"><h6 class="card-title mb-3">Authentication</h6>
                                 <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="websocket-authentication-token">Token</label>
+                                    <label class="col-sm-4" for="server-authentication-token">Token</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="websocket-authentication-token" type="text" v-model="config.webSocketServer.authentication.token"/>
+                                        <input class="form-control form-control-sm" id="server-authentication-token" type="text" v-model="config.server.authentication.token"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group row mb-2">
-                            <label class="col-sm-10" for="websocket-tls-enabled">Enable TLS</label>
+                            <label class="col-sm-10" for="server-tls-enabled">Enable TLS</label>
                             <div class="col-sm-2 text-end">
-                                <input class="form-check-input" id="websocket-tls-enabled" type="checkbox" v-model="config.webSocketServer.tls.enabled"/>
+                                <input class="form-check-input" id="server-tls-enabled" type="checkbox" v-model="config.server.tls.enabled"/>
                             </div>
                         </div>
 
-                        <div class="card mb-2" v-if="config.webSocketServer.tls.enabled">
+                        <div class="card mb-2" v-if="config.server.tls.enabled">
                             <div class="card-body"><h6 class="card-title mb-3">TLS</h6>
                                 <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="websocket-tls-self-signed">Self Signed</label>
+                                    <label class="col-sm-4" for="server-tls-self-signed">Self Signed</label>
                                     <div class="col-sm-8">
-                                        <input class="form-check-input" id="websocket-tls-self-signed" type="checkbox" v-model="config.webSocketServer.tls.selfSigned"/>
+                                        <input class="form-check-input" id="server-tls-self-signed" type="checkbox" v-model="config.server.tls.selfSigned"/>
                                     </div>
                                 </div>
 
                                 <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="websocket-tls-cert">Cert</label>
+                                    <label class="col-sm-4" for="server-tls-cert">Cert</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="websocket-tls-cert" type="text" v-model="config.webSocketServer.tls.cert"/>
+                                        <input class="form-control form-control-sm" id="server-tls-cert" type="text" v-model="config.server.tls.cert"/>
                                     </div>
                                 </div>
 
                                 <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="websocket-tls-key">Key</label>
+                                    <label class="col-sm-4" for="server-tls-key">Key</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="websocket-tls-key" type="text" v-model="config.webSocketServer.tls.key"/>
+                                        <input class="form-control form-control-sm" id="server-tls-key" type="text" v-model="config.server.tls.key"/>
                                     </div>
                                 </div>
 
                                 <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="websocket-tls-ca-bundle">CA Bundle</label>
+                                    <label class="col-sm-4" for="server-tls-ca-bundle">CA Bundle</label>
                                     <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="websocket-tls-ca-bundle" type="text" v-model="config.webSocketServer.tls.caBundle"/>
+                                        <input class="form-control form-control-sm" id="server-tls-ca-bundle" type="text" v-model="config.server.tls.caBundle"/>
                                     </div>
                                 </div>
                             </div>
@@ -104,95 +104,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-2 col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Web UI / API</h5>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-bind">Bind</label>
-                            <div class="col-sm-8">
-                                <input class="form-control form-control-sm" id="web-api-bind" type="text" v-model="config.webApiServer.bind"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-address">Address</label>
-                            <div class="col-sm-8">
-                                <input class="form-control form-control-sm" id="web-api-address" type="text" v-model="config.webApiServer.address"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-4" for="web-api-port">Port</label>
-                            <div class="col-sm-8">
-                                <input class="form-control form-control-sm" id="web-api-port" max="65535" min="1024" type="number" v-model="config.webApiServer.port"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-10" for="web-api-authentication-enabled">Enable authentication</label>
-                            <div class="col-sm-2 text-end">
-                                <input class="form-check-input" id="web-api-authentication-enabled" type="checkbox" v-model="config.webApiServer.authentication.enabled"/>
-                            </div>
-                        </div>
-
-                        <div class="card mb-2" v-if="config.webApiServer.authentication.enabled">
-                            <div class="card-body">
-                                <h6 class="card-title mb-3">Authentication</h6>
-
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="web-api-authentication-token">Token</label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="web-api-authentication-token" type="text" v-model="config.webApiServer.authentication.token"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-2">
-                            <label class="col-sm-10" for="web-api-tls-enabled">Enable TLS</label>
-                            <div class="col-sm-2 text-end">
-                                <input class="form-check-input" id="web-api-tls-enabled" type="checkbox" v-model="config.webApiServer.tls.enabled"/>
-                            </div>
-                        </div>
-
-                        <div class="card mb-2" v-if="config.webApiServer.tls.enabled">
-                            <div class="card-body">
-                                <h6 class="card-title mb-3">TLS</h6>
-
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="web-api-tls-self-signed">Self Signed</label>
-                                    <div class="col-sm-8">
-                                        <input class="form-check-input" id="web-api-tls-self-signed" type="checkbox" v-model="config.webApiServer.tls.selfSigned"/>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="web-api-tls-cert">Cert</label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="web-api-tls-cert" type="text" v-model="config.webApiServer.tls.cert"/>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="web-api-tls-key">Key</label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="web-api-tls-key" type="text" v-model="config.webApiServer.tls.key"/>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row mb-2">
-                                    <label class="col-sm-4" for="web-api-tls-ca-bundle">CA Bundle</label>
-                                    <div class="col-sm-8">
-                                        <input class="form-control form-control-sm" id="web-api-tls-ca-bundle" type="text" v-model="config.webApiServer.tls.caBundle"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">
@@ -221,6 +133,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="mb-2 col-xl-4">
                 <div class="card">
                     <div class="card-body">

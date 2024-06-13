@@ -12,8 +12,7 @@ import java.util.ArrayList;
 @Data
 @NoArgsConstructor
 public class Config {
-    private WebSocketServer webSocketServer;
-    private WebApiServer webApiServer;
+    private Server server;
     private Downloader downloader;
     private Printer printer;
     private Serial serial;
@@ -24,7 +23,7 @@ public class Config {
 
     @Data
     @NoArgsConstructor
-    public static class WebSocketServer {
+    public static class Server {
         private String address;
         private String bind;
         private int port;
@@ -34,21 +33,6 @@ public class Config {
         @JsonIgnore
         public String getUri() {
             return "ws://" + address + ":" + port;
-        }
-    }
-
-    @Data
-    @NoArgsConstructor
-    public static class WebApiServer {
-        private String address;
-        private String bind;
-        private int port;
-        private Authentication authentication;
-        private TLS tls;
-
-        @JsonIgnore
-        public String getUri() {
-            return "http://" + address + ":" + port;
         }
     }
 

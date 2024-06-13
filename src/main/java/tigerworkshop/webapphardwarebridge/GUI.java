@@ -15,8 +15,7 @@ import java.util.Objects;
 public class GUI implements GUIInterface {
     private static final ConfigService configService = ConfigService.getInstance();
 
-    private final WebSocketServer webSocketServer = new WebSocketServer(this);
-    private final WebAPIServer webAPIServer = new WebAPIServer(this);
+    private final Server server = new Server(this);
     private Config config = configService.getConfig();
 
     Desktop desktop = Desktop.getDesktop();
@@ -29,8 +28,7 @@ public class GUI implements GUIInterface {
     }
 
     public void launch() throws Exception {
-        webSocketServer.start();
-        webAPIServer.start();
+        server.start();
 
         // Create tray icon
         if (!SystemTray.isSupported()) {
@@ -47,7 +45,7 @@ public class GUI implements GUIInterface {
                     throw new Exception("Desktop browse is not supported");
                 }
 
-                desktop.browse(new URI(config.getWebApiServer().getUri()));
+                desktop.browse(new URI(config.getServer().getUri()));
             } catch (Exception ex) {
                 log.error("Failed to open Web UI", ex);
             }
@@ -118,11 +116,8 @@ public class GUI implements GUIInterface {
         try {
             config = configService.getConfig();
 
-            webSocketServer.stop();
-            webSocketServer.start();
-
-            webAPIServer.stop();
-            webAPIServer.start();
+            server.stop();
+            server.start();
         } catch (Exception e) {
             log.error("Failed to restart server", e);
         }
