@@ -29,10 +29,6 @@
       "key": "tls/default-key.pem"
     }
   },
-  "cloudProxy": {
-    "enabled": false,
-    "url": "wss://127.0.0.1:22212"
-  },
   "downloader": {
     "timeout": 30.0,
     "path": "downloads",

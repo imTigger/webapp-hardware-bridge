@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class Config {
     private WebSocketServer webSocketServer;
     private WebApiServer webApiServer;
-    private CloudProxy cloudProxy;
     private Downloader downloader;
     private Printer printer;
     private Serial serial;
@@ -51,14 +50,6 @@ public class Config {
         public String getUri() {
             return "http://" + address + ":" + port;
         }
-    }
-
-    @Data
-    @NoArgsConstructor
-    public static class CloudProxy {
-        private boolean enabled;
-        private String url;
-        private int timeout;
     }
 
     @Data

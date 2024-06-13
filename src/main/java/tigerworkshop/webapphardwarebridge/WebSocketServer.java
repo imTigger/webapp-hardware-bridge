@@ -8,7 +8,6 @@ import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
-import tigerworkshop.webapphardwarebridge.websocketservices.CloudProxyClientWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
@@ -119,14 +118,6 @@ public class WebSocketServer implements WebSocketServerInterface {
             });
         }
 
-        // Add Cloud Proxy Client Service
-        if (config.getCloudProxy().isEnabled()) {
-            CloudProxyClientWebSocketService cloudProxyClientWebSocketService = new CloudProxyClientWebSocketService(guiInterface);
-            cloudProxyClientWebSocketService.start();
-
-            registerService(cloudProxyClientWebSocketService);
-        }
-
         javalinServer.start(webSocketConfig.getBind(), webSocketConfig.getPort());
 
         log.info("WebSocket started on {}", webSocketConfig.getUri());
@@ -148,10 +139,6 @@ public class WebSocketServer implements WebSocketServerInterface {
     @Override
     public void onDataReceived(String channel, String message) {
         log.trace("Received data from channel: {}, Data: {}", channel, message);
-
-        if (channel.equals("proxy")) {
-            processMessage("/printer", message);
-        }
 
         ArrayList<WsContext> connectionList = socketChannelSubscriptions.get(channel);
 

@@ -6,7 +6,6 @@ module tigerworkshop.webapphardwarebridge {
     requires org.bouncycastle.pkix;
     requires org.apache.commons.io;
     requires org.slf4j;
-    requires org.java_websocket;
     requires org.apache.pdfbox;
     requires org.apache.commons.codec;
     requires org.apache.httpcomponents.core5.httpcore5;
