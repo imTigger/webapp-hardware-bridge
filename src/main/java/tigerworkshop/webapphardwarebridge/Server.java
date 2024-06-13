@@ -26,11 +26,10 @@ import java.util.*;
 
 @Log4j2
 public class Server implements WebSocketServerInterface {
-    private static final Server server = new Server(null);
-    private static final ConfigService configService = ConfigService.getInstance();
-
     private Javalin javalinServer;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ConfigService configService = ConfigService.getInstance();
 
     private final HashMap<String, ArrayList<WsContext>> socketChannelSubscriptions = new HashMap<>();
     private final HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
@@ -44,7 +43,7 @@ public class Server implements WebSocketServerInterface {
 
     public static void main(String[] args) {
         try {
-            server.start();
+            new Server(null).start();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -225,7 +224,12 @@ public class Server implements WebSocketServerInterface {
         });
 
         javalinServer.post("/system/restart.json", ctx -> {
-            guiInterface.restart();
+            stop();
+            start();
+
+            if (guiInterface != null) {
+                guiInterface.notify("Restart", "Server restarted successfully", TrayIcon.MessageType.INFO);
+            }
         });
 
         javalinServer.start(serverConfig.getBind(), serverConfig.getPort());

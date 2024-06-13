@@ -118,6 +118,8 @@ public class GUI implements GUIInterface {
 
             server.stop();
             server.start();
+
+            notify("Restart", "Server restarted successfully", TrayIcon.MessageType.INFO);
         } catch (Exception e) {
             log.error("Failed to restart server", e);
         }
