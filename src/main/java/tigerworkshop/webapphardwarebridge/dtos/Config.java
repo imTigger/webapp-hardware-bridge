@@ -32,7 +32,7 @@ public class Config {
 
         @JsonIgnore
         public String getUri() {
-            return "ws://" + address + ":" + port;
+            return (tls.isEnabled() ? "https://" : "http://") + address + ":" + port;
         }
     }
 

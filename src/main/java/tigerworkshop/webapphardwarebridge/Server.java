@@ -236,8 +236,6 @@ public class Server implements WebSocketServerInterface {
         });
 
         javalinServer.start(serverConfig.getBind(), serverConfig.getPort());
-
-        log.info("Server started on {}", serverConfig.getUri());
     }
 
     public void stop() throws Exception {
