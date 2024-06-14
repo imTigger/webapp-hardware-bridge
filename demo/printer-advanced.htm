@@ -6,65 +6,82 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
 
     <!-- Bootstrap CSS -->
-    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-    <title>Printer Test</title>
+    <title>WebSocket Printer Advanced</title>
 </head>
 <body>
 <main class="container" role="main">
-    <h1 class="mt-5">Printer Test</h1>
+    <h1 class="mt-5">WebSocket Printer Advanced</h1>
 
     <hr/>
 
     <label>PDF by URL</label>
     <div class="input-group mb-3">
-        <input class="form-control" id="url" type="text" value="https://tcpdf.org/files/examples/example_002.pdf"/>
+        <input class="form-control" id="url" type="text" value="https://pdfobject.com/pdf/sample.pdf"/>
     </div>
 
-    <label>Status</label>
-    <input class="form-control" id="status"/>
+    <label>Connection Status</label>
+
+    <input class="form-control mb-3" id="status"/>
+
+    <label>Output</label>
+
+    <input class="form-control mb-3" id="output"/>
+
+    <hr/>
 
     <div class="py-2">
         <p>
             <button class="btn btn-success" onclick="printPDF()">Normal Print</button>
         </p>
-        <p>
+
+        <hr/>
+
+        <div>
             <button class="btn btn-primary" onclick="printPDFWithFallback()">Print (With Fallback)</button>
-            Fallback to window.open() if WebApp Hardware Bridge is not running.
-        </p>
-        <p>
+            <p class="text-muted">Fallback to window.open() if WebApp Hardware Bridge is not running.</p>
+        </div>
+
+        <hr/>
+
+        <div>
             <button class="btn btn-secondary" onclick="printPDFWithId()">Print (With id)</button>
-            If &quot;id&quot; is submitted, it will be echoed back in onUpdate() thus we can trace back to jobs we
-            submitted
-        </p>
-        <p>
+            <p class="text-muted">If &quot;id&quot; is submitted, it will be echoed back in onUpdate() thus we can trace back to jobs we submitted.</p>
+        </div>
+
+        <hr/>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <input class="form-control" id="qty" type="number" value="3"/>
+            </div>
+
             <button class="btn btn-info" onclick="printPDFWithQty()">Print (With Qty)</button>
-            <input class="form-control" id="qty" type="number" value="3"/>
-            If &quot;qty&quot; is submitted, specified copies of documents will be printed.
-        </p>
+        </div>
+
+        <p class="text-muted">If &quot;qty&quot; is submitted, specified copies of documents will be printed.</p>
     </div>
 </main>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="websocket-printer.js"></script>
 <script>
     var printService = new WebSocketPrinter({
         onConnect: function () {
-            $('#status').val('Connected');
+            document.getElementById('status').value = 'Connected';
         },
         onDisconnect: function () {
-            $('#status').val('Disconnected');
+            document.getElementById('status').value = 'Disconnected';
         },
         onUpdate: function (message) {
-            $('#status').val(message);
+            document.getElementById('output').value = message;
         },
     });
 
     function printPDF() {
         printService.submit({
             'type': 'INVOICE',
-            'url': $('#url').val()
+            'url': document.getElementById('url').value
         });
     }
 
@@ -72,15 +89,15 @@
         printService.submit({
             'type': 'INVOICE',
             'id': new Date().getTime(),
-            'url': $('#url').val()
+            'url': document.getElementById('url').value
         });
     }
 
     function printPDFWithQty() {
         printService.submit({
             'type': 'INVOICE',
-            'qty': $('#qty').val(),
-            'url': $('#url').val()
+            'qty': document.getElementById('qty').value,
+            'url': document.getElementById('url').value
         });
     }
 
@@ -90,7 +107,7 @@
             printPDF();
         } else {
             alert('WebApp Hardware Bridge not running');
-            window.open($('#url').val());
+            window.open(document.getElementById('url').value);
         }
     }
 </script>
