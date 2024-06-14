@@ -86,9 +86,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Prints a PrintDocument
      */
     public void printDocument(PrintDocument printDocument) throws Exception {
-        PrinterSearchResult printerSearchResult = searchPrinterForType(printDocument.getType());
-
+        PrinterSearchResult printerSearchResult = null;
         try {
+            printerSearchResult = searchPrinterForType(printDocument.getType());
+
             if (guiInterface != null) {
                 guiInterface.notify("Printing " + printDocument.getType(), printDocument.getUrl(), TrayIcon.MessageType.INFO);
             }
@@ -112,7 +113,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 guiInterface.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
             }
 
-            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult.getName())));
+            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
 
             throw e;
         }
