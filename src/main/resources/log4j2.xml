@@ -2,20 +2,14 @@
 <configuration status="warn">
     <appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout
-                    pattern="%highlight{%d{HH:mm:ss.SSS} %-5level %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=white, DEBUG=green bold, TRACE=blue}"/>
-        </Console>
-        <Console name="ConsoleDebug" target="SYSTEM_OUT">
-            <PatternLayout
-                    pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}.%M() @%L - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=white, DEBUG=green bold, TRACE=blue}"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %msg%n"/>
         </Console>
         <RollingFile name="RollingFile" fileName="log/client.log" filePattern="log/client-%i.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [${hostName}][%t] %-5level %logger{36}.%M() @%L - %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36}.%M() @%L - %msg%n"/>
             <Policies>
-                <OnStartupTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="1000KB"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="9"/>
+            <DefaultRolloverStrategy max="5"/>
         </RollingFile>
     </appenders>
 
