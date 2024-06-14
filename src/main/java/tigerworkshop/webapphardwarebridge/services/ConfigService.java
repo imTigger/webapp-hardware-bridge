@@ -56,7 +56,6 @@ public class ConfigService {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(CONFIG_FILENAME), config);
         } catch (Exception e) {
             log.error("Failed to save config file", e);
-            System.exit(1);
         }
     }
 
