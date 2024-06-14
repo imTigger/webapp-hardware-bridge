@@ -47,7 +47,6 @@ public class AnnotatedPrintable implements Printable {
             float clipX = (float) graphics2D.getClipBounds().getX();
             float clipY = (float) graphics2D.getClipBounds().getY();
 
-
             // Catch Exceptions otherwise blank page occur while exceptions silently handled
             try {
                 for (AnnotatedPrintableAnnotation annotatedPrintableAnnotation : annotatedPrintableAnnotationArrayList) {
@@ -78,7 +77,6 @@ public class AnnotatedPrintable implements Printable {
 
     @Data
     public static class AnnotatedPrintableAnnotation {
-        private String field;
         private String text;
         private Float x;
         private Float y;

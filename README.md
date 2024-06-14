@@ -23,6 +23,7 @@ Common use cases:
 - Support multiple printers, mapped by key
 - Support PDF/PNG/JPG Printing
 - Support RAW/ESC-POS Printing
+- Support adding annotation text to PDF/Image before printing
 - Per printer settings
 
 ### Serial Access
