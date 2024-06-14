@@ -22,6 +22,7 @@ import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketServi
 import javax.print.PrintService;
 import java.awt.*;
 import java.awt.print.PrinterJob;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -255,17 +256,29 @@ public class Server implements WebSocketServerInterface {
     public void onDataReceived(String channel, String message) {
         log.trace("Received data from channel: {}, Data: {}", channel, message);
 
-        ArrayList<WsContext> connectionList = socketChannelSubscriptions.get(channel);
-
-        if (connectionList == null) {
-            log.trace("connectionList is null, ignoring the message");
-            return;
-        }
+        ArrayList<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
 
         for (Iterator<WsContext> it = connectionList.iterator(); it.hasNext(); ) {
             WsContext conn = it.next();
             try {
                 conn.send(message);
+            } catch (Exception e) {
+                log.warn("Exception: Removing connection from list");
+                it.remove();
+            }
+        }
+    }
+
+    @Override
+    public void onDataReceived(String channel, byte[] message) {
+        log.trace("Received data from channel: {}, Data: {}", channel, message);
+
+        ArrayList<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
+
+        for (Iterator<WsContext> it = connectionList.iterator(); it.hasNext(); ) {
+            WsContext conn = it.next();
+            try {
+                conn.send(ByteBuffer.wrap(message));
             } catch (Exception e) {
                 log.warn("Exception: Removing connection from list");
                 it.remove();
