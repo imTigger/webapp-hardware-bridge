@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Main-Class: tigerworkshop.webapphardwarebridge.GUI
+Class-Path: pdfbox-2.0.31.jar sslcontext-kickstart-for-jetty-8.3.4.jar a
+ nnotations-13.0.jar jetty-alpn-conscrypt-server-11.0.20.jar jetty-util-
+ 11.0.20.jar websocket-servlet-11.0.20.jar jetty-jakarta-servlet-api-5.0
+ .2.jar http2-hpack-11.0.20.jar javalin-6.1.4.jar log4j-slf4j2-impl-2.23
+ .1.jar jackson-databind-2.17.1.jar junit-4.13.2.jar bcprov-jdk18on-1.78
+ .1.jar jetty-server-11.0.20.jar jetty-http-11.0.20.jar jackson-annotati
+ ons-2.17.1.jar http2-server-11.0.20.jar httpcore5-5.2.4.jar websocket-c
+ ore-common-11.0.20.jar bcutil-jdk18on-1.78.1.jar commons-io-2.16.1.jar 
+ jetty-alpn-java-server-11.0.20.jar sslcontext-kickstart-8.3.4.jar slf4j
+ -api-2.0.13.jar jetty-xml-11.0.20.jar websocket-core-server-11.0.20.jar
+  websocket-jetty-api-11.0.20.jar bcpkix-jdk18on-1.78.1.jar fontbox-2.0.
+ 31.jar kotlin-stdlib-jdk8-1.9.23.jar sslcontext-kickstart-for-pem-8.3.4
+ .jar websocket-jetty-server-11.0.20.jar conscrypt-openjdk-uber-2.5.2.ja
+ r http2-common-11.0.20.jar ssl-plugin-6.1.4.jar log4j-api-2.23.1.jar je
+ tty-io-11.0.20.jar log4j-core-2.23.1.jar kotlin-stdlib-1.9.23.jar kotli
+ n-stdlib-jdk7-1.9.23.jar websocket-jetty-common-11.0.20.jar jetty-alpn-
+ server-11.0.20.jar jetty-servlet-11.0.20.jar jetty-webapp-11.0.20.jar j
+ etty-security-11.0.20.jar hamcrest-core-1.3.jar jSerialComm-2.11.0.jar 
+ jackson-core-2.17.1.jar commons-codec-1.17.0.jar commons-logging-1.2.ja
+ r
+
