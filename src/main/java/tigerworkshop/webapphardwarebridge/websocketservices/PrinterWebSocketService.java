@@ -300,7 +300,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         }
 
          if (configService.getConfig().getPrinter().isAutoAddUnknownType()) {
-             configService.addPrintTypeToList(type);
+             // Add unknown type does not already exist
+             if (configService.getConfig().getPrinter().getMappings().stream().noneMatch(it -> it.getType().equals(type))) {
+                 configService.addPrintTypeToList(type);
+             }
         }
 
          if (configService.getConfig().getPrinter().isFallbackToDefault()) {
