@@ -27,6 +27,17 @@
 
     <hr/>
 
+    <label>Image by URL</label>
+    <div class="input-group mb-3">
+        <input class="form-control" id="url2" type="text" value="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"/>
+
+        <div class="input-group-append">
+            <button class="btn btn-success" onclick="printImage()">Print</button>
+        </div>
+    </div>
+
+    <hr/>
+
     <label>PDF by Base64</label>
     <div class="input-group mb-3">
         <input class="form-control" id="file_content" type="text"
@@ -56,6 +67,13 @@
         printService.submit({
             'type': 'INVOICE',
             'url': document.getElementById("url").value
+        });
+    }
+
+    function printImage() {
+        printService.submit({
+            'type': 'INVOICE',
+            'url': document.getElementById("url2").value
         });
     }
 
