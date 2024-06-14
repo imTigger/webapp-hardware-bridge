@@ -74,7 +74,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                     serialPort.readBytes(receivedData, bytesToRead);
 
                     if (server != null) {
-                        if (Objects.equals(mapping.getReadCharset(), "BINARY")) server.onDataReceived(getChannel(), receivedData);
+                        if (Objects.equals(mapping.getReadCharset(), BINARY)) server.onDataReceived(getChannel(), receivedData);
                         else server.onDataReceived(getChannel(), new String(receivedData, Charset.forName(mapping.getReadCharset())));
                     }
                 }
