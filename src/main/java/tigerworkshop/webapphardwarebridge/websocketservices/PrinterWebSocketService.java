@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPrintable;
 import org.apache.pdfbox.printing.Scaling;
@@ -24,7 +25,6 @@ import javax.print.*;
 import java.awt.*;
 import java.awt.print.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 @Log4j2
@@ -33,6 +33,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     private final GUIInterface guiInterface;
 
     private static final ConfigService configService = ConfigService.getInstance();
+    private static final DocumentService documentService = DocumentService.getInstance();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     public PrinterWebSocketService(GUIInterface newGUIInterface) {
@@ -55,7 +56,6 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     public void onDataReceived(String message) {
         try {
             PrintDocument printDocument = objectMapper.readValue(message, PrintDocument.class);
-            DocumentService.getInstance().prepareDocument(printDocument);
             printDocument(printDocument);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -106,16 +106,18 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
             server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(true, "Success", printDocument.getId(), printerSearchResult.getName())));
         } catch (Exception e) {
-            log.error("Document Print Error, deleting downloaded document");
-            DocumentService.deleteFileFromUrl(printDocument.getUrl());
+            log.error("Print Error: {}", e.getMessage());
+
+            if (!isRaw(printDocument)) {
+                log.error("Print Error: Deleting downloaded document");
+                documentService.deleteDocument(printDocument);
+            }
 
             if (guiInterface != null) {
-                guiInterface.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
+                guiInterface.notify("Print Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
             }
 
             server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
-
-            throw e;
         }
     }
 
@@ -130,8 +132,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Return if PrintDocument is image
      */
     private Boolean isImage(PrintDocument printDocument) {
-        String url = printDocument.getUrl();
-        String filename = url.substring(url.lastIndexOf("/") + 1);
+        String filename = FilenameUtils.getName(printDocument.getUrl());
 
         return filename.matches("^.*\\.(jpg|jpeg|png|gif)$");
     }
@@ -140,8 +141,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Return if PrintDocument is PDF
      */
     private Boolean isPDF(PrintDocument printDocument) {
-        String url = printDocument.getUrl();
-        String filename = url.substring(url.lastIndexOf("/") + 1);
+        String filename = FilenameUtils.getName(printDocument.getUrl());
 
         return filename.matches("^.*\\.(pdf)$");
     }
@@ -155,21 +155,21 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         byte[] bytes = Base64.decodeBase64(printDocument.getRawContent());
 
-        DocPrintJob docPrintJob = searchPrinterForType(printDocument.getType()).getDocPrintJob();
+        DocPrintJob docPrintJob = printerSearchResult.getDocPrintJob();
         Doc doc = new SimpleDoc(bytes, DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
         docPrintJob.print(doc, null);
 
         long timeFinish = System.currentTimeMillis();
-        log.info("Document raw printed in {} ms", timeFinish - timeStart);
+        log.info("printRaw finished in {} ms", timeFinish - timeStart);
     }
 
     /**
      * Prints image to specified printer.
      */
-    private void printImage(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrinterException, IOException {
+    private void printImage(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws Exception {
         log.debug("printImage::{}", printDocument);
 
-        File file = DocumentService.getFileFromUrl(printDocument.getUrl());
+        File file = documentService.prepareDocument(printDocument);
         String path = file.getPath();
         String filename = file.getName();
 
@@ -198,16 +198,16 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
         long timeFinish = System.currentTimeMillis();
 
-        log.info("Document {} printed in {} ms", filename, timeFinish - timeStart);
+        log.info("printImage {} finished in {} ms", filename, timeFinish - timeStart);
     }
 
     /**
      * Prints PDF to specified printer.
      */
-    private void printPDF(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrinterException, IOException {
+    private void printPDF(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws Exception {
         log.debug("printPDF::{}", printDocument);
 
-        File file = DocumentService.getFileFromUrl(printDocument.getUrl());
+        File file = documentService.prepareDocument(printDocument);
         String path = file.getPath();
         String filename = file.getName();
 
@@ -236,12 +236,15 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                     }
                 }
 
-                AnnotatedPrintable printable = new AnnotatedPrintable(new PDFPrintable(document, Scaling.SHRINK_TO_FIT, false, printerSearchResult.getMapping().getForceDPI()));
+                PDFPrintable pdfPrintable = new PDFPrintable(document, Scaling.SHRINK_TO_FIT, false, printerSearchResult.getMapping().getForceDPI());
 
+                // Annotate Printable
+                AnnotatedPrintable annotatedPrintable = new AnnotatedPrintable(pdfPrintable);
                 for (AnnotatedPrintable.AnnotatedPrintableAnnotation printDocumentExtra : printDocument.getExtras()) {
-                    printable.addAnnotation(printDocumentExtra);
+                    annotatedPrintable.addAnnotation(printDocumentExtra);
                 }
-                book.append(printable, eachPageFormat);
+
+                book.append(annotatedPrintable, eachPageFormat);
             }
 
             job.setPageable(book);
@@ -251,7 +254,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
             long timeFinish = System.currentTimeMillis();
 
-            log.info("Document {} printed in {} ms", path, timeFinish - timeStart);
+            log.info("printPDF {} finished in {} ms", path, timeFinish - timeStart);
         }
     }
 

@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.awt.*;
@@ -75,6 +76,7 @@ public class AnnotatedPrintable implements Printable {
         return result;
     }
 
+    @Data
     public static class AnnotatedPrintableAnnotation {
         private String field;
         private String text;
@@ -82,45 +84,5 @@ public class AnnotatedPrintable implements Printable {
         private Float y;
         private Integer size;
         private Boolean bold;
-
-        public String getField() {
-            return field;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public Float getX() {
-            return x;
-        }
-
-        public Float getY() {
-            return y;
-        }
-
-        public Integer getSize() {
-            return size;
-        }
-
-        public Boolean getBold() {
-            return bold;
-        }
-
-        @Override
-        public String toString() {
-            return "AnnotatedPrintableAnnotation{" +
-                    "field='" + field + '\'' +
-                    ", text='" + text + '\'' +
-                    ", x=" + x +
-                    ", y=" + y +
-                    ", size=" + size +
-                    ", bold='" + bold + '\'' +
-                    '}';
-        }
     }
 }

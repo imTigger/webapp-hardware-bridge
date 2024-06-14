@@ -14,9 +14,7 @@ public class PrintDocument {
     String url;
     String id;
     Integer qty = 1;
-    @JsonProperty("file_content")
-    String fileContent;
-    @JsonProperty("raw_content")
-    String rawContent;
+    @JsonProperty("file_content") String fileContent;
+    @JsonProperty("raw_content") String rawContent;
     ArrayList<AnnotatedPrintable.AnnotatedPrintableAnnotation> extras = new ArrayList<>();
 }

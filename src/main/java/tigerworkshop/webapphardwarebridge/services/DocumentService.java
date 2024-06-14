@@ -2,72 +2,115 @@ package tigerworkshop.webapphardwarebridge.services;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.bouncycastle.util.encoders.Base64;
-import tigerworkshop.webapphardwarebridge.Constants;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
-import tigerworkshop.webapphardwarebridge.utils.DownloadUtil;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.File;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 @Log4j2
 public class DocumentService {
     @Getter
     private static final DocumentService instance = new DocumentService();
-    private static final ConfigService CONFIG_SERVICE = ConfigService.getInstance();
+    private static final Config.Downloader downloaderConfig = ConfigService.getInstance().getConfig().getDownloader();
 
-    private DocumentService() {
-        File directory = new File(Constants.DOCUMENT_PATH);
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
-    }
-
-    public static void decodeBase64(String base64, String urlString) throws Exception {
-        byte[] bytes = Base64.decode(base64);
-
-        try (OutputStream stream = Files.newOutputStream(Paths.get(getPathFromUrl(urlString)))) {
-            stream.write(bytes);
-        } catch (
-                Exception e) {
-            log.error("Failed to extract file from base64", e);
-            throw e;
-        }
-    }
-
-    public static void download(String urlString) throws Exception {
-        DownloadUtil.file(urlString, getPathFromUrl(urlString), true, CONFIG_SERVICE.getConfig().getDownloader().isIgnoreTLSCertificateError(), CONFIG_SERVICE.getConfig().getDownloader().getTimeout());
-    }
-
-    public static File getFileFromUrl(String urlString) {
-        return new File(getPathFromUrl(urlString));
-    }
-
-    public static void deleteFileFromUrl(String urlString) {
-        getFileFromUrl(urlString).delete();
-    }
-
-    public static String getPathFromUrl(String urlString) {
-        urlString = urlString.replace(" ", "%20");
-        String filename = urlString.substring(urlString.lastIndexOf("/") + 1);
-        return Constants.DOCUMENT_PATH + filename;
-    }
-
-    public void prepareDocument(PrintDocument printDocument) throws Exception {
-        if (printDocument.getRawContent() != null && !printDocument.getRawContent().isEmpty()) {
-            return;
-        }
+    public File prepareDocument(PrintDocument printDocument) throws Exception {
+        FileUtils.forceMkdir(new File(downloaderConfig.getPath()));
 
         if (printDocument.getUrl() == null && printDocument.getFileContent() == null) {
-            throw new Exception("URL is null");
+            throw new Exception("Both URL and File Content are null");
         }
 
+        File output = getOutputFile(printDocument);
         if (printDocument.getFileContent() != null) {
-            decodeBase64(printDocument.getFileContent(), printDocument.getUrl());
+            byte[] bytes = Base64.getDecoder().decode(printDocument.getFileContent());
+            Files.write(output.toPath(), bytes);
         } else {
-            download(printDocument.getUrl());
+            URL url = new URL(printDocument.getUrl());
+            download(url, getOutputFile(printDocument));
         }
+
+        return output;
+    }
+
+    public void deleteDocument(PrintDocument printDocument) throws IOException {
+        FileUtils.delete(getOutputFile(printDocument));
+    }
+
+    private File getOutputFile(PrintDocument printDocument) throws MalformedURLException {
+        File output;
+        if (printDocument.getFileContent() != null) {
+            output = new File(downloaderConfig.getPath() + "/" + printDocument.getUrl());
+        } else {
+            URL url = new URL(printDocument.getUrl());
+            output = new File(downloaderConfig.getPath() + "/" + FilenameUtils.getName(url.getPath()));
+        }
+        return output;
+    }
+
+    private void download(URL url, File outputFile) throws Exception {
+        log.info("Downloading file from: {}", url);
+
+        long timeStart = System.currentTimeMillis();
+
+        if (downloaderConfig.isIgnoreTLSCertificateError()) {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                    }
+            };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setConnectTimeout((int) downloaderConfig.getTimeout() * 1000);
+        urlConnection.setReadTimeout((int) downloaderConfig.getTimeout() * 1000);
+        urlConnection.connect();
+
+        int contentLength = urlConnection.getContentLength();
+        int responseCode;
+        if (urlConnection instanceof HttpsURLConnection) {
+            responseCode = ((HttpsURLConnection) urlConnection).getResponseCode();
+        } else {
+            responseCode = ((HttpURLConnection) urlConnection).getResponseCode();
+        }
+
+        log.trace("Content Length: {}", contentLength);
+        log.trace("Response Code: {}", responseCode);
+
+        // Status code mismatch
+        if (responseCode != 200) {
+            throw new IOException("HTTP Status Code: " + responseCode);
+        }
+
+        FileUtils.copyInputStreamToFile(urlConnection.getInputStream(), outputFile);
+
+        long timeFinish = System.currentTimeMillis();
+        log.info("File {} downloaded in {} ms", outputFile.getName(), timeFinish - timeStart);
     }
 }
