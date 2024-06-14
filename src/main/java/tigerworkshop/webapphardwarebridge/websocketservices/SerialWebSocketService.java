@@ -101,10 +101,8 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                 if (serialPort.isOpen()) {
                     ThreadUtil.silentSleep(1000);
                 } else {
-                    log.info("Trying to connect the serial @ {}", serialPort.getSystemPortName());
-                    serialPort.openPort();
-
-                    ThreadUtil.silentSleep(1000);
+                    log.info("Trying to connect to serial @ {}", serialPort.getSystemPortName());
+                    serialPort.openPort(1000);
                 }
             }
 
