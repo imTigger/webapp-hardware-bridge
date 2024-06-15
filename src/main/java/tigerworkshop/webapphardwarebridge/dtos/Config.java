@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 @Data
@@ -100,5 +101,8 @@ public class Config {
         private Integer numDataBits;
         private Integer numStopBits;
         private Integer parity;
+
+        private Boolean readMultipleBytes = false;
+        private String readCharset = StandardCharsets.UTF_8.toString();
     }
 }
