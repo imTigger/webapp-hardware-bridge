@@ -62,7 +62,10 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                     } else if (bytesAvailable == -1) {
                         // Check if portName closed unexpected (e.g. Unplugged)
                         serialPort.closePort();
-                        guiInterface.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
+
+                        if (guiInterface != null) {
+                            guiInterface.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
+                        }
                         log.warn("Serial {} unplugged", mapping.getName());
 
                         continue;
@@ -110,6 +113,10 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                 } else {
                     log.info("Trying to connect to serial @ {}", serialPort.getSystemPortName());
                     serialPort.openPort(1000);
+
+                    if (serialPort.isOpen()) {
+                        log.warn("Serial {} is open", mapping.getName());
+                    }
                 }
             }
 
