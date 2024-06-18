@@ -24,6 +24,8 @@ import java.awt.*;
 import java.awt.print.PrinterJob;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
@@ -33,9 +35,9 @@ public class Server implements WebSocketServerInterface {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final ConfigService configService = ConfigService.getInstance();
 
-    private final HashMap<String, ArrayList<WsContext>> socketChannelSubscriptions = new HashMap<>();
-    private final HashMap<String, ArrayList<WebSocketServiceInterface>> serviceChannelSubscriptions = new HashMap<>();
-    private final ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<WsContext>> socketChannelSubscriptions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedQueue<WebSocketServiceInterface>> serviceChannelSubscriptions = new ConcurrentHashMap<>();
+    private final ConcurrentLinkedQueue<WebSocketServiceInterface> services = new ConcurrentLinkedQueue<>();
 
     private final GUIInterface guiInterface;
 
@@ -256,14 +258,14 @@ public class Server implements WebSocketServerInterface {
     public void onDataReceived(String channel, String message) {
         log.trace("Received data from channel: {}, Data: {}", channel, message);
 
-        ArrayList<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
+        ConcurrentLinkedQueue<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>());
 
         for (Iterator<WsContext> it = connectionList.iterator(); it.hasNext(); ) {
-            WsContext conn = it.next();
             try {
+                WsContext conn = it.next();
                 conn.send(message);
             } catch (Exception e) {
-                log.warn("Exception: Removing connection from list");
+                log.warn("Exception {}: {}, removing connection from list", e.getClass().getSimpleName(), e.getMessage());
                 it.remove();
             }
         }
@@ -273,7 +275,7 @@ public class Server implements WebSocketServerInterface {
     public void onDataReceived(String channel, byte[] message) {
         log.trace("Received data from channel: {}, Data: {}", channel, message);
 
-        ArrayList<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
+        ConcurrentLinkedQueue<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>());
 
         for (Iterator<WsContext> it = connectionList.iterator(); it.hasNext(); ) {
             WsContext conn = it.next();
@@ -302,7 +304,7 @@ public class Server implements WebSocketServerInterface {
      * Message handler
      */
     private void processMessage(String channel, String message) {
-        ArrayList<WebSocketServiceInterface> services = getServicesForChannel(channel);
+        ConcurrentLinkedQueue<WebSocketServiceInterface> services = getServicesForChannel(channel);
         for (WebSocketServiceInterface service : services) {
             log.trace("Attempt to send: {} to channel: {}", message, channel);
 
@@ -311,7 +313,7 @@ public class Server implements WebSocketServerInterface {
     }
 
     private void processMessage(String channel, byte[] bytes) {
-        ArrayList<WebSocketServiceInterface> services = getServicesForChannel(channel);
+        ConcurrentLinkedQueue<WebSocketServiceInterface> services = getServicesForChannel(channel);
         for (WebSocketServiceInterface service : services) {
             log.trace("Attempt to send: {} to channel: {}", bytes, channel);
 
@@ -322,18 +324,18 @@ public class Server implements WebSocketServerInterface {
     /*
      * Socket to Channel operations
      */
-    private ArrayList<WsContext> getSocketsForChannel(String channel) {
-        return socketChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
+    private ConcurrentLinkedQueue<WsContext> getSocketsForChannel(String channel) {
+        return socketChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>());
     }
 
     void addSocketToChannel(String channel, WsContext socket) {
-        ArrayList<WsContext> connectionList = getSocketsForChannel(channel);
+        ConcurrentLinkedQueue<WsContext> connectionList = getSocketsForChannel(channel);
         connectionList.add(socket);
         socketChannelSubscriptions.put(channel, connectionList);
     }
 
     private void removeSocketFromChannel(String channel, WsContext socket) {
-        ArrayList<WsContext> connectionList = getSocketsForChannel(channel);
+        ConcurrentLinkedQueue<WsContext> connectionList = getSocketsForChannel(channel);
         connectionList.remove(socket);
         socketChannelSubscriptions.put(channel, connectionList);
     }
@@ -341,17 +343,17 @@ public class Server implements WebSocketServerInterface {
     /*
      * Service to Channel operations
      */
-    private ArrayList<WebSocketServiceInterface> getServicesForChannel(String channel) {
-        ArrayList<WebSocketServiceInterface> services = new ArrayList<>();
+    private ConcurrentLinkedQueue<WebSocketServiceInterface> getServicesForChannel(String channel) {
+        ConcurrentLinkedQueue<WebSocketServiceInterface> services = new ConcurrentLinkedQueue<>();
 
-        services.addAll(serviceChannelSubscriptions.getOrDefault(channel, new ArrayList<>()));
-        services.addAll(serviceChannelSubscriptions.getOrDefault("*", new ArrayList<>()));
+        services.addAll(serviceChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>()));
+        services.addAll(serviceChannelSubscriptions.getOrDefault("*", new ConcurrentLinkedQueue<>()));
 
         return services;
     }
 
     private void addServiceToChannel(String channel, WebSocketServiceInterface service) {
-        ArrayList<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.getOrDefault(channel, new ArrayList<>());
+        ConcurrentLinkedQueue<WebSocketServiceInterface> serviceList = serviceChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>());
 
         serviceList.add(service);
         serviceChannelSubscriptions.put(channel, serviceList);
@@ -362,7 +364,7 @@ public class Server implements WebSocketServerInterface {
     }
 
     private void removeServiceFromChannel(String channel, WebSocketServiceInterface service) {
-        ArrayList<WebSocketServiceInterface> serviceList = getServicesForChannel(channel);
+        ConcurrentLinkedQueue<WebSocketServiceInterface> serviceList = getServicesForChannel(channel);
         serviceList.remove(service);
         serviceChannelSubscriptions.put(channel, serviceList);
 
