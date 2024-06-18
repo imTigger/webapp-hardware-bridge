@@ -16,6 +16,7 @@ import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 import tigerworkshop.webapphardwarebridge.utils.CertificateGenerator;
+import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketService;
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
@@ -53,7 +54,7 @@ public class Server implements WebSocketServerInterface {
         }
     }
 
-    public void start() throws Exception {
+    synchronized public void start() throws Exception {
         Config config = configService.getConfig();
 
         Config.Server serverConfig = config.getServer();
@@ -231,6 +232,7 @@ public class Server implements WebSocketServerInterface {
 
         javalinServer.post("/system/restart.json", ctx -> {
             stop();
+            ThreadUtil.silentSleep(500);
             start();
 
             if (guiInterface != null) {
@@ -241,7 +243,7 @@ public class Server implements WebSocketServerInterface {
         javalinServer.start(serverConfig.getBind(), serverConfig.getPort());
     }
 
-    public void stop() throws Exception {
+    synchronized public void stop() throws Exception {
         for (Iterator<WebSocketServiceInterface> it = services.iterator(); it.hasNext(); ) {
             WebSocketServiceInterface service  = it.next();
             service.stop();
