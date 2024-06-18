@@ -240,10 +240,10 @@ public class Server implements WebSocketServerInterface {
     }
 
     public void stop() throws Exception {
-        synchronized (this) {
-            for (int i = 0; i < services.size(); i++) {
-                services.get(i).stop();
-            }
+        for (Iterator<WebSocketServiceInterface> it = services.iterator(); it.hasNext(); ) {
+            WebSocketServiceInterface service  = it.next();
+            service.stop();
+            it.remove();
         }
 
         javalinServer.stop();
