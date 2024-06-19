@@ -1,22 +1,24 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fazecast.jSerialComm.SerialPort;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
+import tigerworkshop.webapphardwarebridge.dtos.NotificationDTO;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
-import java.awt.*;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
 @Log4j2
 public class SerialWebSocketService implements WebSocketServiceInterface {
     private WebSocketServerInterface server;
-    private final GUIInterface guiInterface;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Config.SerialMapping mapping;
     private final SerialPort serialPort;
@@ -30,12 +32,10 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
     private static final String BINARY = "BINARY";
 
-    public SerialWebSocketService(GUIInterface newGUIInterface, Config.SerialMapping newMapping) {
+    public SerialWebSocketService(Config.SerialMapping newMapping) {
         log.info("Starting SerialWebSocketService on {}", newMapping.getName());
 
         this.mapping = newMapping;
-
-        this.guiInterface = newGUIInterface;
 
         this.serialPort = SerialPort.getCommPort(newMapping.getName());
 
@@ -63,9 +63,12 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                         // Check if portName closed unexpected (e.g. Unplugged)
                         serialPort.closePort();
 
-                        if (guiInterface != null) {
-                            guiInterface.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
+                        try {
+                            server.messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("WARNING", "Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged")));
+                        } catch (JsonProcessingException e) {
+                            log.error("Failed to send notification: {}", e.getMessage());
                         }
+
                         log.warn("Serial {} unplugged", mapping.getName());
 
                         continue;
@@ -77,8 +80,8 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                     serialPort.readBytes(receivedData, bytesToRead);
 
                     if (server != null) {
-                        if (Objects.equals(mapping.getReadCharset(), BINARY)) server.onDataReceived(getChannel(), receivedData);
-                        else server.onDataReceived(getChannel(), new String(receivedData, Charset.forName(mapping.getReadCharset())));
+                        if (Objects.equals(mapping.getReadCharset(), BINARY)) server.messageToServer(getChannel(), receivedData);
+                        else server.messageToServer(getChannel(), new String(receivedData, Charset.forName(mapping.getReadCharset())));
                     }
                 }
             }
@@ -144,12 +147,12 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void onDataReceived(String message) {
-        onDataReceived(message.getBytes());
+    public void messageToService(String message) {
+        messageToService(message.getBytes());
     }
 
     @Override
-    public void onDataReceived(byte[] message) {
+    public void messageToService(byte[] message) {
         writeBuffer = message;
     }
 

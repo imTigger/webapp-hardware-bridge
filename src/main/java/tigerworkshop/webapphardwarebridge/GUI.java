@@ -1,8 +1,11 @@
 package tigerworkshop.webapphardwarebridge;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
+import tigerworkshop.webapphardwarebridge.dtos.NotificationDTO;
+import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
+import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
 import javax.imageio.ImageIO;
@@ -12,10 +15,10 @@ import java.net.URI;
 import java.util.Objects;
 
 @Log4j2
-public class GUI implements GUIInterface {
+public class GUI implements WebSocketServiceInterface {
     private static final ConfigService configService = ConfigService.getInstance();
 
-    private final Server server = new Server(this);
+    private final Server server = new Server();
     private Config config = configService.getConfig();
 
     Desktop desktop = Desktop.getDesktop();
@@ -35,6 +38,8 @@ public class GUI implements GUIInterface {
             log.warn("SystemTray is not supported");
             return;
         }
+
+        server.registerService(this);
 
         final Image image = ImageIO.read(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("icon.png")));
 
@@ -102,7 +107,6 @@ public class GUI implements GUIInterface {
         notify(Constants.APP_NAME, " is running in background!", TrayIcon.MessageType.INFO);
     }
 
-    @Override
     public void notify(String title, String message, TrayIcon.MessageType messageType) {
         try {
             trayIcon.displayMessage(title, message, messageType);
@@ -111,7 +115,6 @@ public class GUI implements GUIInterface {
         }
     }
 
-    @Override
     public void restart() {
         try {
             config = configService.getConfig();
@@ -123,5 +126,45 @@ public class GUI implements GUIInterface {
         } catch (Exception e) {
             log.error("Failed to restart server", e);
         }
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void messageToService(String message) {
+        try {
+            log.debug("GUI Notification: {}", message);
+
+            NotificationDTO notificationDTO = new ObjectMapper().readValue(message, NotificationDTO.class);
+            notify(notificationDTO.getTitle(), notificationDTO.getMessage(), TrayIcon.MessageType.valueOf(notificationDTO.getType()));
+        } catch (Exception e) {
+            log.error("Failed to parse notification message", e);
+        }
+    }
+
+    @Override
+    public void messageToService(byte[] message) {
+    }
+
+    @Override
+    public void onRegister(WebSocketServerInterface server) {
+
+    }
+
+    @Override
+    public void onUnregister() {
+    }
+
+    @Override
+    public String getChannel() {
+        return "/notification";
     }
 }

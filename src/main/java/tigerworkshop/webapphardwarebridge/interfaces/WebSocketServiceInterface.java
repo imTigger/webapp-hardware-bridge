@@ -5,9 +5,9 @@ public interface WebSocketServiceInterface {
 
     void stop();
 
-    void onDataReceived(String message);
+    void messageToService(String message);
 
-    void onDataReceived(byte[] message);
+    void messageToService(byte[] message);
 
     void onRegister(WebSocketServerInterface server);
 

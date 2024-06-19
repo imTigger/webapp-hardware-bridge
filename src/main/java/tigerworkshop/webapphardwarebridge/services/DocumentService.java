@@ -47,7 +47,7 @@ public class DocumentService {
     }
 
     public void deleteDocument(PrintDocument printDocument) throws IOException {
-        FileUtils.delete(getOutputFile(printDocument));
+        FileUtils.deleteQuietly(getOutputFile(printDocument));
     }
 
     private File getOutputFile(PrintDocument printDocument) throws MalformedURLException {

@@ -10,7 +10,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPrintable;
 import org.apache.pdfbox.printing.Scaling;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
+import tigerworkshop.webapphardwarebridge.dtos.NotificationDTO;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
@@ -30,16 +30,13 @@ import java.util.Optional;
 @Log4j2
 public class PrinterWebSocketService implements WebSocketServiceInterface {
     private WebSocketServerInterface server;
-    private final GUIInterface guiInterface;
 
     private static final ConfigService configService = ConfigService.getInstance();
     private static final DocumentService documentService = DocumentService.getInstance();
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
-    public PrinterWebSocketService(GUIInterface newGUIInterface) {
+    public PrinterWebSocketService() {
         log.info("Starting PrinterWebSocketService");
-
-        this.guiInterface = newGUIInterface;
     }
 
     @Override
@@ -53,7 +50,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void onDataReceived(String message) {
+    public void messageToService(String message) {
         try {
             PrintDocument printDocument = objectMapper.readValue(message, PrintDocument.class);
             printDocument(printDocument);
@@ -63,7 +60,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     }
 
     @Override
-    public void onDataReceived(byte[] message) {
+    public void messageToService(byte[] message) {
         log.error("PrinterWebSocketService onDataReceived: binary data not supported");
     }
 
@@ -90,9 +87,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
         try {
             printerSearchResult = searchPrinterForType(printDocument.getType());
 
-            if (guiInterface != null) {
-                guiInterface.notify("Printing " + printDocument.getType(), printDocument.getUrl(), TrayIcon.MessageType.INFO);
-            }
+            server.messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("INFO", "Printing " + printDocument.getType(), printDocument.getUrl())));
 
             if (isRaw(printDocument)) {
                 printRaw(printDocument, printerSearchResult);
@@ -104,7 +99,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 throw new Exception("Unknown file type: " + printDocument.getUrl());
             }
 
-            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(true, "Success", printDocument.getId(), printerSearchResult.getName())));
+            server.messageToServer(getChannel(), objectMapper.writeValueAsString(new PrintResult(true, "Success", printDocument.getId(), printerSearchResult.getName())));
         } catch (Exception e) {
             log.error("Print Error: {}", e.getMessage());
 
@@ -113,11 +108,9 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 documentService.deleteDocument(printDocument);
             }
 
-            if (guiInterface != null) {
-                guiInterface.notify("Print Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
-            }
+            server.messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("ERROR", "Print Error " + printDocument.getType(), e.getMessage())));
 
-            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
+            server.messageToServer(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
         }
     }
 
