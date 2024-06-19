@@ -14,7 +14,7 @@ Common use cases:
 - [x] Direct print from WebApps
 - [x] Serial port read/write from WebApps
 - [x] Support all modern browsers that implemented WebSocket (Chrome, Firefox, Edge... etc)
-- [x] Web API to configure directly from your WebApp
+- [x] [HTTP API](HTTP_API.md) to configure directly from your WebApp
 - [x] [JS SDK/Example included](demo)
 
 ### Direct Print
@@ -71,6 +71,7 @@ Therefore, WebApps do not need to care about the actual printer names.
 ## More documents
 
 - [Configurations](CONFIGURATION.md)
+- [HTTP APIs](HTTP_API.md)
 - [Advanced Configurations - Authentication](ADVANCED.md#authentication)
 - [Advanced Configurations - HTTPS/WSS Support](ADVANCED.md#httpswss-support)
 - [Build from source](BUILD.md)
