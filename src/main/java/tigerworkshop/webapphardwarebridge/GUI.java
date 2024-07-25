@@ -104,6 +104,8 @@ public class GUI implements GUIInterface {
 
     @Override
     public void notify(String title, String message, TrayIcon.MessageType messageType) {
+        if (!config.getGui().getNotification().isEnabled()) return;
+
         try {
             trayIcon.displayMessage(title, message, messageType);
         } catch (Exception e) {

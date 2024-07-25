@@ -23,6 +23,19 @@
             <div class="mb-2 col-xl-4">
                 <div class="card mb-2">
                     <div class="card-body">
+                        <h5 class="card-title mb-3">GUI</h5>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="gui-notification-enabled">Enable notification</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="gui-notification-enabled" type="checkbox" v-model="config.gui.notification.enabled"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-2">
+                    <div class="card-body">
                         <h5 class="card-title mb-3">Web/WebSocket Server</h5>
 
                         <div class="form-group row mb-2">

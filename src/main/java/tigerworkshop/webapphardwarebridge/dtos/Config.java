@@ -13,6 +13,7 @@ import java.util.ArrayList;
 @Data
 @NoArgsConstructor
 public class Config {
+    private GUI gui;
     private Server server;
     private Downloader downloader;
     private Printer printer;
@@ -20,6 +21,18 @@ public class Config {
 
     public String toJson() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class GUI {
+        private Notification notification;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class Notification {
+        private boolean enabled;
     }
 
     @Data
