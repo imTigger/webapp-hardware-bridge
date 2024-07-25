@@ -6,6 +6,7 @@ import io.javalin.Javalin;
 import io.javalin.community.ssl.SslPlugin;
 import io.javalin.http.ContentType;
 import io.javalin.plugin.bundled.CorsPluginConfig;
+import io.javalin.util.JavalinBindException;
 import io.javalin.websocket.WsContext;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
@@ -240,7 +241,12 @@ public class Server implements WebSocketServerInterface {
             }
         });
 
-        javalinServer.start(serverConfig.getBind(), serverConfig.getPort());
+        try {
+            javalinServer.start(serverConfig.getBind(), serverConfig.getPort());
+        } catch (JavalinBindException e) {
+            log.info("Unable to bind port, another instance is already running?");
+            System.exit(1);
+        }
     }
 
     synchronized public void stop() throws Exception {

@@ -115,7 +115,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
                     serialPort.openPort(1000);
 
                     if (serialPort.isOpen()) {
-                        log.warn("Serial {} is open", mapping.getName());
+                        log.info("Serial {} is now open", mapping.getName());
                     }
                 }
             }
