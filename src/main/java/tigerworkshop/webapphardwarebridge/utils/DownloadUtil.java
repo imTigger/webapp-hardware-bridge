@@ -12,27 +12,21 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.cert.X509Certificate;
 
 public class DownloadUtil {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DownloadUtil.class.getName());
 
-    public static long file(String urlString, String path, Boolean overwrite, Boolean ignoreCertError, double downloadTimeout) throws Exception {
+    public static long file(String urlString, Path path, Boolean ignoreCertError, double downloadTimeout) throws Exception {
         logger.info("Downloading file from: " + urlString);
         long timeStart = System.currentTimeMillis();
 
-        urlString.replace(" ", "%20");
+        urlString = urlString.replace(" ", "%20");
 
-        File outputFile = new File(path);
         try {
-            // File Exist, return
-            if (!overwrite && outputFile.exists()) {
-                long timeFinish = System.currentTimeMillis();
-                logger.info("File " + path + " found on local disk in " + (timeFinish - timeStart) + "ms");
-                return timeStart;
-            }
-
-            // Otherwise download it
+            // Download it
             URL url = new URL(urlString);
 
             if (ignoreCertError) {
@@ -77,7 +71,7 @@ public class DownloadUtil {
                 throw new IOException("HTTP Status Code: " + responseCode);
             }
 
-            FileUtils.copyInputStreamToFile(urlConnection.getInputStream(), outputFile);
+            FileUtils.copyInputStreamToFile(urlConnection.getInputStream(), path.toFile());
 
             long timeFinish = System.currentTimeMillis();
             logger.info("File " + path + " downloaded in " + (timeFinish - timeStart) + "ms");
