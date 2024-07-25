@@ -99,7 +99,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             server.onDataReceived(getChannel(), gson.toJson(new PrintResult(0, printDocument.getId(), "Success")));
         } catch (Exception e) {
             logger.error("Document Print Error, deleting downloaded document");
-            DocumentService.deleteFileFromUrl(printDocument.getUrl());
+            DocumentService.deleteFileFromUrl(printDocument.getUuid().toString(), printDocument.getUrl());
 
             if (notificationListener != null) {
                 notificationListener.notify("Printing Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
@@ -169,7 +169,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     private void printImage(PrintDocument printDocument) throws PrinterException, IOException {
         logger.debug("printImage::" + printDocument);
 
-        String filename = DocumentService.getFileFromUrl(printDocument.getUrl()).getPath();
+        String filename = DocumentService.getPathFromUrl(printDocument.getUuid().toString(), printDocument.getUrl()).toString();
 
         long timeStart = System.currentTimeMillis();
 
@@ -205,7 +205,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     private void printPDF(PrintDocument printDocument) throws PrinterException, IOException {
         logger.debug("printPDF::" + printDocument);
 
-        String filename = DocumentService.getFileFromUrl(printDocument.getUrl()).getPath();
+        String filename = DocumentService.getPathFromUrl(printDocument.getUuid().toString(), printDocument.getUrl()).toString();
 
         long timeStart = System.currentTimeMillis();
 

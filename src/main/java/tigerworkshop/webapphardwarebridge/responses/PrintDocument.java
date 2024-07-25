@@ -3,8 +3,10 @@ package tigerworkshop.webapphardwarebridge.responses;
 import tigerworkshop.webapphardwarebridge.utils.AnnotatedPrintable;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class PrintDocument {
+    private final UUID uuid;
     String type;
     String url;
     String id;
@@ -12,6 +14,14 @@ public class PrintDocument {
     String file_content;
     String raw_content;
     ArrayList<AnnotatedPrintable.AnnotatedPrintableAnnotation> extras = new ArrayList<>();
+
+    public PrintDocument() {
+        uuid = UUID.randomUUID();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 
     public String getType() {
         return type;
@@ -44,7 +54,8 @@ public class PrintDocument {
     @Override
     public String toString() {
         return "PrintDocument{" +
-                "type='" + type + '\'' +
+                "uuid='" + uuid + '\'' +
+                ", type='" + type + '\'' +
                 ", url='" + url + '\'' +
                 ", id='" + id + '\'' +
                 ", qty=" + qty +
