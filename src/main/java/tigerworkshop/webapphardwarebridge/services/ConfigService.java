@@ -16,28 +16,20 @@ public class ConfigService {
     private static final ConfigService instance = new ConfigService();
 
     private static final String CONFIG_FILENAME = "config.json";
-    private static final String CONFIG_DEFAULT_FILENAME = "config.default.json";
     private static final String PRINTER_PLACEHOLDER = "";
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Getter
-    private Config config = null;
+    private Config config = new Config();
 
     private ConfigService() {
         try {
             loadFromFile(CONFIG_FILENAME);
         } catch (Exception e) {
-            log.warn("Failed loading config file", e);
-            try {
-                log.warn("Loading default config file", e);
-                loadFromFile(CONFIG_DEFAULT_FILENAME);
-                save();
-            } catch (Exception ex) {
-                log.error("Failed loading default config file", ex);
-                System.exit(1);
-            }
+            log.warn("Failed loading config, creating new file");
+            save();
         }
     }
 

@@ -13,11 +13,11 @@ import java.util.ArrayList;
 @Data
 @NoArgsConstructor
 public class Config {
-    private GUI gui;
-    private Server server;
-    private Downloader downloader;
-    private Printer printer;
-    private Serial serial;
+    private GUI gui = new GUI();
+    private Server server = new Server();
+    private Downloader downloader = new Downloader();
+    private Printer printer = new Printer();
+    private Serial serial = new Serial();
 
     public String toJson() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);
@@ -26,23 +26,23 @@ public class Config {
     @Data
     @NoArgsConstructor
     public static class GUI {
-        private Notification notification;
+        private Notification notification = new Notification();
     }
 
     @Data
     @NoArgsConstructor
     public static class Notification {
-        private boolean enabled;
+        private boolean enabled = false;
     }
 
     @Data
     @NoArgsConstructor
     public static class Server {
-        private String address;
-        private String bind;
-        private int port;
-        private Authentication authentication;
-        private TLS tls;
+        private String address = "127.0.0.1";
+        private String bind = "127.0.0.1";
+        private int port = 22212;
+        private Authentication authentication = new Authentication();
+        private TLS tls = new TLS();
 
         @JsonIgnore
         public String getUri() {
@@ -53,42 +53,42 @@ public class Config {
     @Data
     @NoArgsConstructor
     public static class Authentication {
-        private boolean enabled;
-        private String token;
+        private boolean enabled = false;
+        private String token = null;
     }
 
     @Data
     @NoArgsConstructor
     public static class TLS {
-        private boolean enabled;
-        private boolean selfSigned;
-        private String cert;
-        private String key;
-        private String caBundle;
+        private boolean enabled = false ;
+        private boolean selfSigned = true;
+        private String cert = "tls/default-cert.pem";
+        private String key = "tls/default-key.pem";
+        private String caBundle = null;
     }
 
     @Data
     @NoArgsConstructor
     public static class Downloader {
-        private boolean ignoreTLSCertificateError;
-        private double timeout;
-        private String path;
+        private boolean ignoreTLSCertificateError = false;
+        private double timeout = 30;
+        private String path = "downloads";
     }
 
     @Data
     @NoArgsConstructor
     public static class Printer {
-        private boolean enabled;
-        private boolean autoAddUnknownType;
-        private boolean fallbackToDefault;
-        private ArrayList<PrinterMapping> mappings;
+        private boolean enabled = true;
+        private boolean autoAddUnknownType = false;
+        private boolean fallbackToDefault = false;
+        private ArrayList<PrinterMapping> mappings = new ArrayList<>();
     }
 
     @Data
     @NoArgsConstructor
     public static class Serial {
-        private boolean enabled;
-        private ArrayList<SerialMapping> mappings;
+        private boolean enabled = true;
+        private ArrayList<SerialMapping> mappings = new ArrayList<>();
     }
 
     @Data
