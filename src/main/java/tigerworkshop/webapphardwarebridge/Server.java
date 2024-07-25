@@ -245,7 +245,8 @@ public class Server implements WebSocketServerInterface {
 
     synchronized public void stop() throws Exception {
         for (Iterator<WebSocketServiceInterface> it = services.iterator(); it.hasNext(); ) {
-            WebSocketServiceInterface service  = it.next();
+            WebSocketServiceInterface service = it.next();
+            unregisterService(service);
             service.stop();
             it.remove();
         }

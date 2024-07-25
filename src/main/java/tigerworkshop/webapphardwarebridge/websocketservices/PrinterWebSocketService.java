@@ -86,6 +86,8 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
      * Prints a PrintDocument
      */
     public void printDocument(PrintDocument printDocument) throws Exception {
+        log.info("Printing Document {}, {}", printDocument.getType(), printDocument.getUrl());
+
         PrinterSearchResult printerSearchResult = null;
         try {
             printerSearchResult = searchPrinterForType(printDocument.getType());
@@ -149,7 +151,7 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
     /**
      * Prints raw bytes to specified printer.
      */
-    private void printRaw(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrinterException, PrintException {
+    private void printRaw(PrintDocument printDocument, PrinterSearchResult printerSearchResult) throws PrintException {
         log.debug("printRaw::{}", printDocument);
         long timeStart = System.currentTimeMillis();
 
