@@ -108,7 +108,13 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
 
             server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(true, "Success", printDocument.getId(), printerSearchResult.getName())));
         } catch (Exception e) {
-            log.error("Print Error: {}", e.getMessage());
+            String errorMessage = e.getMessage();
+
+            if (e instanceof PrinterAbortException) {
+                errorMessage = "Printing aborted";
+            }
+
+            log.error("Print Error: {}, {}", e.getClass().getName(), errorMessage);
 
             if (!isRaw(printDocument)) {
                 log.error("Print Error: Deleting downloaded document");
@@ -116,10 +122,10 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
             }
 
             if (guiInterface != null) {
-                guiInterface.notify("Print Error " + printDocument.getType(), e.getMessage(), TrayIcon.MessageType.ERROR);
+                guiInterface.notify("Print Error " + printDocument.getType(), errorMessage, TrayIcon.MessageType.ERROR);
             }
 
-            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
+            server.onDataReceived(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, errorMessage, printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
         }
     }
 
