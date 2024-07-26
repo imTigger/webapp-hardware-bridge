@@ -53,10 +53,10 @@ public class DocumentService {
     private File getOutputFile(PrintDocument printDocument) throws MalformedURLException {
         File output;
         if (printDocument.getFileContent() != null) {
-            output = new File(downloaderConfig.getPath() + "/" + printDocument.getUrl());
+            output = new File(downloaderConfig.getPath() + "/" + printDocument.getUuid() + "-" + printDocument.getUrl());
         } else {
             URL url = new URL(printDocument.getUrl());
-            output = new File(downloaderConfig.getPath() + "/" + FilenameUtils.getName(url.getPath()));
+            output = new File(downloaderConfig.getPath() + "/" + printDocument.getUuid() + "-" + FilenameUtils.getName(url.getPath()));
         }
         return output;
     }
