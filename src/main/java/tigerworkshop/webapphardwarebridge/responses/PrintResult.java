@@ -1,13 +1,15 @@
 package tigerworkshop.webapphardwarebridge.responses;
 
-public class PrintResult {
-    private int status;
-    private String id;
-    private String message;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-    public PrintResult(int status, String file, String message) {
-        this.status = status;
-        this.id = file;
-        this.message = message;
-    }
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class PrintResult {
+    public Boolean success;
+    public String message;
+    public String id;
+    public String printerName;
 }

@@ -1,10 +1,10 @@
-documents/
+downloads/
 .gradle/
-.idea/workspace.xml
 gradle/
 log/
 out/
 jre/
 build/
-setting.json
+.idea/workspace.xml
+config.json
 *.exe

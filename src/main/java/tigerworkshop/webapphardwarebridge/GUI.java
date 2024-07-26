@@ -1,149 +1,129 @@
 package tigerworkshop.webapphardwarebridge;
 
-import it.sauronsoftware.junique.AlreadyLockedException;
-import it.sauronsoftware.junique.JUnique;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.interfaces.NotificationListenerInterface;
+import lombok.extern.log4j.Log4j2;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
+import tigerworkshop.webapphardwarebridge.services.ConfigService;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
+import java.net.URI;
+import java.util.Objects;
 
-public class GUI extends Application implements NotificationListenerInterface {
-    private static final Logger logger = LoggerFactory.getLogger("GUI");
+@Log4j2
+public class GUI implements GUIInterface {
+    private static final ConfigService configService = ConfigService.getInstance();
 
+    private final Server server = new Server(this);
+    private Config config = configService.getConfig();
+
+    Desktop desktop = Desktop.getDesktop();
     TrayIcon trayIcon;
     SystemTray tray;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         GUI gui = new GUI();
         gui.launch();
     }
 
-    public void launch() {
-        Server server = new Server(this);
-
-        try {
-            JUnique.acquireLock(Config.APP_ID);
-        } catch (AlreadyLockedException e) {
-            logger.error(Config.APP_ID + " already running");
-            System.exit(1);
-        }
+    public void launch() throws Exception {
+        server.start();
 
         // Create tray icon
-        try {
-            if (!SystemTray.isSupported()) {
-                System.out.println("SystemTray is not supported");
-                return;
-            }
-
-            final Image image = ImageIO.read(GUI.class.getResource("/icon.png"));
-
-            tray = SystemTray.getSystemTray();
-            trayIcon = new TrayIcon(image, Config.APP_NAME);
-
-            // Create a pop-up menu components
-            MenuItem settingItem = new MenuItem("Configurator");
-            settingItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Platform.setImplicitExit(false);
-                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/setting.fxml"));
-
-                                Stage stage = new Stage();
-                                stage.setTitle("WebApp Hardware Bridge Configurator");
-                                stage.setScene(new Scene(loader.load()));
-                                stage.setResizable(false);
-                                stage.show();
-                                stage.setOnHiding(new EventHandler<WindowEvent>() {
-                                    @Override
-                                    public void handle(WindowEvent event) {
-                                        server.restart();
-                                    }
-                                });
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
-            });
-
-            MenuItem logItem = new MenuItem("Log");
-            logItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        Desktop.getDesktop().open(new File("log"));
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            });
-
-            MenuItem restartItem = new MenuItem("Restart");
-            restartItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    server.restart();
-                }
-            });
-
-            MenuItem exitItem = new MenuItem("Exit");
-            exitItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    server.stop();
-                    System.exit(0);
-                }
-            });
-
-            //Add components to pop-up menu
-            final PopupMenu popup = new PopupMenu();
-            popup.add(settingItem);
-            popup.add(logItem);
-            popup.addSeparator();
-            popup.add(restartItem);
-            popup.add(exitItem);
-
-            trayIcon.setPopupMenu(popup);
-
-            tray.add(trayIcon);
-
-            notify(Config.APP_NAME, "is running in background!", TrayIcon.MessageType.INFO);
-        } catch (Exception e) {
-            System.out.println("TrayIcon could not be added.");
-            e.printStackTrace();
+        if (!SystemTray.isSupported()) {
+            log.warn("SystemTray is not supported");
+            return;
         }
 
-        server.start();
+        final Image image = ImageIO.read(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("icon.png")));
+
+        MenuItem settingItem = new MenuItem("Web UI");
+        settingItem.addActionListener(e -> {
+            try {
+                if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
+                    throw new Exception("Desktop browse is not supported");
+                }
+
+                desktop.browse(new URI(config.getServer().getUri()));
+            } catch (Exception ex) {
+                log.error("Failed to open Web UI", ex);
+            }
+        });
+
+        MenuItem appDirectoryItem = new MenuItem("App Directory");
+        appDirectoryItem.addActionListener(e -> {
+            try {
+                if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
+                    throw new Exception("Desktop open is not supported");
+                }
+
+                desktop.open(new File("."));
+            } catch (Exception ex) {
+                log.error("Failed to open log folder", ex);
+            }
+        });
+
+        MenuItem logDirectoryItem = new MenuItem("Log Directory");
+        logDirectoryItem.addActionListener(e -> {
+            try {
+                if (desktop == null || !desktop.isSupported(Desktop.Action.OPEN)) {
+                    throw new Exception("Desktop open is not supported");
+                }
+
+                desktop.open(new File("log"));
+            } catch (Exception ex) {
+                log.error("Failed to open log folder", ex);
+            }
+        });
+
+        MenuItem restartItem = new MenuItem("Restart");
+        restartItem.addActionListener(e -> restart());
+
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.addActionListener(e -> System.exit(0));
+
+        // Add components to pop-up menu
+        final PopupMenu popupMenu = new PopupMenu();
+        popupMenu.add(settingItem);
+        popupMenu.addSeparator();
+        popupMenu.add(appDirectoryItem);
+        popupMenu.add(logDirectoryItem);
+        popupMenu.addSeparator();
+        popupMenu.add(restartItem);
+        popupMenu.add(exitItem);
+
+        trayIcon = new TrayIcon(image, Constants.APP_NAME);
+        trayIcon.setPopupMenu(popupMenu);
+
+        tray = SystemTray.getSystemTray();
+        tray.add(trayIcon);
+
+        notify(Constants.APP_NAME, " is running in background!", TrayIcon.MessageType.INFO);
     }
 
+    @Override
     public void notify(String title, String message, TrayIcon.MessageType messageType) {
+        if (!config.getGui().getNotification().isEnabled()) return;
+
         try {
             trayIcon.displayMessage(title, message, messageType);
         } catch (Exception e) {
-            
+            log.error("Failed to display notification", e);
         }
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void restart() {
+        try {
+            config = configService.getConfig();
 
+            server.stop();
+            server.start();
+
+            notify("Restart", "Server restarted successfully", TrayIcon.MessageType.INFO);
+        } catch (Exception e) {
+            log.error("Failed to restart server", e);
+        }
     }
 }

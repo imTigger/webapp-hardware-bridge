@@ -1,47 +1,43 @@
 # WebApp Hardware Bridge
 
-## Security Warning
-
-Version <= 0.13.0 are known to be affected by log44 vulnerabilities (CVE-2021-44228, CVE-2021-45105, CVE-2021-45046).
-
-Existing users are strongly recommended to update to 0.14.0 or above as soon as possible.
-
 ## Introduction
 
-WebApp Hardware Bridge (succeeder of "Chrome Hardware Bridge / Chrome Direct Print")
-
-Make it possible for WebApp to perform silent print and access to serial ports.
+WebApp Hardware Bridge made it possible for WebApps to perform silent print and access to serial ports.
 
 Common use cases:
 - Web-based POS - PDF and ESC/POS receipt silent print
-- Web-based WMS - Serial weight scale real-time reading, delivery Note/packing List silent print
-- WebApp that need to read/write to serial ports
+- Web-based WMS - Serial weight scale real-time reading, delivery note/packing List silent print
+- Any WebApps need to read/write to serial ports
 
 ## Features
 
-- [x] Direct print from webpage
-- [x] Serial read/write from webpage
-- [x] Support all modern broswers that implemented WebSocket (Chrome, Firefox, Edge... etc)
+- [x] Direct print from WebApps
+- [x] Serial port read/write from WebApps
+- [x] Support all modern browsers that implemented WebSocket (Chrome, Firefox, Edge... etc)
+- [x] [HTTP API](HTTP_API.md) to configure directly from your WebApp
 - [x] [JS SDK/Example included](demo)
 
-### Web Direct Print
+### Direct Print
 - 0-click silent printing in web browsers
 - Download via URL / Base64 encoded file / Base64 encoded binary raw command
 - Support multiple printers, mapped by key
 - Support PDF/PNG/JPG Printing
 - Support RAW/ESC-POS Printing
+- Support adding annotation text to PDF/Image before printing
+- Per printer settings
 
-### Web Serial Access
+### Serial Access
 - Bidirectional communication
 - Support multiple ports, mapped by key
 - Support multiple connection share same serial port
 - Serial weigh scale (AWH-SA30 supported out-of-box in JS SDK)
+- Per port settings (Baud rate, data bits, stop bit, parity bit)
 
 ## How to use?
 
 ### Client Side
 
-1. Install and setup mapping via Configurator
+1. Install and setup mapping via Web UI / API
 
 2. Start "WebApp Hardware Bridge" and start using your WebApp
 
@@ -51,45 +47,40 @@ Common use cases:
 
 ## How it works?
 
-WebApp Hardware Bridge is a Java based application, which have more direct access to hardwares.
+WebApp Hardware Bridge is a Java based application, which have more access to underlying hardwares.
 
-It expose a WebSocket server on localhost which accept print jobs and serial connection.
+It exposes a WebSocket server on localhost to accept print jobs and serial connections from browsers.
 
+### Print Jobs 
 
-For print jobs, PDF/Images job are downloaded/decoded and then sent to mapped printer.
+- PDF/Images job are downloaded/decoded and then sent to mapped printer.
+- Raw job are sent to mapped printer directly.
 
-Raw job are sent to mapped printer directly.
+### Serial Connections
 
+- Serial port are opened by Java and "proxied" as WebSocket stream
+- Serial port can be shared by multiple connections
+- Bidirectional communications possible
 
-For serial port, serial port are opened by Java and "proxified" as WebSocket stream,
+### Mappings
 
-which allow bidirectional communcations.
+Web UI / API are provided to set up mappings between keys and printers/serials.
 
+Therefore, WebApps do not need to care about the actual printer names.
 
-Configurator is provided to setup mappings between keys and printers/serials.
+## More documents
 
-Therefore web apps do not need to care about the actual printer names.
+- [Configurations](CONFIGURATION.md)
+- [HTTP APIs](HTTP_API.md)
+- [Advanced Configurations - Authentication](ADVANCED.md#authentication)
+- [Advanced Configurations - HTTPS/WSS Support](ADVANCED.md#httpswss-support)
+- [Build from source](BUILD.md)
+- [Troubleshooting](TROUBLESHOOT.md)
 
-## Known Issue
+## Upgrade
 
-- Browser refuse to connect to non-Secure WebSocket server
-  Firefox Workaround: Change "network.websocket.allowInsecureFromHTTPS" to true in about:config
+- Settings will lost after upgrade from 0.x to 1.0, please reconfigure via "Web UI" or "Web API"
 
-## FAQs
+## Changelogs
 
-- Configurator/GUI do not run? Install [vc_redist.x64.exe](
-https://www.microsoft.com/en-US/download/details.aspx?id=48145)
-- [Build from source](../../wiki/Build-from-source)
-
-## Advanced Usages
-
-- [HTTPS/WSS Support](../../wiki/HTTPS-WSS-Support)
-- [Authentication](../../wiki/Authentication)
-
-## TODOs
-- [ ] Deprecate "Configurator" in favor of Web UI
-- [ ] Revamp settings format with proper json processor
-- [ ] Per type printer setting
-- [ ] Serial settings (Baudrate, data bits, stop bit, parity bit)
-
-Any other ideas? Fork and PR are welcome!
+- [Changelogs](README)

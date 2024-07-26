@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8">
-      <module name="configurator_main" target="1.8" />
-      <module name="configurator_test" target="1.8" />
-      <module name="server_main" target="1.8" />
-      <module name="server_test" target="1.8" />
-    </bytecodeTargetLevel>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+    </annotationProcessing>
+    <bytecodeTargetLevel target="21" />
   </component>
 </project>

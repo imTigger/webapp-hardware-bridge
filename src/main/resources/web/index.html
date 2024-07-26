@@ -1,0 +1,368 @@
+<!doctype html>
+<!--suppress JSUnusedGlobalSymbols, HtmlFormInputWithoutLabel, JSUnresolvedReference -->
+<html lang="en" xmlns: xmlns:@vue>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <title>WebApp Hardware Bridge Web UI</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div @vue:mounted="mounted" v-scope>
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none" href="#">
+                <span class="fs-4">WebApp Hardware Bridge Web UI</span>
+            </a>
+            <button @click="saveConfig" class="btn btn-success ms-2">Save</button>
+            <button @click="restartServer" class="btn btn-warning ms-2">Restart Server</button>
+        </header>
+    </div>
+    <div class="container" v-if="config != null">
+        <div class="row">
+            <div class="mb-2 col-xl-4">
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">GUI</h5>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="gui-notification-enabled">Enable notification</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="gui-notification-enabled" type="checkbox" v-model="config.gui.notification.enabled"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Web/WebSocket Server</h5>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-4" for="server-bind">Bind</label>
+                            <div class="col-sm-8">
+                                <input class="form-control form-control-sm" id="server-bind" type="text" v-model="config.server.bind"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-4" for="server-address">Address</label>
+                            <div class="col-sm-8">
+                                <input class="form-control form-control-sm" id="server-address" type="text" v-model="config.server.address"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-4" for="server-port">Port</label>
+                            <div class="col-sm-8">
+                                <input class="form-control form-control-sm" id="server-port" max="65535" min="1024" type="number" v-model="config.server.port"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="server-authentication-enabled">Enable authentication</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="server-authentication-enabled" type="checkbox" v-model="config.server.authentication.enabled"/>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2" v-if="config.server.authentication.enabled">
+                            <div class="card-body"><h6 class="card-title mb-3">Authentication</h6>
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4" for="server-authentication-token">Token</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" id="server-authentication-token" type="text" v-model="config.server.authentication.token"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="server-tls-enabled">Enable TLS</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="server-tls-enabled" type="checkbox" v-model="config.server.tls.enabled"/>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2" v-if="config.server.tls.enabled">
+                            <div class="card-body"><h6 class="card-title mb-3">TLS</h6>
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4" for="server-tls-self-signed">Self Signed</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-check-input" id="server-tls-self-signed" type="checkbox" v-model="config.server.tls.selfSigned"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4" for="server-tls-cert">Cert</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" id="server-tls-cert" type="text" v-model="config.server.tls.cert"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4" for="server-tls-key">Key</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" id="server-tls-key" type="text" v-model="config.server.tls.key"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4" for="server-tls-ca-bundle">CA Bundle</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" id="server-tls-ca-bundle" type="text" v-model="config.server.tls.caBundle"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Downloader</h5>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-4" for="downloader-path">Path</label>
+                            <div class="col-sm-8">
+                                <input class="form-control form-control-sm" id="downloader-path" type="text" v-model="config.downloader.path"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-4" for="downloader-timeout">Timeout</label>
+                            <div class="col-sm-8">
+                                <input class="form-control form-control-sm" id="downloader-timeout" type="number" v-model="config.downloader.timeout"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="downloader-ignore-tls-certificate-error">Ignore TLS certificate error</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="downloader-ignore-tls-certificate-error" type="checkbox" v-model="config.downloader.ignoreTLSCertificateError"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mb-2 col-xl-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            Printers
+                            <button @click="addPrinter" class="btn btn-sm btn-success float-end">+</button>
+                        </h5>
+
+                        <div class="clearfix pb-3"></div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-enabled">Enabled</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="printer-enabled" type="checkbox" v-model="config.printer.enabled"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-auto-add-unknown-type">Auto add unknown type</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="printer-auto-add-unknown-type" type="checkbox" v-model="config.printer.autoAddUnknownType"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-fallback-to-default">Fallback to default printer if none matched</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="printer-fallback-to-default" type="checkbox" v-model="config.printer.fallbackToDefault"/>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2" v-for="(printer, index) in config.printer.mappings">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    Printer {{ index + 1 }} <span v-if="printer.type">({{ printer.type }})</span>
+                                    <button @click="removePrinter(index)" class="btn btn-sm btn-danger float-end">-</button>
+                                </h5>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Type</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="text" v-model="printer.type"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Printer Name</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control form-control-sm" type="text" v-model="printer.name">
+                                            <option :value="printerSelection.name" v-for="printerSelection in printers">{{ printerSelection.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-10">Auto rotate</label>
+                                    <div class="col-sm-2 text-end">
+                                        <input class="form-check-input" type="checkbox" v-model="printer.autoRotate"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-10">Reset imageable area</label>
+                                    <div class="col-sm-2 text-end">
+                                        <input class="form-check-input" type="checkbox" v-model="printer.resetImageableArea"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Force DPI</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="number" v-model="printer.forceDPI"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-2 col-xl-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            Serials
+                            <button @click="addSerial" class="btn btn-sm btn-success float-end">+</button>
+                        </h5>
+
+                        <div class="clearfix pb-3"></div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-10" for="printer-enabled">Enabled</label>
+                            <div class="col-sm-2 text-end">
+                                <input class="form-check-input" id="serial-enabled" type="checkbox" v-model="config.serial.enabled"/>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2" v-for="(serial, index) in config.serial.mappings">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    Serial {{ index + 1 }} <span v-if="serial.type">({{ serial.type }})</span>
+                                    <button @click="removeSerial(index)" class="btn btn-sm btn-danger float-end">-</button>
+                                </h5>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Type</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="text" v-model="serial.type"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Serial Port</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control form-control-sm" type="text" v-model="serial.name">
+                                            <option :value="serial.name" v-for="serial in serials">{{ serial.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Baud Rate</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="number" v-model="serial.baudRate"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Data Bits</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="number" v-model="serial.numDataBits"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Stop Bits</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="number" v-model="serial.numStopBits"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Parity</label>
+                                    <div class="col-sm-8">
+                                        <input class="form-control form-control-sm" type="number" v-model="serial.parity"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-4">Read Charset</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control form-control-sm" type="text" v-model="serial.readCharset">
+                                            <option :value="charset" v-for="charset in ['UTF-8', 'US-ASCII', 'BINARY']">{{ charset }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row mb-2">
+                                    <label class="col-sm-10">Read Multi-bytes</label>
+                                    <div class="col-sm-2 text-end">
+                                        <input class="form-check-input" type="checkbox" v-model="serial.readMultipleBytes"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script type="module">import { createApp } from './js/petite-vue.js'
+
+createApp({
+    config: null,
+    printers: [],
+    serials: [],
+
+    loadConfig() {
+        return axios.get('/config.json')
+            .then(response => this.config = response.data)
+    },
+    saveConfig() {
+        return axios.put('/config.json', this.config)
+            .then(response => this.config = response.data)
+    },
+    addPrinter() {
+        this.config.printer.mappings.push({type: '', name: ''})
+    },
+    removePrinter(index) {
+        this.config.printer.mappings.splice(index, 1)
+    },
+    addSerial() {
+        this.config.serial.mappings.push({type: '', name: ''})
+    },
+    removeSerial(index) {
+        this.config.serial.mappings.splice(index, 1)
+    },
+    loadPrinters() {
+        return axios.get('/system/printers.json')
+            .then(response => this.printers = response.data)
+    },
+    loadSerials() {
+        return axios.get('/system/serials.json')
+            .then(response => this.serials = response.data)
+    },
+    restartServer() {
+        return axios.post('/system/restart.json', this.config)
+    },
+    mounted() {
+        Promise.all([this.loadPrinters(), this.loadSerials()]).then(() => {
+            this.loadConfig()
+        })
+    }
+}).mount()</script>
+</body>
+</html>

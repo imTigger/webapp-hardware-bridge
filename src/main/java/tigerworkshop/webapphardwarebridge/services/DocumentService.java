@@ -1,82 +1,116 @@
 package tigerworkshop.webapphardwarebridge.services;
 
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.util.encoders.Base64;
-import org.slf4j.LoggerFactory;
-import tigerworkshop.webapphardwarebridge.Config;
+import org.apache.commons.io.FilenameUtils;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
 import tigerworkshop.webapphardwarebridge.responses.PrintDocument;
-import tigerworkshop.webapphardwarebridge.utils.DownloadUtil;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 
+@Log4j2
 public class DocumentService {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DocumentService.class.getName());
+    @Getter
     private static final DocumentService instance = new DocumentService();
-    private static final SettingService settingService = SettingService.getInstance();
+    private static final Config.Downloader downloaderConfig = ConfigService.getInstance().getConfig().getDownloader();
 
-    private DocumentService() {
-        File directory = new File(Config.DOCUMENT_PATH);
-        if (!directory.exists()) {
-            boolean result = directory.mkdir();
-            if (!result) {
-                logger.error("Directory for documents doesn't exist and can't be created.");
-            }
-        }
-    }
-
-    public static DocumentService getInstance() {
-        return instance;
-    }
-
-    public static void extract(String base64, String uuid, String urlString) throws Exception {
-        byte[] bytes = Base64.decode(base64);
-
-        Path filePath = getPathFromUrl(uuid, urlString);
-        Files.createDirectories(filePath.getParent());
-        try (OutputStream stream = Files.newOutputStream(filePath)) {
-            stream.write(bytes);
-        }
-    }
-
-    public static void download(String uuid, String urlString) throws Exception {
-        Path filePath = getPathFromUrl(uuid, urlString);
-        Files.createDirectories(filePath.getParent());
-        DownloadUtil.file(urlString, filePath, settingService.getSetting().getIgnoreTLSCertificateErrorEnabled(), settingService.getSetting().getDownloadTimeout());
-    }
-
-    public static void deleteFileFromUrl(String uuid, String urlString) {
-        Path filePath = getPathFromUrl(uuid, urlString);
-        try {
-            FileUtils.deleteDirectory(filePath.getParent().toFile());
-        } catch (IOException e) {
-            logger.error("Couldn't delete downloaded document.");
-        }
-    }
-
-    public static Path getPathFromUrl(String uuid, String urlString) {
-        urlString = urlString.replace(" ", "%20");
-        String filename = urlString.substring(urlString.lastIndexOf("/") + 1);
-        return Paths.get(Config.DOCUMENT_PATH + uuid + "/" + filename);
-    }
-
-    public void prepareDocument(PrintDocument printDocument) throws Exception {
-        if (printDocument.getRawContent() != null && !printDocument.getRawContent().isEmpty()) {
-            return;
-        }
+    public File prepareDocument(PrintDocument printDocument) throws Exception {
+        FileUtils.forceMkdir(new File(downloaderConfig.getPath()));
 
         if (printDocument.getUrl() == null && printDocument.getFileContent() == null) {
-            throw new Exception("URL is null");
+            throw new Exception("Both URL and File Content are null");
         }
 
+        File output = getOutputFile(printDocument);
         if (printDocument.getFileContent() != null) {
-            extract(printDocument.getFileContent(), printDocument.getUuid().toString(), printDocument.getUrl());
+            byte[] bytes = Base64.getDecoder().decode(printDocument.getFileContent());
+            Files.write(output.toPath(), bytes);
         } else {
-            download(printDocument.getUuid().toString(), printDocument.getUrl());
+            URL url = new URL(printDocument.getUrl());
+            download(url, getOutputFile(printDocument));
         }
+
+        return output;
+    }
+
+    public void deleteDocument(PrintDocument printDocument) throws IOException {
+        FileUtils.deleteQuietly(getOutputFile(printDocument));
+    }
+
+    private File getOutputFile(PrintDocument printDocument) throws MalformedURLException {
+        File output;
+        if (printDocument.getFileContent() != null) {
+            output = new File(downloaderConfig.getPath() + "/" + printDocument.getUrl());
+        } else {
+            URL url = new URL(printDocument.getUrl());
+            output = new File(downloaderConfig.getPath() + "/" + FilenameUtils.getName(url.getPath()));
+        }
+        return output;
+    }
+
+    private void download(URL url, File outputFile) throws Exception {
+        log.info("Downloading file from: {}", url);
+
+        long timeStart = System.currentTimeMillis();
+
+        if (downloaderConfig.isIgnoreTLSCertificateError()) {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                    }
+            };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setConnectTimeout((int) downloaderConfig.getTimeout() * 1000);
+        urlConnection.setReadTimeout((int) downloaderConfig.getTimeout() * 1000);
+        urlConnection.connect();
+
+        int contentLength = urlConnection.getContentLength();
+        int responseCode;
+        if (urlConnection instanceof HttpsURLConnection) {
+            responseCode = ((HttpsURLConnection) urlConnection).getResponseCode();
+        } else {
+            responseCode = ((HttpURLConnection) urlConnection).getResponseCode();
+        }
+
+        log.trace("Content Length: {}", contentLength);
+        log.trace("Response Code: {}", responseCode);
+
+        // Status code mismatch
+        if (responseCode != 200) {
+            throw new IOException("HTTP Status Code: " + responseCode);
+        }
+
+        FileUtils.copyInputStreamToFile(urlConnection.getInputStream(), outputFile);
+
+        long timeFinish = System.currentTimeMillis();
+        log.info("File {} downloaded in {} ms", outputFile.getName(), timeFinish - timeStart);
     }
 }

@@ -6,23 +6,33 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
 
     <!-- Bootstrap CSS -->
-    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-    <title>Printer Test</title>
+    <title>WebSocket Printer Basic</title>
 </head>
 <body>
 <main class="container" role="main">
-    <h1 class="mt-5">Printer Test</h1>
+    <h1 class="mt-5">WebSocket Printer Basic</h1>
 
     <hr/>
 
     <label>PDF by URL</label>
     <div class="input-group mb-3">
-        <input class="form-control" id="url" type="text" value="https://tcpdf.org/files/examples/example_002.pdf"/>
+        <input class="form-control" id="url" type="text" value="https://pdfobject.com/pdf/sample.pdf"/>
 
         <div class="input-group-append">
             <button class="btn btn-success" onclick="printPDF()">Print</button>
+        </div>
+    </div>
+
+    <hr/>
+
+    <label>Image by URL</label>
+    <div class="input-group mb-3">
+        <input class="form-control" id="url2" type="text" value="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"/>
+
+        <div class="input-group-append">
+            <button class="btn btn-success" onclick="printImage()">Print</button>
         </div>
     </div>
 
@@ -49,15 +59,21 @@
     </div>
 </main>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="websocket-printer.js"></script>
 <script>
-    var printService = new WebSocketPrinter();
+    const printService = new WebSocketPrinter();
 
     function printPDF() {
         printService.submit({
             'type': 'INVOICE',
-            'url': $('#url').val()
+            'url': document.getElementById("url").value
+        });
+    }
+
+    function printImage() {
+        printService.submit({
+            'type': 'INVOICE',
+            'url': document.getElementById("url2").value
         });
     }
 
@@ -65,14 +81,14 @@
         printService.submit({
             'type': 'INVOICE',
             'url': 'file.pdf',
-            'file_content': $('#file_content').val()
+            'file_content': document.getElementById('file_content').value
         });
     }
 
     function printRaw() {
         printService.submit({
             'type': 'RECEIPT',
-            'raw_content': $('#raw_content').val()
+            'raw_content': document.getElementById('raw_content').value
         });
     }
 </script>

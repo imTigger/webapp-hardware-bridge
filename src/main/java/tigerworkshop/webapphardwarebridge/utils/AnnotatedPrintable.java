@@ -1,7 +1,7 @@
 package tigerworkshop.webapphardwarebridge.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -10,12 +10,12 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.ArrayList;
 
+@Log4j2
 public class AnnotatedPrintable implements Printable {
-
-    private static final Double MM_TO_PPI = 2.8346457;
     private final Printable printable;
     private final ArrayList<AnnotatedPrintableAnnotation> annotatedPrintableAnnotationArrayList = new ArrayList<>();
-    private Logger logger = LoggerFactory.getLogger(AnnotatedPrintable.class.getName());
+
+    private static final Double MM_TO_PPI = 2.8346457;
 
     public AnnotatedPrintable(Printable printable) {
         this.printable = printable;
@@ -29,7 +29,7 @@ public class AnnotatedPrintable implements Printable {
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
         int result = printable.print(graphics, pageFormat, pageIndex);
 
-        if (annotatedPrintableAnnotationArrayList.size() == 0) {
+        if (annotatedPrintableAnnotationArrayList.isEmpty()) {
             return result;
         }
 
@@ -37,7 +37,7 @@ public class AnnotatedPrintable implements Printable {
             Graphics2D graphics2D = (Graphics2D) graphics;
 
             // On Windows we need getDefaultTransform() to print in correct scale
-            // But on Mac it cause NullPointerException, however a blank AffineTransform works
+            // But on Mac it causes NullPointerException, however a blank AffineTransform works
             try {
                 graphics2D.setTransform(graphics2D.getDeviceConfiguration().getDefaultTransform());
             } catch (Exception e) {
@@ -47,20 +47,19 @@ public class AnnotatedPrintable implements Printable {
             float clipX = (float) graphics2D.getClipBounds().getX();
             float clipY = (float) graphics2D.getClipBounds().getY();
 
-
             // Catch Exceptions otherwise blank page occur while exceptions silently handled
             try {
                 for (AnnotatedPrintableAnnotation annotatedPrintableAnnotation : annotatedPrintableAnnotationArrayList) {
                     if (annotatedPrintableAnnotation.getText() == null) {
-                        logger.warn("annotatedPrintableAnnotation.getText() is null");
+                        log.warn("annotatedPrintableAnnotation.getText() is null");
                         continue;
                     }
 
                     float realX = (float) (clipX + annotatedPrintableAnnotation.getX() * MM_TO_PPI);
                     float realY = (float) (clipY + annotatedPrintableAnnotation.getY() * MM_TO_PPI);
 
-                    Integer isBold = annotatedPrintableAnnotation.getBold() != null ? Font.BOLD : Font.PLAIN;
-                    Integer fontSize = annotatedPrintableAnnotation.getSize() != null ? annotatedPrintableAnnotation.getSize() : 10;
+                    int isBold = annotatedPrintableAnnotation.getBold() != null ? Font.BOLD : Font.PLAIN;
+                    int fontSize = annotatedPrintableAnnotation.getSize() != null ? annotatedPrintableAnnotation.getSize() : 10;
 
                     Font font = new Font("Sans-Serif", isBold, fontSize);
                     graphics2D.setColor(Color.BLACK);
@@ -68,7 +67,7 @@ public class AnnotatedPrintable implements Printable {
                     graphics2D.drawString(annotatedPrintableAnnotation.getText(), realX, realY);
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
 
         }
@@ -76,53 +75,12 @@ public class AnnotatedPrintable implements Printable {
         return result;
     }
 
-    public class AnnotatedPrintableAnnotation {
-
-        private String field;
+    @Data
+    public static class AnnotatedPrintableAnnotation {
         private String text;
         private Float x;
         private Float y;
         private Integer size;
         private Boolean bold;
-
-        public String getField() {
-            return field;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public Float getX() {
-            return x;
-        }
-
-        public Float getY() {
-            return y;
-        }
-
-        public Integer getSize() {
-            return size;
-        }
-
-        public Boolean getBold() {
-            return bold;
-        }
-
-        @Override
-        public String toString() {
-            return "AnnotatedPrintableAnnotation{" +
-                    "field='" + field + '\'' +
-                    ", text='" + text + '\'' +
-                    ", x=" + x +
-                    ", y=" + y +
-                    ", size=" + size +
-                    ", bold='" + bold + '\'' +
-                    '}';
-        }
     }
 }

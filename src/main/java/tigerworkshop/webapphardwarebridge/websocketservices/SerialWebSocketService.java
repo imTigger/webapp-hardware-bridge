@@ -1,131 +1,170 @@
 package tigerworkshop.webapphardwarebridge.websocketservices;
 
 import com.fazecast.jSerialComm.SerialPort;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import tigerworkshop.webapphardwarebridge.dtos.Config;
+import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
-import java.nio.charset.StandardCharsets;
+import java.awt.*;
+import java.nio.charset.Charset;
+import java.util.Objects;
 
+@Log4j2
 public class SerialWebSocketService implements WebSocketServiceInterface {
-    private final String portName;
-    private final String mappingKey;
+    private WebSocketServerInterface server;
+    private final GUIInterface guiInterface;
+
+    private final Config.SerialMapping mapping;
     private final SerialPort serialPort;
     private byte[] writeBuffer = {};
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private WebSocketServerInterface server = null;
     private Thread readThread;
     private Thread writeThread;
+    private Thread monitorThread;
 
-    public SerialWebSocketService(String portName, String mappingKey) {
-        logger.info("Starting SerialWebSocketService on " + portName);
+    private Boolean isRunning = true;
 
-        this.portName = portName;
-        this.mappingKey = mappingKey;
-        this.serialPort = SerialPort.getCommPort(portName);
+    private static final String BINARY = "BINARY";
+
+    public SerialWebSocketService(GUIInterface newGUIInterface, Config.SerialMapping newMapping) {
+        log.info("Starting SerialWebSocketService on {}", newMapping.getName());
+
+        this.mapping = newMapping;
+
+        this.guiInterface = newGUIInterface;
+
+        this.serialPort = SerialPort.getCommPort(newMapping.getName());
+
+        if (mapping.getBaudRate() != null) serialPort.setBaudRate(mapping.getBaudRate());
+        if (mapping.getNumDataBits() != null) serialPort.setNumDataBits(mapping.getNumDataBits());
+        if (mapping.getNumStopBits() != null) serialPort.setNumStopBits(mapping.getNumStopBits());
+        if (mapping.getParity() != null) serialPort.setParity(mapping.getParity());
     }
 
     @Override
     public void start() {
-        readThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                logger.trace("Serial Read Thread started for " + portName);
+        isRunning = true;
 
-                while (!Thread.interrupted()) {
-                    try {
-                        if (serialPort.isOpen()) {
-                            if (serialPort.bytesAvailable() == 0) {
-                                // No data coming from COM portName
-                                ThreadUtil.silentSleep(10);
-                                continue;
-                            } else if (serialPort.bytesAvailable() == -1) {
-                                // Check if portName closed unexpected (e.g. Unplugged)
-                                serialPort.closePort();
-                                logger.warn("Serial unplugged!");
-                                continue;
-                            }
+        readThread = new Thread(() -> {
+            log.debug("Serial Read Thread started for {}", mapping.getName());
 
-                            byte[] receivedData = new byte[1];
-                            serialPort.readBytes(receivedData, 1);
+            while (isRunning) {
+                if (serialPort.isOpen()) {
+                    int bytesAvailable = serialPort.bytesAvailable();
+                    if (bytesAvailable == 0) {
+                        // No data coming from COM portName
+                        ThreadUtil.silentSleep(10);
+                        continue;
+                    } else if (bytesAvailable == -1) {
+                        // Check if portName closed unexpected (e.g. Unplugged)
+                        serialPort.closePort();
 
-                            if (server != null) {
-                                server.onDataReceived(getChannel(), new String(receivedData, StandardCharsets.UTF_8));
-                            }
-                        } else {
-                            logger.trace("Trying to connect the serial @ " + serialPort.getSystemPortName());
-                            serialPort.openPort();
+                        if (guiInterface != null) {
+                            guiInterface.notify("Serial Port", "Serial " + mapping.getName() + "(" + mapping.getType() + ") unplugged", TrayIcon.MessageType.WARNING);
                         }
-                    } catch (Exception e) {
-                        logger.warn("Error: " + e.getMessage(), e);
-                        ThreadUtil.silentSleep(1000);
+                        log.warn("Serial {} unplugged", mapping.getName());
+
+                        continue;
+                    }
+
+                    int bytesToRead = mapping.getReadMultipleBytes() ? bytesAvailable : 1;
+
+                    byte[] receivedData = new byte[bytesToRead];
+                    serialPort.readBytes(receivedData, bytesToRead);
+
+                    if (server != null) {
+                        if (Objects.equals(mapping.getReadCharset(), BINARY)) server.onDataReceived(getChannel(), receivedData);
+                        else server.onDataReceived(getChannel(), new String(receivedData, Charset.forName(mapping.getReadCharset())));
                     }
                 }
             }
+
+            log.debug("Serial Read Thread stopped for {}", mapping.getName());
         });
 
-        writeThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                logger.trace("Serial Write Thread started for " + portName);
+        writeThread = new Thread(() -> {
+            log.debug("Serial Write Thread started for {}", mapping.getName());
 
-                while (!Thread.interrupted()) {
+            while (isRunning) {
+                if (serialPort.isOpen()) {
+                    if (writeBuffer.length > 0) {
+                        log.trace("Bytes: {}", Hex.encodeHexString(writeBuffer));
+
+                        serialPort.writeBytes(writeBuffer, writeBuffer.length);
+                        writeBuffer = new byte[]{};
+                    }
+                    ThreadUtil.silentSleep(10);
+                }
+            }
+
+            log.debug("Serial Write Thread stopped for {}", mapping.getName());
+        });
+
+        monitorThread = new Thread(() -> {
+            log.debug("Serial Monitor Thread started for {}", mapping.getName());
+
+            while (isRunning) {
+                if (serialPort.isOpen()) {
+                    ThreadUtil.silentSleep(1000);
+                } else {
+                    log.info("Trying to connect to serial @ {}", serialPort.getSystemPortName());
+                    serialPort.openPort(1000);
+
                     if (serialPort.isOpen()) {
-                        try {
-                            if (writeBuffer.length > 0) {
-                                logger.trace("Bytes: {}", Hex.encodeHexString(writeBuffer));
-
-                                serialPort.writeBytes(writeBuffer, writeBuffer.length);
-                                writeBuffer = new byte[]{};
-                            }
-                            ThreadUtil.silentSleep(10);
-                        } catch (Exception e) {
-                            logger.warn("Error: " + e.getMessage());
-                            ThreadUtil.silentSleep(1000);
-                        }
+                        log.info("Serial {} is now open", mapping.getName());
                     }
                 }
             }
+
+            log.debug("Serial Monitor Thread stopped for {}", mapping.getName());
         });
 
         readThread.start();
         writeThread.start();
+        monitorThread.start();
     }
 
     @Override
     public void stop() {
-        logger.info("Stopping SerialWebSocketService");
-        serialPort.closePort();
+        log.info("Stopping SerialWebSocketService");
+
+        isRunning = false;
 
         readThread.interrupt();
         writeThread.interrupt();
+        monitorThread.interrupt();
+
+        serialPort.closePort();
+
+        log.info("Stopped SerialWebSocketService");
     }
 
     @Override
     public void onDataReceived(String message) {
-        send(message.getBytes());
+        onDataReceived(message.getBytes());
     }
 
     @Override
     public void onDataReceived(byte[] message) {
-        send(message);
-    }
-
-    @Override
-    public void setServer(WebSocketServerInterface server) {
-        this.server = server;
-        server.subscribe(this, getChannel());
-    }
-
-    private void send(byte[] message) {
         writeBuffer = message;
     }
 
-    private String getChannel() {
-        return "/serial/" + mappingKey;
+    @Override
+    public void onRegister(WebSocketServerInterface newServer) {
+        this.server = newServer;
+    }
+
+    @Override
+    public void onUnregister() {
+        this.server = null;
+    }
+
+    @Override
+    public String getChannel() {
+        return "/serial/" + mapping.getType();
     }
 }
