@@ -83,4 +83,4 @@ Therefore, WebApps do not need to care about the actual printer names.
 
 ## Changelogs
 
-- [Changelogs](README)
+- [Changelogs](CHANGELOG.md)
