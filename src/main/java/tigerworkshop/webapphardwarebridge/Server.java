@@ -1,5 +1,6 @@
 package tigerworkshop.webapphardwarebridge;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fazecast.jSerialComm.SerialPort;
 import io.javalin.Javalin;
@@ -10,9 +11,9 @@ import io.javalin.util.JavalinBindException;
 import io.javalin.websocket.WsContext;
 import lombok.extern.log4j.Log4j2;
 import tigerworkshop.webapphardwarebridge.dtos.Config;
+import tigerworkshop.webapphardwarebridge.dtos.NotificationDTO;
 import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
 import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
-import tigerworkshop.webapphardwarebridge.interfaces.GUIInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
@@ -22,7 +23,6 @@ import tigerworkshop.webapphardwarebridge.websocketservices.PrinterWebSocketServ
 import tigerworkshop.webapphardwarebridge.websocketservices.SerialWebSocketService;
 
 import javax.print.PrintService;
-import java.awt.*;
 import java.awt.print.PrinterJob;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -41,15 +41,9 @@ public class Server implements WebSocketServerInterface {
     private final ConcurrentHashMap<String, ConcurrentLinkedQueue<WebSocketServiceInterface>> serviceChannelSubscriptions = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<WebSocketServiceInterface> services = new ConcurrentLinkedQueue<>();
 
-    private final GUIInterface guiInterface;
-
-    public Server(GUIInterface guiInterface) {
-        this.guiInterface = guiInterface;
-    }
-
     public static void main(String[] args) {
         try {
-            new Server(null).start();
+            new Server().start();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -101,8 +95,8 @@ public class Server implements WebSocketServerInterface {
 
         // Add WebSocket Printer Service
         Config.Printer printerConfig = config.getPrinter();
-        if (printerConfig.isEnabled() && !printerConfig.getMappings().isEmpty()) {
-            PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService(guiInterface);
+        if (printerConfig.isEnabled()) {
+            PrinterWebSocketService printerWebSocketService = new PrinterWebSocketService();
             printerWebSocketService.start();
 
             javalinServer.ws(printerWebSocketService.getChannel(), ws -> {
@@ -121,7 +115,7 @@ public class Server implements WebSocketServerInterface {
                 ws.onMessage(ctx -> {
                     log.info("{} sent message to {}: {}", ctx.host(), printerWebSocketService.getChannel(), ctx.message());
 
-                    processMessage("/printer", ctx.message());
+                    messageToService("/printer", ctx.message());
                 });
             });
 
@@ -134,7 +128,7 @@ public class Server implements WebSocketServerInterface {
             serialConfig.getMappings().forEach(mapping -> {
                 try {
                     log.info("Starting SerialWebSocketService: {}", mapping.toString());
-                    SerialWebSocketService serialWebSocketService = new SerialWebSocketService(guiInterface, mapping);
+                    SerialWebSocketService serialWebSocketService = new SerialWebSocketService(mapping);
                     serialWebSocketService.start();
 
                     registerService(serialWebSocketService);
@@ -155,21 +149,23 @@ public class Server implements WebSocketServerInterface {
                         ws.onMessage(ctx -> {
                             log.info("{} sent message to {}: {}", ctx.host(), serialWebSocketService.getChannel(), ctx.message());
 
-                            processMessage(serialWebSocketService.getChannel(), ctx.message());
+                            messageToService(serialWebSocketService.getChannel(), ctx.message());
                         });
 
                         ws.onBinaryMessage(ctx -> {
                             log.info("{} sent binary message to {}: {}", ctx.host(), serialWebSocketService.getChannel(), ctx.data());
 
-                            processMessage(serialWebSocketService.getChannel(), ctx.data());
+                            messageToService(serialWebSocketService.getChannel(), ctx.data());
                         });
                     });
                 } catch (Exception e) {
                     String message = "Failed to start SerialWebSocketService for " + mapping.getType() + ": " + e.getMessage();
                     log.error(message);
 
-                    if (guiInterface != null) {
-                        guiInterface.notify("Error", message, TrayIcon.MessageType.ERROR);
+                    try {
+                        messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("ERROR", "Serial", message)));
+                    } catch (JsonProcessingException ex) {
+                        log.error("Failed to send notification: {}", ex.getMessage());
                     }
                 }
             });
@@ -206,9 +202,7 @@ public class Server implements WebSocketServerInterface {
             configService.loadFromJson(ctx.body());
             configService.save();
 
-            if (guiInterface != null) {
-                guiInterface.notify("Setting", "Setting saved successfully", TrayIcon.MessageType.INFO);
-            }
+            messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("INFO", "Setting", "Setting saved successfully")));
 
             ctx.contentType(ContentType.APPLICATION_JSON).result(configService.getConfig().toJson());
         });
@@ -236,9 +230,7 @@ public class Server implements WebSocketServerInterface {
             ThreadUtil.silentSleep(500);
             start();
 
-            if (guiInterface != null) {
-                guiInterface.notify("Restart", "Server restarted successfully", TrayIcon.MessageType.INFO);
-            }
+            messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("INFO", "Restart", "Server restarted successfully")));
         });
 
         try {
@@ -264,8 +256,8 @@ public class Server implements WebSocketServerInterface {
      * Service to Server listener
      */
     @Override
-    public void onDataReceived(String channel, String message) {
-        log.trace("Received data from channel: {}, Data: {}", channel, message);
+    public void messageToServer(String channel, String message) {
+        log.debug("Received data from channel: {}, Data: {}", channel, message);
 
         ConcurrentLinkedQueue<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>());
 
@@ -281,8 +273,8 @@ public class Server implements WebSocketServerInterface {
     }
 
     @Override
-    public void onDataReceived(String channel, byte[] message) {
-        log.trace("Received data from channel: {}, Data: {}", channel, message);
+    public void messageToServer(String channel, byte[] message) {
+        log.debug("Received data from channel: {}, Data: {}", channel, message);
 
         ConcurrentLinkedQueue<WsContext> connectionList = socketChannelSubscriptions.getOrDefault(channel, new ConcurrentLinkedQueue<>());
 
@@ -297,6 +289,29 @@ public class Server implements WebSocketServerInterface {
         }
     }
 
+    /*
+     * Service to Service listener
+     */
+    @Override
+    public void messageToService(String channel, String message) {
+        ConcurrentLinkedQueue<WebSocketServiceInterface> services = getServicesForChannel(channel);
+        for (WebSocketServiceInterface service : services) {
+            log.debug("Sending: {} to channel: {}, service = {}", message, channel, service.getClass().getSimpleName());
+
+            service.messageToService(message);
+        }
+    }
+
+    @Override
+    public void messageToService(String channel, byte[] bytes) {
+        ConcurrentLinkedQueue<WebSocketServiceInterface> services = getServicesForChannel(channel);
+        for (WebSocketServiceInterface service : services) {
+            log.debug("Sending: {} to channel: {}, service = {}", bytes, channel, service.getClass().getSimpleName());
+
+            service.messageToService(bytes);
+        }
+    }
+
     @Override
     public void registerService(WebSocketServiceInterface service) {
         service.onRegister(this);
@@ -307,27 +322,6 @@ public class Server implements WebSocketServerInterface {
     public void unregisterService(WebSocketServiceInterface service) {
         service.onUnregister();
         removeServiceFromChannel(service.getChannel(), service);
-    }
-
-    /*
-     * Message handler
-     */
-    private void processMessage(String channel, String message) {
-        ConcurrentLinkedQueue<WebSocketServiceInterface> services = getServicesForChannel(channel);
-        for (WebSocketServiceInterface service : services) {
-            log.trace("Attempt to send: {} to channel: {}", message, channel);
-
-            service.onDataReceived(message);
-        }
-    }
-
-    private void processMessage(String channel, byte[] bytes) {
-        ConcurrentLinkedQueue<WebSocketServiceInterface> services = getServicesForChannel(channel);
-        for (WebSocketServiceInterface service : services) {
-            log.trace("Attempt to send: {} to channel: {}", bytes, channel);
-
-            service.onDataReceived(bytes);
-        }
     }
 
     /*

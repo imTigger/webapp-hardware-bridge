@@ -32,7 +32,7 @@ public class Config {
     @Data
     @NoArgsConstructor
     public static class Notification {
-        private boolean enabled = false;
+        private boolean enabled = true;
     }
 
     @Data
