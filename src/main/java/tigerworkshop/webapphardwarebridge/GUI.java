@@ -44,8 +44,6 @@ public class GUI implements WebSocketServiceInterface {
             server.registerService(this);
         }
 
-        final Image image = ImageIO.read(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("icon.png")));
-
         MenuItem settingItem = new MenuItem("Web UI");
         settingItem.addActionListener(e -> {
             try {
@@ -101,10 +99,16 @@ public class GUI implements WebSocketServiceInterface {
         popupMenu.add(restartItem);
         popupMenu.add(exitItem);
 
-        trayIcon = new TrayIcon(image, Constants.APP_NAME);
+        tray = SystemTray.getSystemTray();
+
+        // Set icon
+        Dimension trayIconSize = tray.getTrayIconSize();
+        final Image image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("icon.png")));
+        final Image scaledImage = image.getScaledInstance(trayIconSize.width, trayIconSize.height, Image.SCALE_SMOOTH);
+
+        trayIcon = new TrayIcon(scaledImage, Constants.APP_NAME);
         trayIcon.setPopupMenu(popupMenu);
 
-        tray = SystemTray.getSystemTray();
         tray.add(trayIcon);
 
         notify(Constants.APP_NAME, " is running in background!", TrayIcon.MessageType.INFO);
