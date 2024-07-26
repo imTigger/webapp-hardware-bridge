@@ -116,9 +116,9 @@ public class PrinterWebSocketService implements WebSocketServiceInterface {
                 documentService.deleteDocument(printDocument);
             }
 
-            server.messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("ERROR", "Print Error " + printDocument.getType(), e.getMessage())));
+            server.messageToService("/notification", objectMapper.writeValueAsString(new NotificationDTO("ERROR", "Print Error " + printDocument.getType(), errorMessage)));
 
-            server.messageToServer(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, e.getMessage(), printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
+            server.messageToServer(getChannel(), objectMapper.writeValueAsString(new PrintResult(false, errorMessage, printDocument.getId(), printerSearchResult != null ? printerSearchResult.getName() : null)));
         }
     }
 
