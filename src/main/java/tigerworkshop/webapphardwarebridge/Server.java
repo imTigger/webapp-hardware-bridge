@@ -81,6 +81,9 @@ public class Server implements WebSocketServerInterface {
         // Add WebSocket Auth
         javalinServer.wsBefore(ctx -> {
             ctx.onConnect(wsConnectContext -> {
+                wsConnectContext.session.getPolicy().setMaxBinaryMessageSize(-1);
+                wsConnectContext.session.getPolicy().setMaxTextMessageSize(-1);
+
                 wsConnectContext.enableAutomaticPings(5, TimeUnit.SECONDS);
 
                 if (serverConfig.getAuthentication().isEnabled()) {
