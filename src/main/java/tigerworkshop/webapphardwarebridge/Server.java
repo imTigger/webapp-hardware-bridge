@@ -1,6 +1,7 @@
 package tigerworkshop.webapphardwarebridge;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fazecast.jSerialComm.SerialPort;
 import io.javalin.Javalin;
@@ -10,10 +11,7 @@ import io.javalin.plugin.bundled.CorsPluginConfig;
 import io.javalin.util.JavalinBindException;
 import io.javalin.websocket.WsContext;
 import lombok.extern.log4j.Log4j2;
-import tigerworkshop.webapphardwarebridge.dtos.Config;
-import tigerworkshop.webapphardwarebridge.dtos.NotificationDTO;
-import tigerworkshop.webapphardwarebridge.dtos.PrintServiceDTO;
-import tigerworkshop.webapphardwarebridge.dtos.SerialPortDTO;
+import tigerworkshop.webapphardwarebridge.dtos.*;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServerInterface;
 import tigerworkshop.webapphardwarebridge.interfaces.WebSocketServiceInterface;
 import tigerworkshop.webapphardwarebridge.services.ConfigService;
@@ -229,6 +227,12 @@ public class Server implements WebSocketServerInterface {
             ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dtos));
         });
 
+        javalinServer.get("/system/version.json", ctx -> {
+            VersionDTO dto = new VersionDTO(Constants.APP_NAME, Constants.APP_ID, Constants.VERSION);
+
+            ctx.contentType(ContentType.APPLICATION_JSON).result(objectMapper.writeValueAsString(dto));
+        });
+
         javalinServer.post("/system/restart.json", ctx -> {
             stop();
             ThreadUtil.silentSleep(500);
@@ -239,6 +243,7 @@ public class Server implements WebSocketServerInterface {
 
         try {
             javalinServer.start(serverConfig.getBind(), serverConfig.getPort());
+            log.info("{} {} running on {}", Constants.APP_NAME, Constants.VERSION, serverConfig.getUri());
         } catch (JavalinBindException e) {
             log.info("Unable to bind port, another instance is already running?");
             System.exit(1);
