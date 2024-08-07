@@ -13,58 +13,57 @@
         <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/icon.png" />
         <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/log4j2.xml" />
       </element>
-      <element id="library" level="project" name="Gradle: org.apache.httpcomponents.core5:httpcore5:5.2.4" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1" />
-      <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-xml:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-util:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-io:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-http:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.apache.pdfbox:pdfbox:2.0.31" />
-      <element id="library" level="project" name="Gradle: io.javalin:javalin:6.1.4" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-core-common:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23" />
-      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.17.1" />
-      <element id="library" level="project" name="Gradle: org.bouncycastle:bcutil-jdk18on:1.78.1" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-server:11.0.20" />
-      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.17.1" />
-      <element id="library" level="project" name="Gradle: org.bouncycastle:bcpkix-jdk18on:1.78.1" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-core-server:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-core:2.23.1" />
-      <element id="library" level="project" name="Gradle: commons-io:commons-io:2.16.1" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:11.0.20" />
+      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.17.2" />
+      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.17.2" />
+      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.17.2" />
       <element id="library" level="project" name="Gradle: com.fazecast:jSerialComm:2.11.0" />
-      <element id="library" level="project" name="Gradle: org.bouncycastle:bcprov-jdk18on:1.78.1" />
-      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.9.23" />
-      <element id="library" level="project" name="Gradle: org.apache.pdfbox:fontbox:2.0.31" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-security:11.0.20" />
-      <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.17.1" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-webapp:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api:5.0.2" />
-      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-api:2.23.1" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-api:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.23" />
-      <element id="library" level="project" name="Gradle: org.jetbrains:annotations:13.0" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-common:11.0.20" />
-      <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.17.0" />
-      <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:2.0.13" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-server:11.0.20" />
-      <element id="library" level="project" name="Gradle: io.javalin.community.ssl:ssl-plugin:6.1.4" />
-      <element id="library" level="project" name="Gradle: io.github.hakky54:sslcontext-kickstart-for-jetty:8.3.4" />
-      <element id="library" level="project" name="Gradle: io.github.hakky54:sslcontext-kickstart-for-pem:8.3.4" />
-      <element id="library" level="project" name="Gradle: io.github.hakky54:sslcontext-kickstart:8.3.4" />
+      <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.17.1" />
+      <element id="library" level="project" name="Gradle: commons-io:commons-io:2.16.1" />
+      <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
+      <element id="library" level="project" name="Gradle: io.github.hakky54:sslcontext-kickstart-for-jetty:8.3.6" />
+      <element id="library" level="project" name="Gradle: io.github.hakky54:sslcontext-kickstart-for-pem:8.3.6" />
+      <element id="library" level="project" name="Gradle: io.github.hakky54:sslcontext-kickstart:8.3.6" />
+      <element id="library" level="project" name="Gradle: io.javalin.community.ssl:ssl-plugin:6.2.0" />
+      <element id="library" level="project" name="Gradle: io.javalin:javalin:6.2.0" />
       <element id="library" level="project" name="Gradle: junit:junit:4.13.2" />
+      <element id="library" level="project" name="Gradle: org.apache.httpcomponents.core5:httpcore5:5.2.5" />
+      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-api:2.23.1" />
+      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-core:2.23.1" />
+      <element id="library" level="project" name="Gradle: org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1" />
+      <element id="library" level="project" name="Gradle: org.apache.pdfbox:fontbox:2.0.31" />
+      <element id="library" level="project" name="Gradle: org.apache.pdfbox:pdfbox:2.0.31" />
+      <element id="library" level="project" name="Gradle: org.bouncycastle:bcpkix-jdk18on:1.78.1" />
+      <element id="library" level="project" name="Gradle: org.bouncycastle:bcprov-jdk18on:1.78.1" />
+      <element id="library" level="project" name="Gradle: org.bouncycastle:bcutil-jdk18on:1.78.1" />
       <element id="library" level="project" name="Gradle: org.conscrypt:conscrypt-openjdk-uber:2.5.2" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-common:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-hpack:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-server:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-conscrypt-server:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-java-server:11.0.20" />
-      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-server:11.0.20" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-common:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-hpack:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api:5.0.2" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-core-common:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-core-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-api:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-common:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-jetty-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-conscrypt-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-java-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-http:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-io:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-security:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-server:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-util:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-webapp:11.0.21" />
+      <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-xml:11.0.21" />
       <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
-      <element id="library" level="project" name="Gradle: org.projectlombok:lombok:1.18.32" />
-      <element id="file-copy" path="$PROJECT_DIR$/config.default.json" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.9.24" />
+      <element id="library" level="project" name="Gradle: org.jetbrains:annotations:13.0" />
+      <element id="library" level="project" name="Gradle: org.projectlombok:lombok:1.18.34" />
+      <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:2.0.13" />
     </root>
   </artifact>
 </component>

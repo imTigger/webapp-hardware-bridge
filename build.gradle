@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'webapp-hardware-bridge'
-version '1.0-SNAPSHOT'
+version '1.0.1'
 
 sourceCompatibility = '21'
 targetCompatibility = '21'
@@ -18,21 +18,21 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j2-impl', version: '2.23.1'
 
     implementation group: 'commons-io', name: 'commons-io', version: '2.16.1'
-    implementation group: 'commons-codec', name: 'commons-codec', version: '1.17.0'
-    implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.2.4'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.1'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.17.1'
+    implementation group: 'org.apache.httpcomponents.core5', name: 'httpcore5', version: '5.2.5'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.2'
     implementation group: 'com.fazecast', name: 'jSerialComm', version: '2.11.0'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.31'
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.78.1'
-    implementation group: 'io.javalin', name: 'javalin', version: '6.1.4'
-    implementation group: 'io.javalin.community.ssl', name: 'ssl-plugin', version: '6.1.4'
+    implementation group: 'io.javalin', name: 'javalin', version: '6.2.0'
+    implementation group: 'io.javalin.community.ssl', name: 'ssl-plugin', version: '6.2.0'
 
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.32'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 }
