@@ -73,6 +73,7 @@ public class Server implements WebSocketServerInterface {
                     conf.insecure = false;
                     conf.securePort = serverConfig.getPort();
                     conf.pemFromPath(serverConfig.getTls().getCert(), serverConfig.getTls().getKey());
+                    conf.sniHostCheck = !serverConfig.getTls().isSelfSigned();
                 });
                 cfg.registerPlugin(plugin);
             }
