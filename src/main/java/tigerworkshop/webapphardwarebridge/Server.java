@@ -66,7 +66,7 @@ public class Server implements WebSocketServerInterface {
 
                     CertificateGenerator.generateSelfSignedCertificate(serverConfig.getAddress(), serverConfig.getTls().getCert(), serverConfig.getTls().getKey());
 
-                    log.info("For first time setup, open in browser and trust the certificate: {}", serverConfig.getUri().replace("http", "https"));
+                    log.info("For first time setup, open in browser and trust the certificate: {}", serverConfig.getUri());
                 }
 
                 SslPlugin plugin = new SslPlugin(conf -> {
