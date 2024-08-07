@@ -12,7 +12,7 @@ When enabled, connections without correct token will be rejected.
 
 #### WebSocket
 
-Point url to `ws://127.0.0.1:12212/serial/WEIGH?access_token=1234567890` if your `token` is "1234567890"
+Point url to `ws://127.0.0.1:12212/serial/WEIGH?token=1234567890` if your `token` is "1234567890"
 
 #### Web UI
 
