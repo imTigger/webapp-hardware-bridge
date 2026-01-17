@@ -13,6 +13,8 @@ import tigerworkshop.webapphardwarebridge.utils.ThreadUtil;
 
 import java.nio.charset.Charset;
 import java.util.Objects;
+import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.TransferQueue;
 
 @Log4j2
 public class SerialWebSocketService implements WebSocketServiceInterface {
@@ -22,7 +24,7 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
     private final Config.SerialMapping mapping;
     private final SerialPort serialPort;
-    private byte[] writeBuffer = {};
+    private TransferQueue<byte[]> transferQueue = new LinkedTransferQueue<>();
 
     private Thread readThread;
     private Thread writeThread;
@@ -89,18 +91,19 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
             log.debug("Serial Read Thread stopped for {}", mapping.getName());
         });
 
+        // Consumer
         writeThread = new Thread(() -> {
             log.debug("Serial Write Thread started for {}", mapping.getName());
 
             while (isRunning) {
                 if (serialPort.isOpen()) {
-                    if (writeBuffer.length > 0) {
-                        log.trace("Bytes: {}", Hex.encodeHexString(writeBuffer));
-
-                        serialPort.writeBytes(writeBuffer, writeBuffer.length);
-                        writeBuffer = new byte[]{};
-                    }
-                    ThreadUtil.silentSleep(10);
+                	try {
+						byte[] message = transferQueue.take();
+	                    log.info("Bytes: {}", Hex.encodeHexString(message));
+	                    serialPort.writeBytes(message, message.length);
+					} catch (InterruptedException e) {
+						log.error("Error writing on serial " + mapping.getName());
+					}
                 }
             }
 
@@ -153,7 +156,9 @@ public class SerialWebSocketService implements WebSocketServiceInterface {
 
     @Override
     public void messageToService(byte[] message) {
-        writeBuffer = message;
+    	// Producer
+    	transferQueue.add(message);
+        //writeBuffer = message;
     }
 
     @Override
